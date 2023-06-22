@@ -26,8 +26,18 @@ class MyAppState extends ChangeNotifier {
 
   void updateDeviceList() async {
     var descriptions = await QuickUsb.getDevicesWithDescription();
-    var devList = descriptions.map((e) => e).toList();
+    var devList = descriptions.map((e) => e.device).toList();
     deviceList = devList.join("\n");
+    var labelPrinter =
+        devList.firstWhere((e) => e.vendorId == 8137 && e.productId == 8214);
+    var openDevice = await QuickUsb.openDevice(labelPrinter);
+    print('openDevice $openDevice');
+    notifyListeners();
+
+    var _configuration = await QuickUsb.getConfiguration(0);
+    var claimInterface =
+        await QuickUsb.claimInterface(_configuration!.interfaces[0]);
+    deviceList = _configuration!.interfaces[0].endpoints.toString();
     notifyListeners();
   }
 }
