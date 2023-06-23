@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
 import 'package:quick_usb/quick_usb.dart';
@@ -37,7 +40,25 @@ class MyAppState extends ChangeNotifier {
     var _configuration = await QuickUsb.getConfiguration(0);
     var claimInterface =
         await QuickUsb.claimInterface(_configuration!.interfaces[0]);
-    deviceList = _configuration!.interfaces[0].endpoints.toString();
+    deviceList = _configuration.interfaces[0].endpoints.toString();
+    var endpoint = _configuration.interfaces[0].endpoints
+        .firstWhere((e) => e.direction == UsbEndpoint.DIRECTION_OUT);
+
+    const cmds = [
+      'SIZE 70 mm,70 mm',
+      'CLS',
+      'TEXT 30,10,"4",0,1,1,"Nametag"',
+      'TEXT 30,50,"2",0,1,1,"Flutter + QuickUSB"',
+      'BARCODE 30,80,"128",70,1,0,2,2,"2023.ubuntu-kr.org"',
+      'PRINT 1',
+      'END',
+    ];
+    var bulkTransferOut = await QuickUsb.bulkTransferOut(
+      endpoint,
+      Uint8List.fromList(utf8.encode(cmds.join('\r\n'))),
+    );
+    print('bulkTransferOut $bulkTransferOut');
+    await QuickUsb.closeDevice();
     notifyListeners();
   }
 }
