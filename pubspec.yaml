@@ -39,6 +39,8 @@ dependencies:
   convert: ^3.0.1
   yaru: ^0.4.8
   provider: ^6.0.5
+  charset: ^2.0.1
+  image: ^4.0.17
 
 dev_dependencies:
   flutter_test:
