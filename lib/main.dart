@@ -1,10 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
 import 'package:quick_usb/quick_usb.dart';
 import 'package:provider/provider.dart';
+import 'package:charset/charset.dart';
+import 'package:image/image.dart' as imglib;
 
 void main() {
   runApp(const MyApp());
@@ -26,6 +32,20 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var deviceList = "";
+  GlobalKey globalKey = GlobalKey();
+
+  Future<Uint8List> _capturePng() async {
+    RenderRepaintBoundary boundary =
+        globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    ui.Image image = await boundary.toImage();
+    ByteData? byteData =
+        await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    Uint8List pngBytes = byteData!.buffer.asUint8List();
+    var binaryBitmap = imglib.Image.fromBytes(550, 550, pngBytes)
+        .convert(numChannels: 4, alpha: 255);
+    print(binaryBitmap);
+    return binaryBitmap;
+  }
 
   void updateDeviceList() async {
     var descriptions = await QuickUsb.getDevicesWithDescription();
@@ -35,6 +55,7 @@ class MyAppState extends ChangeNotifier {
         devList.firstWhere((e) => e.vendorId == 8137 && e.productId == 8214);
     var openDevice = await QuickUsb.openDevice(labelPrinter);
     print('openDevice $openDevice');
+    await QuickUsb.setAutoDetachKernelDriver(true);
     notifyListeners();
 
     var _configuration = await QuickUsb.getConfiguration(0);
@@ -43,19 +64,22 @@ class MyAppState extends ChangeNotifier {
     deviceList = _configuration.interfaces[0].endpoints.toString();
     var endpoint = _configuration.interfaces[0].endpoints
         .firstWhere((e) => e.direction == UsbEndpoint.DIRECTION_OUT);
-
-    const cmds = [
-      'SIZE 70 mm,70 mm',
-      'CLS',
-      'TEXT 30,10,"4",0,1,1,"Nametag"',
-      'TEXT 30,50,"2",0,1,1,"Flutter + QuickUSB"',
-      'BARCODE 30,80,"128",70,1,0,2,2,"2023.ubuntu-kr.org"',
-      'PRINT 1',
-      'END',
-    ];
+    var imageUint8 = await _capturePng();
+    // var cmddata = utf8.encode("CODEPAGE 949");
+    var cmddata = utf8.encode("SIZE 70 mm,70 mm\r\n");
+    // cmddata += utf8.encode("SIZE 70 mm,70 mm\r\n");
+    cmddata += utf8.encode("CLS\r\n");
+    cmddata += utf8.encode('BITMAP 0,0,72,550,1, ');
+    // print('image bitmap: $imageUint8');\
+    if (imageUint8 != null) {
+      cmddata += imageUint8;
+    }
+    cmddata += utf8.encode("PRINT 1\r\n");
+    cmddata += utf8.encode("END\r\n");
+    // print(utf8.decode(cmddata));
     var bulkTransferOut = await QuickUsb.bulkTransferOut(
       endpoint,
-      Uint8List.fromList(utf8.encode(cmds.join('\r\n'))),
+      Uint8List.fromList(cmddata),
     );
     print('bulkTransferOut $bulkTransferOut');
     await QuickUsb.closeDevice();
@@ -68,9 +92,12 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
+    // final img = textToImage("Test image");
+    // final imgBuffer =
+    //      img.toByteData(format: ui.ImageByteFormat.png).then();
     return Scaffold(
       appBar: AppBar(
-        title: Text('UbuCon KR Check-in Kiosk'),
+        title: Text('UbuCon KR 체크인 키오스크'),
       ),
       body: Column(
         children: [
@@ -85,6 +112,38 @@ class MyHomePage extends StatelessWidget {
               onPressed: () async {
                 appState.updateDeviceList();
               }),
+          RepaintBoundary(
+              key: appState.globalKey,
+              child: SizedBox(
+                  width: 550.0,
+                  height: 550.0,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.matrix(<double>[
+                      0.2126,
+                      0.7152,
+                      0.0722,
+                      0,
+                      0,
+                      0.2126,
+                      0.7152,
+                      0.0722,
+                      0,
+                      0,
+                      0.2126,
+                      0.7152,
+                      0.0722,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                    ]),
+                    child: Center(
+                      child: const Text("라벨 출력 테스트"),
+                    ),
+                  )))
         ],
       ),
     );
