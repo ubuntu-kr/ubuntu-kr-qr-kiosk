@@ -94,11 +94,11 @@ class MyAppState extends ChangeNotifier {
     var endpoint = _configuration.interfaces[0].endpoints
         .firstWhere((e) => e.direction == UsbEndpoint.DIRECTION_OUT);
 
-    var clscmd = utf8.encode("CLS\r\n");
-    var bulkTransferOutCls = await QuickUsb.bulkTransferOut(
-        endpoint, Uint8List.fromList(clscmd),
-        timeout: 2000);
-    print('bulkTransferOutCls $bulkTransferOutCls');
+    // var clscmd = utf8.encode("CLS\r\n");
+    // var bulkTransferOutCls = await QuickUsb.bulkTransferOut(
+    //     endpoint, Uint8List.fromList(clscmd),
+    //     timeout: 2000);
+    // print('bulkTransferOutCls $bulkTransferOutCls');
 
     // var cmddata = utf8.encode("CODEPAGE 949");
     var cmddata = utf8.encode("SIZE 70 mm,70 mm\r\n");
@@ -108,8 +108,8 @@ class MyAppState extends ChangeNotifier {
     // print('image bitmap: $imageUint8');\
     var imageUint8 = await _capturePng();
     cmddata += imageUint8;
-    print(imageUint8);
-    cmddata += utf8.encode("PRINT 1\r\n");
+    // print(imageUint8);
+    cmddata += utf8.encode("\r\nPRINT 1\r\n");
     cmddata += utf8.encode("END\r\n");
     // print(utf8.decode(cmddata));
     var bulkTransferOut =
