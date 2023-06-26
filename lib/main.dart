@@ -41,12 +41,39 @@ class MyAppState extends ChangeNotifier {
 
     ByteData? byteData =
         await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-    var binaryBitmap =
-        imglib.Image.fromBytes(width: 550, height: 200, bytes: byteData!.buffer)
-            .convert(format: imglib.Format.uint1, numChannels: 1)
-            .getBytes();
+    var imglibImage = imglib.Image.fromBytes(width: 550, height: 200, bytes: byteData!.buffer);
+    // var binaryBitmap =
+    //     imglib.Image.fromBytes(width: 550, height: 200, bytes: byteData!.buffer)
+    //         .convert(format: imglib.Format.uint1, numChannels: 1)
+    //         .getBytes();
     // print(binaryBitmap);
-    return binaryBitmap;
+    var widthInBytes = (imglibImage.width / 8).ceil();
+    List<List<int>> imgData = List.filled(imglibImage.height, []);
+    var lastPixIndex = imglibImage.data!.last.index;
+    for(var y = 0; y < imglibImage.height; y++){
+      List<int> row = List.filled(widthInBytes, 0);
+      for (var b = 0; b < widthInBytes; b++) {
+        var byte = 0;
+        var mask = 128;
+        for (var x = b*8; x < (b+1)*8; x++) {
+          var pix = imglibImage.getPixel(x,y);
+          var lum = 0.0;
+          try {
+            lum = (0.2126*pix.r) + (0.7152*pix.g) + (0.0722*pix.b);
+          } on RangeError {
+            lum = 255.0;
+          }
+          if (lum > 200) byte = byte ^ mask; // empty dot (1)
+          mask = mask >> 1;
+        }
+        row[b] = byte;
+      }
+      imgData[y] = row;
+    }
+    //flatten imgData
+    var flat = imgData.expand((i) => i).toList();
+
+    return Uint8List.fromList(flat);
   }
 
   void updateDeviceList() async {
@@ -67,11 +94,11 @@ class MyAppState extends ChangeNotifier {
     var endpoint = _configuration.interfaces[0].endpoints
         .firstWhere((e) => e.direction == UsbEndpoint.DIRECTION_OUT);
 
-    // var clscmd = utf8.encode("CLS\r\n");
-    // var bulkTransferOutCls = await QuickUsb.bulkTransferOut(
-    //     endpoint, Uint8List.fromList(clscmd),
-    //     timeout: 2000);
-    // print('bulkTransferOutCls $bulkTransferOutCls');
+    var clscmd = utf8.encode("CLS\r\n");
+    var bulkTransferOutCls = await QuickUsb.bulkTransferOut(
+        endpoint, Uint8List.fromList(clscmd),
+        timeout: 2000);
+    print('bulkTransferOutCls $bulkTransferOutCls');
 
     // var cmddata = utf8.encode("CODEPAGE 949");
     var cmddata = utf8.encode("SIZE 70 mm,70 mm\r\n");
@@ -81,6 +108,7 @@ class MyAppState extends ChangeNotifier {
     // print('image bitmap: $imageUint8');\
     var imageUint8 = await _capturePng();
     cmddata += imageUint8;
+    print(imageUint8);
     cmddata += utf8.encode("PRINT 1\r\n");
     cmddata += utf8.encode("END\r\n");
     // print(utf8.decode(cmddata));
@@ -122,10 +150,19 @@ class MyHomePage extends StatelessWidget {
               height: 200.0,
               child: RepaintBoundary(
                   key: appState.globalKey,
-                  child: Container(
+                  child:ColorFiltered(
+                  colorFilter:ColorFilter.matrix(<double>[
+ 0.2126,0.7152,0.0722,0,0,
+ 0.2126,0.7152,0.0722,0,0,
+ 0.2126,0.7152,0.0722,0,0,
+ 0,0,0,1,0,
+]),
+                  child:Container(
                     color: Colors.white,
                     child: Center(child: Text("라벨 출력 테스트")),
                   )))
+                  
+                   )
         ],
       ),
     );
