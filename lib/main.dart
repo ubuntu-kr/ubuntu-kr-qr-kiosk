@@ -11,6 +11,7 @@ import 'package:quick_usb/quick_usb.dart';
 import 'package:provider/provider.dart';
 import 'package:charset/charset.dart';
 import 'package:image/image.dart' as imglib;
+import 'package:qr_flutter/qr_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,9 +40,10 @@ class MyAppState extends ChangeNotifier {
         globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
 
-    ByteData? byteData =
-        await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-    var imglibImage = imglib.Image.fromBytes(width: 550, height: 200, bytes: byteData!.buffer);
+    ByteData? byteData = await image.toByteData();
+    var imglibImage = imglib.Image.fromBytes(
+        width: 550, height: 500, bytes: byteData!.buffer, numChannels: 4);
+    // imglib.encodePngFile('./test.png', imglibImage);
     // var binaryBitmap =
     //     imglib.Image.fromBytes(width: 550, height: 200, bytes: byteData!.buffer)
     //         .convert(format: imglib.Format.uint1, numChannels: 1)
@@ -49,28 +51,29 @@ class MyAppState extends ChangeNotifier {
     // print(binaryBitmap);
     var widthInBytes = (imglibImage.width / 8).ceil();
     List<List<int>> imgData = List.filled(imglibImage.height, []);
-    var lastPixIndex = imglibImage.data!.last.index;
-    for(var y = 0; y < imglibImage.height; y++){
+    for (var y = 0; y < imglibImage.height; y++) {
       List<int> row = List.filled(widthInBytes, 0);
       for (var b = 0; b < widthInBytes; b++) {
         var byte = 0;
         var mask = 128;
-        for (var x = b*8; x < (b+1)*8; x++) {
-          var pix = imglibImage.getPixel(x,y);
-          var lum = 0.0;
+        for (var x = b * 8; x < (b + 1) * 8; x++) {
+          var pix = imglibImage.getPixel(x, y);
+          var lum = 255.0;
           try {
-            lum = (0.2126*pix.r) + (0.7152*pix.g) + (0.0722*pix.b);
+            lum = (0.2126 * pix.r) + (0.7152 * pix.g) + (0.0722 * pix.b);
           } on RangeError {
             lum = 255.0;
           }
-          if (lum > 200) byte = byte ^ mask; // empty dot (1)
+          if (lum > 160) byte = byte ^ mask; // empty dot (1)
           mask = mask >> 1;
         }
+
         row[b] = byte;
       }
       imgData[y] = row;
     }
     //flatten imgData
+    print(imgData[0].length);
     var flat = imgData.expand((i) => i).toList();
 
     return Uint8List.fromList(flat);
@@ -104,7 +107,7 @@ class MyAppState extends ChangeNotifier {
     var cmddata = utf8.encode("SIZE 70 mm,70 mm\r\n");
     // cmddata += utf8.encode("SIZE 70 mm,70 mm\r\n");
     cmddata += utf8.encode("CLS\r\n");
-    cmddata += utf8.encode('BITMAP 0,0,68,200,0, ');
+    cmddata += utf8.encode('BITMAP 0,50,69,500,1, ');
     // print('image bitmap: $imageUint8');\
     var imageUint8 = await _capturePng();
     cmddata += imageUint8;
@@ -147,22 +150,59 @@ class MyHomePage extends StatelessWidget {
               }),
           SizedBox(
               width: 550.0,
-              height: 200.0,
+              height: 500.0,
               child: RepaintBoundary(
                   key: appState.globalKey,
-                  child:ColorFiltered(
-                  colorFilter:ColorFilter.matrix(<double>[
- 0.2126,0.7152,0.0722,0,0,
- 0.2126,0.7152,0.0722,0,0,
- 0.2126,0.7152,0.0722,0,0,
- 0,0,0,1,0,
-]),
-                  child:Container(
-                    color: Colors.white,
-                    child: Center(child: Text("라벨 출력 테스트")),
-                  )))
-                  
-                   )
+                  child: ColorFiltered(
+                      colorFilter: ColorFilter.matrix(<double>[
+                        0.2126,
+                        0.7152,
+                        0.0722,
+                        0,
+                        0,
+                        0.2126,
+                        0.7152,
+                        0.0722,
+                        0,
+                        0,
+                        0.2126,
+                        0.7152,
+                        0.0722,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                      ]),
+                      child: Container(
+                        color: Colors.white,
+                        child: Center(
+                            child: Column(
+                          children: [
+                            Text(
+                              "한영빈",
+                              style: TextStyle(
+                                  fontWeight: ui.FontWeight.bold, fontSize: 100),
+                            ),
+                            Text(
+                              "우분투한국커뮤니티",
+                              style: TextStyle(
+                                  fontWeight: ui.FontWeight.bold, fontSize: 40),
+                            ),
+                            Text(
+                              "대표",
+                              style: TextStyle(
+                                  fontWeight: ui.FontWeight.bold, fontSize: 40),
+                            ),
+                            QrImageView(
+                                data: 'https://discourse.ubuntu-kr.org/u/sukso96100',
+                                version: QrVersions.auto,
+                                size: 150.0),
+                          ],
+                        )),
+                      ))))
         ],
       ),
     );
