@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 import 'package:charset/charset.dart';
 import 'package:image/image.dart' as imglib;
 import 'package:qr_flutter/qr_flutter.dart';
+import 'imgutil.dart';
+import 'tsplutils.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,48 +37,11 @@ class MyAppState extends ChangeNotifier {
   var deviceList = "";
   GlobalKey globalKey = GlobalKey();
 
-  Future<Uint8List> _capturePng() async {
+  Future<ui.Image> _capturePng() async {
     RenderRepaintBoundary boundary =
         globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
-
-    ByteData? byteData = await image.toByteData();
-    var imglibImage = imglib.Image.fromBytes(
-        width: 550, height: 500, bytes: byteData!.buffer, numChannels: 4);
-    // imglib.encodePngFile('./test.png', imglibImage);
-    // var binaryBitmap =
-    //     imglib.Image.fromBytes(width: 550, height: 200, bytes: byteData!.buffer)
-    //         .convert(format: imglib.Format.uint1, numChannels: 1)
-    //         .getBytes();
-    // print(binaryBitmap);
-    var widthInBytes = (imglibImage.width / 8).ceil();
-    List<List<int>> imgData = List.filled(imglibImage.height, []);
-    for (var y = 0; y < imglibImage.height; y++) {
-      List<int> row = List.filled(widthInBytes, 0);
-      for (var b = 0; b < widthInBytes; b++) {
-        var byte = 0;
-        var mask = 128;
-        for (var x = b * 8; x < (b + 1) * 8; x++) {
-          var pix = imglibImage.getPixel(x, y);
-          var lum = 255.0;
-          try {
-            lum = (0.2126 * pix.r) + (0.7152 * pix.g) + (0.0722 * pix.b);
-          } on RangeError {
-            lum = 255.0;
-          }
-          if (lum > 160) byte = byte ^ mask; // empty dot (1)
-          mask = mask >> 1;
-        }
-
-        row[b] = byte;
-      }
-      imgData[y] = row;
-    }
-    //flatten imgData
-    print(imgData[0].length);
-    var flat = imgData.expand((i) => i).toList();
-
-    return Uint8List.fromList(flat);
+    return image;
   }
 
   void updateDeviceList() async {
@@ -97,26 +62,12 @@ class MyAppState extends ChangeNotifier {
     var endpoint = _configuration.interfaces[0].endpoints
         .firstWhere((e) => e.direction == UsbEndpoint.DIRECTION_OUT);
 
-    // var clscmd = utf8.encode("CLS\r\n");
-    // var bulkTransferOutCls = await QuickUsb.bulkTransferOut(
-    //     endpoint, Uint8List.fromList(clscmd),
-    //     timeout: 2000);
-    // print('bulkTransferOutCls $bulkTransferOutCls');
-
-    // var cmddata = utf8.encode("CODEPAGE 949");
-    var cmddata = utf8.encode("SIZE 70 mm,70 mm\r\n");
-    // cmddata += utf8.encode("SIZE 70 mm,70 mm\r\n");
-    cmddata += utf8.encode("CLS\r\n");
-    cmddata += utf8.encode('BITMAP 0,50,69,500,1, ');
-    // print('image bitmap: $imageUint8');\
-    var imageUint8 = await _capturePng();
-    cmddata += imageUint8;
-    // print(imageUint8);
-    cmddata += utf8.encode("\r\nPRINT 1\r\n");
-    cmddata += utf8.encode("END\r\n");
-    // print(utf8.decode(cmddata));
-    var bulkTransferOut =
-        await QuickUsb.bulkTransferOut(endpoint, Uint8List.fromList(cmddata));
+    var uiImage = await _capturePng();
+    var imageUint8 = await convertImageToMonochrome(uiImage);
+    var bulkTransferOut = await QuickUsb.bulkTransferOut(
+        endpoint,
+        buildBitmapPrintTsplCmd(
+            0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8));
     print('bulkTransferOut $bulkTransferOut');
     await QuickUsb.closeDevice();
     notifyListeners();
@@ -128,9 +79,6 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
-    // final img = textToImage("Test image");
-    // final imgBuffer =
-    //      img.toByteData(format: ui.ImageByteFormat.png).then();
     return Scaffold(
       appBar: AppBar(
         title: Text('UbuCon KR 체크인 키오스크'),
@@ -154,50 +102,29 @@ class MyHomePage extends StatelessWidget {
               child: RepaintBoundary(
                   key: appState.globalKey,
                   child: ColorFiltered(
-                      colorFilter: ColorFilter.matrix(<double>[
-                        0.2126,
-                        0.7152,
-                        0.0722,
-                        0,
-                        0,
-                        0.2126,
-                        0.7152,
-                        0.0722,
-                        0,
-                        0,
-                        0.2126,
-                        0.7152,
-                        0.0722,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        1,
-                        0,
-                      ]),
+                      colorFilter: greyScaleFilter,
                       child: Container(
                         color: Colors.white,
                         child: Center(
                             child: Column(
                           children: [
                             Text(
-                              "한영빈",
+                              "Hey, Parktana!",
                               style: TextStyle(
-                                  fontWeight: ui.FontWeight.bold, fontSize: 100),
+                                  fontWeight: ui.FontWeight.bold, fontSize: 70),
                             ),
                             Text(
-                              "우분투한국커뮤니티",
+                              "Q: 도쿄 가는 빠르고 저렴한 방법은?",
                               style: TextStyle(
-                                  fontWeight: ui.FontWeight.bold, fontSize: 40),
+                                  fontWeight: ui.FontWeight.bold, fontSize: 30),
                             ),
                             Text(
-                              "대표",
+                              "A: 하늘로의 산책을 하십시오. w/ Star Aliance Membership",
                               style: TextStyle(
-                                  fontWeight: ui.FontWeight.bold, fontSize: 40),
+                                  fontWeight: ui.FontWeight.bold, fontSize: 30),
                             ),
                             QrImageView(
-                                data: 'https://discourse.ubuntu-kr.org/u/sukso96100',
+                                data: 'https://parktana.youngbin.xyz',
                                 version: QrVersions.auto,
                                 size: 150.0),
                           ],
