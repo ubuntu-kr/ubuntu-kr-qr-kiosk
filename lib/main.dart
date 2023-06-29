@@ -11,6 +11,8 @@ import 'package:quick_usb/quick_usb.dart';
 import 'package:provider/provider.dart';
 import 'package:charset/charset.dart';
 import 'package:image/image.dart' as imglib;
+import 'package:flutter_gstreamer_player/flutter_gstreamer_player.dart';
+import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'imgutil.dart';
 import 'tsplutils.dart';
@@ -80,58 +82,75 @@ class MyHomePage extends StatelessWidget {
     var appState = context.watch<MyAppState>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('UbuCon KR 체크인 키오스크'),
-      ),
-      body: Column(
-        children: [
-          Text(appState.deviceList),
-          ElevatedButton(
-              child: const Text("Init"),
-              onPressed: () async {
-                await QuickUsb.init();
-              }),
-          ElevatedButton(
-              child: const Text("Get List"),
-              onPressed: () async {
-                appState.updateDeviceList();
-              }),
-          SizedBox(
-              width: 550.0,
-              height: 500.0,
-              child: RepaintBoundary(
-                  key: appState.globalKey,
-                  child: ColorFiltered(
-                      colorFilter: greyScaleFilter,
-                      child: Container(
-                        color: Colors.white,
-                        child: Center(
-                            child: Column(
-                          children: [
-                            Text(
-                              "Hey, Parktana!",
-                              style: TextStyle(
-                                  fontWeight: ui.FontWeight.bold, fontSize: 70),
-                            ),
-                            Text(
-                              "Q: 도쿄 가는 빠르고 저렴한 방법은?",
-                              style: TextStyle(
-                                  fontWeight: ui.FontWeight.bold, fontSize: 30),
-                            ),
-                            Text(
-                              "A: 하늘로의 산책을 하십시오. w/ Star Aliance Membership",
-                              style: TextStyle(
-                                  fontWeight: ui.FontWeight.bold, fontSize: 30),
-                            ),
-                            QrImageView(
-                                data: 'https://parktana.youngbin.xyz',
-                                version: QrVersions.auto,
-                                size: 150.0),
-                          ],
-                        )),
-                      ))))
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: Text('UbuCon KR 체크인 키오스크'),
+        ),
+        body: Row(
+          children: [
+            Column(
+              children: [
+                SizedBox(
+                    width: 550.0,
+                    height: 500.0,
+                    child: GstPlayer(
+                      pipeline:
+                          '''v4l2src device=/dev/video0  ! videoconvert ! video/x-raw,format=RGBA ! appsink name=sink''',
+                    ))
+              ],
+            ),
+            Column(
+              children: [
+                Text(appState.deviceList),
+                ElevatedButton(
+                    child: const Text("Init"),
+                    onPressed: () async {
+                      await QuickUsb.init();
+                    }),
+                ElevatedButton(
+                    child: const Text("Get List"),
+                    onPressed: () async {
+                      appState.updateDeviceList();
+                    }),
+                SizedBox(
+                    width: 550.0,
+                    height: 500.0,
+                    child: RepaintBoundary(
+                        key: appState.globalKey,
+                        child: ColorFiltered(
+                            colorFilter: greyScaleFilter,
+                            child: Container(
+                              color: Colors.white,
+                              child: Center(
+                                  child: Column(
+                                children: [
+                                  Text(
+                                    "Hey, Parktana!",
+                                    style: TextStyle(
+                                        fontWeight: ui.FontWeight.bold,
+                                        fontSize: 70),
+                                  ),
+                                  Text(
+                                    "Q: 도쿄 가는 빠르고 저렴한 방법은?",
+                                    style: TextStyle(
+                                        fontWeight: ui.FontWeight.bold,
+                                        fontSize: 30),
+                                  ),
+                                  Text(
+                                    "A: 하늘로의 산책을 하십시오. w/ Star Aliance Membership",
+                                    style: TextStyle(
+                                        fontWeight: ui.FontWeight.bold,
+                                        fontSize: 30),
+                                  ),
+                                  QrImageView(
+                                      data: 'https://parktana.youngbin.xyz',
+                                      version: QrVersions.auto,
+                                      size: 150.0),
+                                ],
+                              )),
+                            ))))
+              ],
+            )
+          ],
+        ));
   }
 }

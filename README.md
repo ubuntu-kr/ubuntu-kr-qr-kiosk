@@ -14,3 +14,11 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Ubuntu dependencies
+
+- libusb-1.0-0
+- libusb-1.0-0-dev
+- v4l-utils
+- gstreamer1.0-plugins-good
+- Gstreamer: [See here](https://gstreamer.freedesktop.org/documentation/installing/on-linux.html?gi-language=c)
