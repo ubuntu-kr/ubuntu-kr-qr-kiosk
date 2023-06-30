@@ -44,15 +44,10 @@ dependencies:
   image: ^3.1.0
   flutter_gstreamer_player: ^0.0.3
   qr_flutter: ^4.1.0
-  # camera: ^0.10.0+1
-  # camera_elinux:
-  #   git:
-  #     url: https://github.com/sony/flutter-elinux-plugins.git
-  #     path: packages/camera
-  #     ref: main
   lightstreamer_flutter_client: ^1.0.4
   qr_code_vision: ^0.1.0
   dart_jsonwebtoken: ^2.8.2
+  sqlite3: ^2.0.0
 
 dev_dependencies:
   flutter_test:

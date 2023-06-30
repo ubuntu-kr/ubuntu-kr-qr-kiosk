@@ -21,4 +21,5 @@ samples, guidance on mobile development, and a full API reference.
 - libusb-1.0-0-dev
 - v4l-utils
 - gstreamer1.0-plugins-good
+- libsqlite3-dev
 - Gstreamer: [See here](https://gstreamer.freedesktop.org/documentation/installing/on-linux.html?gi-language=c)

@@ -21,9 +21,9 @@ Future<Uint8List> convertImageToMonochrome(ui.Image image) async {
       var byte = 0;
       var mask = 128;
       for (var x = b * 8; x < (b + 1) * 8; x++) {
-        var pix = Color(imglibImage.getPixel(x, y));
         var lum = 255.0;
         try {
+          var pix = Color(imglibImage.getPixel(x, y));
           lum = (0.2126 * pix.red) + (0.7152 * pix.green) + (0.0722 * pix.blue);
         } on RangeError {
           lum = 255.0;

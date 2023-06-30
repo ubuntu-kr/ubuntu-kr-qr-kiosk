@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,10 @@ import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qr_code_vision/qr_code_vision.dart' as qrvision;
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:sqlite3/sqlite3.dart' as sqlite3lib;
 import 'imgutil.dart';
 import 'tsplutils.dart';
+import 'dbcommands.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,6 +56,9 @@ class _KioskMainPageState extends State<KioskMainPage> {
   var nametagAffiliation = "";
   var nametagRole = "";
   var nametagQrUrl = "";
+  var printStatus = "";
+  late sqlite3lib.Database db;
+  bool isProcessingQrCheckin = false;
   late Timer _timer;
 
   @override
@@ -62,7 +69,10 @@ class _KioskMainPageState extends State<KioskMainPage> {
     });
     setState(() {
       _timer = timer;
+      db = sqlite3lib.sqlite3.open("check_in_db.db");
     });
+    createTable(db);
+    QuickUsb.init().whenComplete(() => print("QuickUsb Init"));
     print('initState is called');
   }
 
@@ -94,6 +104,8 @@ class _KioskMainPageState extends State<KioskMainPage> {
   @override
   void dispose() {
     _timer.cancel();
+    db.dispose();
+    QuickUsb.exit().whenComplete(() => print("QuickUsb exit"));
     super.dispose();
     print('dispose is called');
   }
@@ -112,6 +124,10 @@ class _KioskMainPageState extends State<KioskMainPage> {
   }
 
   Future<void> _getQrCodeContentFromCamera() async {
+    if (isProcessingQrCheckin) {
+      return;
+    }
+
     RenderRepaintBoundary boundary =
         cameraKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
@@ -123,31 +139,58 @@ class _KioskMainPageState extends State<KioskMainPage> {
             .asUint8List();
     qrCode.scanRgbaBytes(byteData, image.width, image.height);
 
-    if (qrCode.location == null) {
-      print('No QR code found');
-    } else {
-      print('QR code here: ${qrCode.location}');
+    if (qrCode.location != null) {
+      // print('QR code here: ${qrCode.location}');
 
-      if (qrCode.content == null) {
-        print('The content of the QR code could not be decoded');
-      } else {
-        print('This is the content: ${qrCode.content?.text}');
-        final jwt = JWT.decode(qrCode.content!.text);
-
-        print('Payload: ${jwt.payload}');
-
-        // Example jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZXRhZ05hbWUiOiLtlZzsmIHruYgiLCJuYW1ldGFnQWZmaWxpYXRpb24iOiLsmrDrtoTtiKztlZzqta3su6TrrqTri4jti7AiLCJuYW1ldGFnUm9sZSI6IuuMgO2RnCIsIm5hbWV0YWdVcmwiOiJodHRwczovL2Rpc2NvdXJzZS51YnVudHUta3Iub3JnL3Uvc3Vrc285NjEwMC8iLCJpYXQiOjE1MTYyMzkwMjJ9.8x-hrjrvXnIVjfDqVuvmQmGv3qcuyiSCY_ASqNWBpEg
+      if (qrCode.content != null) {
         setState(() {
-          nametagName = jwt.payload['nametagName'];
-          nametagAffiliation = jwt.payload['nametagAffiliation'];
-          nametagRole = jwt.payload['nametagRole'];
-          nametagQrUrl = jwt.payload['nametagUrl'];
+          isProcessingQrCheckin = true;
         });
+        try {
+          print('This is the content: ${qrCode.content?.text}');
+          final jwt = JWT.decode(qrCode.content!.text);
+
+          print('Payload: ${jwt.payload}');
+
+          // Example jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZXRhZ05hbWUiOiLtlZzsmIHruYgiLCJuYW1ldGFnQWZmaWxpYXRpb24iOiLsmrDrtoTtiKztlZzqta3su6TrrqTri4jti7AiLCJuYW1ldGFnUm9sZSI6IuuMgO2RnCIsIm5hbWV0YWdVcmwiOiJodHRwczovL2Rpc2NvdXJzZS51YnVudHUta3Iub3JnL3Uvc3Vrc285NjEwMC8iLCJpYXQiOjE1MTYyMzkwMjJ9.8x-hrjrvXnIVjfDqVuvmQmGv3qcuyiSCY_ASqNWBpEg
+          final tid = jwt.payload['tid'];
+          if (isCheckedIn(db, tid)) {
+            setState(() {
+              nametagName = "[X]";
+              nametagAffiliation = "";
+              nametagRole = "이미 사용된 QR 코드 입니다.";
+              nametagQrUrl = "";
+            });
+          } else {
+            setState(() {
+              nametagName = jwt.payload['nametagName'];
+              nametagAffiliation = jwt.payload['nametagAffiliation'];
+              nametagRole = jwt.payload['nametagRole'];
+              nametagQrUrl = jwt.payload['nametagUrl'];
+            });
+            Timer(Duration(seconds: 1), () {
+              printNametag();
+              markAsCheckedIn(
+                  db,
+                  jwt.payload['tid'],
+                  jwt.payload['nametagName'],
+                  jwt.payload['nametagAffiliation'],
+                  jwt.payload['nametagRole'],
+                  jwt.payload['nametagUrl'],
+                  jwt.payload['sub']);
+            });
+          }
+        } catch (e) {
+          print(e);
+        }
       }
     }
   }
 
-  void updateDeviceList() async {
+  void printNametag() async {
+    setState(() {
+      printStatus = "인쇄 중...";
+    });
     var descriptions = await QuickUsb.getDevicesWithDescription();
     var devList = descriptions.map((e) => e.device).toList();
     deviceList = devList.join("\n");
@@ -173,6 +216,10 @@ class _KioskMainPageState extends State<KioskMainPage> {
             0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8));
     print('bulkTransferOut $bulkTransferOut');
     await QuickUsb.closeDevice();
+    setState(() {
+      printStatus = "";
+      isProcessingQrCheckin = false;
+    });
   }
 
   @override
@@ -199,15 +246,11 @@ class _KioskMainPageState extends State<KioskMainPage> {
             Column(
               children: [
                 Text(deviceList),
-                ElevatedButton(
-                    child: const Text("Init"),
-                    onPressed: () async {
-                      await QuickUsb.init();
-                    }),
+                Text(printStatus),
                 ElevatedButton(
                     child: const Text("Get List"),
                     onPressed: () async {
-                      updateDeviceList();
+                      printNametag();
                     }),
                 SizedBox(
                     width: 550.0,
