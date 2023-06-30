@@ -27,19 +27,65 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => MyAppState(),
-        child: YaruTheme(builder: (context, yaru, child) {
-          return MaterialApp(
-              theme: yaru.theme, darkTheme: yaru.darkTheme, home: MyHomePage());
-        }));
+    return Scaffold(body: YaruTheme(builder: (context, yaru, child) {
+      return MaterialApp(
+          theme: yaru.theme, darkTheme: yaru.darkTheme, home: KioskMainPage());
+    }));
   }
 }
 
-class MyAppState extends ChangeNotifier {
+class KioskMainPage extends StatefulWidget {
+  @override
+  _KioskMainPageState createState() => _KioskMainPageState();
+}
+
+class _KioskMainPageState extends State<KioskMainPage> {
   var deviceList = "";
   GlobalKey globalKey = GlobalKey();
   GlobalKey cameraKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    print('initState is called');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('didChangeDependencies is called');
+  }
+
+  @override
+  void setState(fn) {
+    super.setState(fn);
+    print('setState');
+  }
+
+  @override
+  void didUpdateWidget(covariant KioskMainPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print('didUpdateWidget');
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    print('deactivate');
+  }
+
+  // dispose 메서드는 위젯이 위젯 트리에서 완전히 제거될 때 호출된다
+  @override
+  void dispose() {
+    super.dispose();
+    print('dispose is called');
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    print('reassemble');
+  }
 
   Future<ui.Image> _capturePng() async {
     RenderRepaintBoundary boundary =
@@ -82,13 +128,13 @@ class MyAppState extends ChangeNotifier {
     var openDevice = await QuickUsb.openDevice(labelPrinter);
     print('openDevice $openDevice');
     await QuickUsb.setAutoDetachKernelDriver(true);
-    notifyListeners();
 
-    var _configuration = await QuickUsb.getConfiguration(0);
-    var claimInterface =
-        await QuickUsb.claimInterface(_configuration!.interfaces[0]);
-    deviceList = _configuration.interfaces[0].endpoints.toString();
-    var endpoint = _configuration.interfaces[0].endpoints
+    var usbConfig = await QuickUsb.getConfiguration(0);
+    var claimInterface = await QuickUsb.claimInterface(usbConfig.interfaces[0]);
+    setState(() {
+      deviceList = usbConfig.interfaces[0].endpoints.toString();
+    });
+    var endpoint = usbConfig.interfaces[0].endpoints
         .firstWhere((e) => e.direction == UsbEndpoint.DIRECTION_OUT);
 
     var uiImage = await _capturePng();
@@ -99,15 +145,12 @@ class MyAppState extends ChangeNotifier {
             0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8));
     print('bulkTransferOut $bulkTransferOut');
     await QuickUsb.closeDevice();
-    notifyListeners();
   }
-}
 
-class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
+    // StatefulWidget이 초기화되었다면 실제적으로 위젯을 build해야한다
+    print('build is called');
     return Scaffold(
         appBar: AppBar(
           title: Text('UbuCon KR 체크인 키오스크'),
@@ -120,7 +163,7 @@ class MyHomePage extends StatelessWidget {
                     width: 550.0,
                     height: 500.0,
                     child: RepaintBoundary(
-                        key: appState.cameraKey,
+                        key: cameraKey,
                         child: GstPlayer(
                           pipeline:
                               '''v4l2src device=/dev/video0  ! videoconvert ! video/x-raw,format=RGBA ! appsink name=sink''',
@@ -129,7 +172,7 @@ class MyHomePage extends StatelessWidget {
             ),
             Column(
               children: [
-                Text(appState.deviceList),
+                Text(deviceList),
                 ElevatedButton(
                     child: const Text("Init"),
                     onPressed: () async {
@@ -138,18 +181,18 @@ class MyHomePage extends StatelessWidget {
                 ElevatedButton(
                     child: const Text("Get List"),
                     onPressed: () async {
-                      appState.updateDeviceList();
+                      updateDeviceList();
                     }),
                 ElevatedButton(
                     child: const Text("Scan QR"),
                     onPressed: () async {
-                      appState._getQrCodeContentFromCamera();
+                      _getQrCodeContentFromCamera();
                     }),
                 SizedBox(
                     width: 550.0,
                     height: 500.0,
                     child: RepaintBoundary(
-                        key: appState.globalKey,
+                        key: globalKey,
                         child: ColorFiltered(
                             colorFilter: greyScaleFilter,
                             child: Container(
