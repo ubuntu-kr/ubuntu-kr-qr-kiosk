@@ -14,6 +14,7 @@ import 'package:image/image.dart' as imglib;
 import 'package:flutter_gstreamer_player/flutter_gstreamer_player.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qr_code_vision/qr_code_vision.dart' as qrvision;
 import 'imgutil.dart';
 import 'tsplutils.dart';
 
@@ -38,12 +39,38 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var deviceList = "";
   GlobalKey globalKey = GlobalKey();
+  GlobalKey cameraKey = GlobalKey();
 
   Future<ui.Image> _capturePng() async {
     RenderRepaintBoundary boundary =
         globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
     return image;
+  }
+
+  Future<void> _getQrCodeContentFromCamera() async {
+    RenderRepaintBoundary boundary =
+        cameraKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    ui.Image image = await boundary.toImage();
+
+    final qrCode = qrvision.QrCode();
+    final byteData =
+        (await image.toByteData(format: ui.ImageByteFormat.rawRgba))!
+            .buffer
+            .asUint8List();
+    qrCode.scanRgbaBytes(byteData, image.width, image.height);
+
+    if (qrCode.location == null) {
+      print('No QR code found');
+    } else {
+      print('QR code here: ${qrCode.location}');
+
+      if (qrCode.content == null) {
+        print('The content of the QR code could not be decoded');
+      } else {
+        print('This is the content: ${qrCode.content?.text}');
+      }
+    }
   }
 
   void updateDeviceList() async {
@@ -92,10 +119,12 @@ class MyHomePage extends StatelessWidget {
                 SizedBox(
                     width: 550.0,
                     height: 500.0,
-                    child: GstPlayer(
-                      pipeline:
-                          '''v4l2src device=/dev/video0  ! videoconvert ! video/x-raw,format=RGBA ! appsink name=sink''',
-                    ))
+                    child: RepaintBoundary(
+                        key: appState.cameraKey,
+                        child: GstPlayer(
+                          pipeline:
+                              '''v4l2src device=/dev/video0  ! videoconvert ! video/x-raw,format=RGBA ! appsink name=sink''',
+                        )))
               ],
             ),
             Column(
@@ -110,6 +139,11 @@ class MyHomePage extends StatelessWidget {
                     child: const Text("Get List"),
                     onPressed: () async {
                       appState.updateDeviceList();
+                    }),
+                ElevatedButton(
+                    child: const Text("Scan QR"),
+                    onPressed: () async {
+                      appState._getQrCodeContentFromCamera();
                     }),
                 SizedBox(
                     width: 550.0,
