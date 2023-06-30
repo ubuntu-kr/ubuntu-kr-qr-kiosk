@@ -52,6 +52,7 @@ dependencies:
   #     ref: main
   lightstreamer_flutter_client: ^1.0.4
   qr_code_vision: ^0.1.0
+  dart_jsonwebtoken: ^2.8.2
 
 dev_dependencies:
   flutter_test:

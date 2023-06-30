@@ -16,6 +16,7 @@ import 'package:flutter_gstreamer_player/flutter_gstreamer_player.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qr_code_vision/qr_code_vision.dart' as qrvision;
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'imgutil.dart';
 import 'tsplutils.dart';
 
@@ -47,6 +48,10 @@ class KioskMainPage extends StatefulWidget {
 class _KioskMainPageState extends State<KioskMainPage> {
   var deviceList = "";
   var qrCodeContent = "";
+  var nametagName = "";
+  var nametagAffiliation = "";
+  var nametagRole = "";
+  var nametagQrUrl = "";
   late Timer _timer;
 
   @override
@@ -127,10 +132,18 @@ class _KioskMainPageState extends State<KioskMainPage> {
         print('The content of the QR code could not be decoded');
       } else {
         print('This is the content: ${qrCode.content?.text}');
+        final jwt = JWT.decode(qrCode.content!.text);
+
+        print('Payload: ${jwt.payload}');
+
+        // Example jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZXRhZ05hbWUiOiLtlZzsmIHruYgiLCJuYW1ldGFnQWZmaWxpYXRpb24iOiLsmrDrtoTtiKztlZzqta3su6TrrqTri4jti7AiLCJuYW1ldGFnUm9sZSI6IuuMgO2RnCIsIm5hbWV0YWdVcmwiOiJodHRwczovL2Rpc2NvdXJzZS51YnVudHUta3Iub3JnL3Uvc3Vrc285NjEwMC8iLCJpYXQiOjE1MTYyMzkwMjJ9.8x-hrjrvXnIVjfDqVuvmQmGv3qcuyiSCY_ASqNWBpEg
+        setState(() {
+          nametagName = jwt.payload['nametagName'];
+          nametagAffiliation = jwt.payload['nametagAffiliation'];
+          nametagRole = jwt.payload['nametagRole'];
+          nametagQrUrl = jwt.payload['nametagUrl'];
+        });
       }
-      setState(() {
-        qrCodeContent = qrCode.content!.text;
-      });
     }
   }
 
@@ -186,7 +199,6 @@ class _KioskMainPageState extends State<KioskMainPage> {
             Column(
               children: [
                 Text(deviceList),
-                Text(qrCodeContent),
                 ElevatedButton(
                     child: const Text("Init"),
                     onPressed: () async {
@@ -210,25 +222,25 @@ class _KioskMainPageState extends State<KioskMainPage> {
                                   child: Column(
                                 children: [
                                   Text(
-                                    "Hey, Parktana!",
+                                    nametagName,
                                     style: TextStyle(
                                         fontWeight: ui.FontWeight.bold,
                                         fontSize: 70),
                                   ),
                                   Text(
-                                    "Q: 도쿄 가는 빠르고 저렴한 방법은?",
+                                    nametagAffiliation,
                                     style: TextStyle(
                                         fontWeight: ui.FontWeight.bold,
                                         fontSize: 30),
                                   ),
                                   Text(
-                                    "A: 하늘로의 산책을 하십시오. w/ Star Aliance Membership",
+                                    nametagRole,
                                     style: TextStyle(
                                         fontWeight: ui.FontWeight.bold,
                                         fontSize: 30),
                                   ),
                                   QrImageView(
-                                      data: 'https://parktana.youngbin.xyz',
+                                      data: nametagQrUrl,
                                       version: QrVersions.auto,
                                       size: 150.0),
                                 ],
