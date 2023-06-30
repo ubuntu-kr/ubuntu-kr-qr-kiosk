@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:typed_data';
@@ -22,31 +23,41 @@ void main() {
   runApp(const MyApp());
 }
 
+GlobalKey globalKey = GlobalKey();
+GlobalKey cameraKey = GlobalKey();
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: YaruTheme(builder: (context, yaru, child) {
+    return YaruTheme(builder: (context, yaru, child) {
       return MaterialApp(
           theme: yaru.theme, darkTheme: yaru.darkTheme, home: KioskMainPage());
-    }));
+    });
   }
 }
 
 class KioskMainPage extends StatefulWidget {
+  const KioskMainPage({Key? key}) : super(key: key);
   @override
   _KioskMainPageState createState() => _KioskMainPageState();
 }
 
 class _KioskMainPageState extends State<KioskMainPage> {
   var deviceList = "";
-  GlobalKey globalKey = GlobalKey();
-  GlobalKey cameraKey = GlobalKey();
+  var qrCodeContent = "";
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
+    var timer = Timer.periodic(Duration(milliseconds: 1), (timer) {
+      _getQrCodeContentFromCamera();
+    });
+    setState(() {
+      _timer = timer;
+    });
     print('initState is called');
   }
 
@@ -77,6 +88,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
   // dispose 메서드는 위젯이 위젯 트리에서 완전히 제거될 때 호출된다
   @override
   void dispose() {
+    _timer.cancel();
     super.dispose();
     print('dispose is called');
   }
@@ -116,6 +128,9 @@ class _KioskMainPageState extends State<KioskMainPage> {
       } else {
         print('This is the content: ${qrCode.content?.text}');
       }
+      setState(() {
+        qrCodeContent = qrCode.content!.text;
+      });
     }
   }
 
@@ -149,8 +164,6 @@ class _KioskMainPageState extends State<KioskMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    // StatefulWidget이 초기화되었다면 실제적으로 위젯을 build해야한다
-    print('build is called');
     return Scaffold(
         appBar: AppBar(
           title: Text('UbuCon KR 체크인 키오스크'),
@@ -173,6 +186,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
             Column(
               children: [
                 Text(deviceList),
+                Text(qrCodeContent),
                 ElevatedButton(
                     child: const Text("Init"),
                     onPressed: () async {
@@ -182,11 +196,6 @@ class _KioskMainPageState extends State<KioskMainPage> {
                     child: const Text("Get List"),
                     onPressed: () async {
                       updateDeviceList();
-                    }),
-                ElevatedButton(
-                    child: const Text("Scan QR"),
-                    onPressed: () async {
-                      _getQrCodeContentFromCamera();
                     }),
                 SizedBox(
                     width: 550.0,
