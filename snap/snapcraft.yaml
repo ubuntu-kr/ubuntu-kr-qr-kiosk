@@ -15,7 +15,7 @@ slots:
     
 apps:
   ubuntu-kr-qr-kiosk:
-    command: /usr/bin/ubuntu_kr_qr_kiosk
+    command: bin/ubuntu_kr_qr_kiosk
     # extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
     extensions: [gnome] 
     plugs:
@@ -51,8 +51,9 @@ parts:
     after: [flutter-git]
     source: .
     source-type: git
-    plugin: flutter
-    flutter-target: lib/main.dart # The main entry-point file of the application
+    plugin: nil
+    # plugin: flutter
+    # flutter-target: lib/main.dart # The main entry-point file of the application
     build-packages:
       - libusb-1.0-0-dev
       - libsqlite3-dev
