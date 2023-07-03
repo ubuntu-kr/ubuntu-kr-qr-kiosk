@@ -72,7 +72,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
     setState(() {
       _timer = timer;
       db = sqlite3lib.sqlite3
-          .open("$envVars['HOME']/ubuntu_kr_qr_kiosk_check_in_db.db");
+          .open(envVars['HOME']! + "/ubuntu_kr_qr_kiosk_check_in_db.db");
     });
     createTable(db);
     QuickUsb.init().whenComplete(() => print("QuickUsb Init"));
