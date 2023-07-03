@@ -69,7 +69,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
     });
     setState(() {
       _timer = timer;
-      db = sqlite3lib.sqlite3.open("check_in_db.db");
+      db = sqlite3lib.sqlite3.open("~/.ubuntu-kr-qr-kiosk/check_in_db.db");
     });
     createTable(db);
     QuickUsb.init().whenComplete(() => print("QuickUsb Init"));
