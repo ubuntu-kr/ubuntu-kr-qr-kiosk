@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io';
+import 'dart:io' show Platform;
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
@@ -64,12 +65,14 @@ class _KioskMainPageState extends State<KioskMainPage> {
   @override
   void initState() {
     super.initState();
+    Map<String, String> envVars = Platform.environment;
     var timer = Timer.periodic(Duration(milliseconds: 1), (timer) {
       _getQrCodeContentFromCamera();
     });
     setState(() {
       _timer = timer;
-      db = sqlite3lib.sqlite3.open("~/.ubuntu-kr-qr-kiosk/check_in_db.db");
+      db = sqlite3lib.sqlite3
+          .open("$envVars['HOME']/ubuntu_kr_qr_kiosk_check_in_db.db");
     });
     createTable(db);
     QuickUsb.init().whenComplete(() => print("QuickUsb Init"));
