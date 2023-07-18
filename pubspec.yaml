@@ -48,6 +48,8 @@ dependencies:
   qr_code_vision: ^0.1.0
   dart_jsonwebtoken: ^2.8.2
   sqlite3: ^2.0.0
+  shared_preferences: ^2.2.0
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:

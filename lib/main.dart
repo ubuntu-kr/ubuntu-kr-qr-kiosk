@@ -1,29 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io';
 import 'dart:io' show Platform;
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/material.dart';
 import 'package:yaru/yaru.dart';
 import 'package:quick_usb/quick_usb.dart';
-import 'package:provider/provider.dart';
-import 'package:charset/charset.dart';
-import 'package:image/image.dart' as imglib;
 import 'package:flutter_gstreamer_player/flutter_gstreamer_player.dart';
-import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qr_code_vision/qr_code_vision.dart' as qrvision;
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'package:sqlite3/sqlite3.dart' as sqlite3lib;
 import 'imgutil.dart';
 import 'tsplutils.dart';
-import 'dbcommands.dart';
+import 'kioskclient.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,7 +49,8 @@ class _KioskMainPageState extends State<KioskMainPage> {
   var nametagRole = "";
   var nametagQrUrl = "";
   var printStatus = "";
-  late sqlite3lib.Database db;
+  var isKioskConfigured = false;
+  late KioskClient kioskClient;
   bool isProcessingQrCheckin = false;
   late Timer _timer;
 
@@ -69,12 +61,31 @@ class _KioskMainPageState extends State<KioskMainPage> {
     var timer = Timer.periodic(Duration(milliseconds: 1), (timer) {
       _getQrCodeContentFromCamera();
     });
-    setState(() {
-      _timer = timer;
-      db = sqlite3lib.sqlite3
-          .open(envVars['HOME']! + "/ubuntu_kr_qr_kiosk_check_in_db.db");
+    checkIsKioskConfigured().then((checkKioskConfig) {
+      print("Is Kiosk configured? ${checkKioskConfig}");
+      if (checkKioskConfig) {
+        SharedPreferences.getInstance().then((prefs) {
+          setState(() {
+            isKioskConfigured = checkKioskConfig;
+            nametagRole = "체크인 QR을 스캔하세요.";
+            kioskClient = KioskClient(
+                envVars['HOME']! + "/ubuntu_kr_qr_kiosk_check_in_db.db",
+                prefs.getString('host') ?? '',
+                prefs.getString('apiToken') ?? '',
+                prefs.getString('jwtKey') ?? '',
+                prefs.getString('jwtKeyAlgo') ?? '');
+            _timer = timer;
+          });
+        });
+      } else {
+        setState(() {
+          isKioskConfigured = checkKioskConfig;
+          nametagRole = "키오스크 설정 QR을 스캔하세요.";
+          _timer = timer;
+        });
+      }
     });
-    createTable(db);
+
     QuickUsb.init().whenComplete(() => print("QuickUsb Init"));
     print('initState is called');
   }
@@ -107,7 +118,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
   @override
   void dispose() {
     _timer.cancel();
-    db.dispose();
+    kioskClient.closeDb();
     QuickUsb.exit().whenComplete(() => print("QuickUsb exit"));
     super.dispose();
     print('dispose is called');
@@ -144,44 +155,56 @@ class _KioskMainPageState extends State<KioskMainPage> {
 
     if (qrCode.location != null) {
       // print('QR code here: ${qrCode.location}');
-
       if (qrCode.content != null) {
-        setState(() {
-          isProcessingQrCheckin = true;
-        });
         try {
-          print('This is the content: ${qrCode.content?.text}');
-          final jwt = JWT.decode(qrCode.content!.text);
-
-          print('Payload: ${jwt.payload}');
-
-          // Example jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZXRhZ05hbWUiOiLtlZzsmIHruYgiLCJuYW1ldGFnQWZmaWxpYXRpb24iOiLsmrDrtoTtiKztlZzqta3su6TrrqTri4jti7AiLCJuYW1ldGFnUm9sZSI6IuuMgO2RnCIsIm5hbWV0YWdVcmwiOiJodHRwczovL2Rpc2NvdXJzZS51YnVudHUta3Iub3JnL3Uvc3Vrc285NjEwMC8iLCJpYXQiOjE1MTYyMzkwMjJ9.8x-hrjrvXnIVjfDqVuvmQmGv3qcuyiSCY_ASqNWBpEg
-          final tid = jwt.payload['tid'];
-          if (isCheckedIn(db, tid)) {
-            setState(() {
-              nametagName = "[X]";
-              nametagAffiliation = "";
-              nametagRole = "이미 사용된 QR 코드 입니다.";
-              nametagQrUrl = "";
-            });
+          print('QR Content found!');
+          print('QR Content: ${qrCode.content?.text}');
+          var qrContent = qrCode.content!.text;
+          if (!isKioskConfigured) {
+            try {
+              var clientConfig = jsonDecode(qrContent);
+              if (clientConfig.containsKey('config_endpoint') &&
+                  clientConfig.containsKey('token')) {
+                setState(() {
+                  nametagRole = "키오스크 설정 중입니다.";
+                });
+                await configureKiosk(
+                    clientConfig['config_endpoint'], clientConfig['token']);
+                Map<String, String> envVars = Platform.environment;
+                final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
+                var newKioskClient = KioskClient(
+                    envVars['HOME']! + "/ubuntu_kr_qr_kiosk_check_in_db.db",
+                    prefs.getString('host') ?? '',
+                    prefs.getString('apiToken') ?? '',
+                    prefs.getString('jwtKey') ?? '',
+                    prefs.getString('jwtKeyAlgo') ?? '');
+                setState(() {
+                  isKioskConfigured = true;
+                  nametagRole = "체크인 QR을 스캔하세요.";
+                  kioskClient = newKioskClient;
+                });
+              }
+            } on Exception catch (e) {
+              print(e);
+            }
           } else {
             setState(() {
-              nametagName = jwt.payload['nametagName'];
-              nametagAffiliation = jwt.payload['nametagAffiliation'];
-              nametagRole = jwt.payload['nametagRole'];
-              nametagQrUrl = jwt.payload['nametagUrl'];
+              isProcessingQrCheckin = true;
             });
-            Timer(Duration(seconds: 1), () {
-              printNametag();
-              markAsCheckedIn(
-                  db,
-                  jwt.payload['tid'],
-                  jwt.payload['nametagName'],
-                  jwt.payload['nametagAffiliation'],
-                  jwt.payload['nametagRole'],
-                  jwt.payload['nametagUrl'],
-                  jwt.payload['sub']);
+            var (result, payload) = kioskClient.checkInLocally(qrContent);
+            setState(() {
+              nametagName = payload['nametagName'];
+              nametagAffiliation = payload['nametagAffiliation'];
+              nametagRole = payload['nametagRole'];
+              nametagQrUrl = payload['nametagUrl'];
             });
+            if (result) {
+              Timer(Duration(seconds: 1), () {
+                printNametag();
+              });
+              await kioskClient.checkInOnServer(qrContent);
+            }
           }
         } catch (e) {
           print(e);
