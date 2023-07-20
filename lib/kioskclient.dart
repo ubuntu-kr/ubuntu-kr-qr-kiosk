@@ -11,7 +11,7 @@ Future<void> configureKiosk(String host, String apiToken) async {
   prefs.setString('apiToken', apiToken);
   prefs.setString('host', host);
 
-  var url = Uri.https(host, "kioskconfig");
+  var url = Uri.parse("$host/kioskconfig");
   var response = await http.get(url);
   var jsonBody = jsonDecode(response.body);
 
@@ -98,7 +98,7 @@ class KioskClient {
   }
 
   Future<(bool, String)> checkInOnServer(String jwt) async {
-    var url = Uri.https(host, "checkin");
+    var url = Uri.parse("$host/checkin");
     var response = await http.post(url,
         headers: {'Authorization': 'Token $apiToken', "ParticipantToken": jwt});
     var status = response.statusCode;
