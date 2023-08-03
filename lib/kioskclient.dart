@@ -118,7 +118,7 @@ class KioskClient {
   }
 
   Future<(bool, String)> checkInOnServer(String jwt) async {
-    var url = Uri.parse("$host/checkin");
+    var url = Uri.parse("$host/checkin/");
     var response = await http.post(url,
         headers: {'Authorization': 'Token $apiToken', "ParticipantToken": jwt});
     var status = response.statusCode;
