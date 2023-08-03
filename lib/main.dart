@@ -209,8 +209,9 @@ class _KioskMainPageState extends State<KioskMainPage> {
               await kioskClient.checkInOnServer(qrContent);
             }
           }
-        } catch (e) {
+        } catch (e, s) {
           print(e);
+          print(s);
         }
       }
     }

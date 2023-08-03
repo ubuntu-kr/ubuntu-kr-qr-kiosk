@@ -48,7 +48,9 @@ class KioskClient {
   }
 
   dynamic verifyQrToken(String token) {
-    final jwt = JWT.verify(token, ECPublicKey(jwtKey));
+    var pubkey = ECPublicKey(jwtKey);
+    final jwt =
+        JWT.verify(token, pubkey, checkExpiresIn: false, checkNotBefore: false);
     return jwt.payload;
   }
 
@@ -76,7 +78,9 @@ class KioskClient {
           payload['nametagUrl'],
           payload['sub']);
       return (true, payload);
-    } on JWTExpiredException catch (e) {
+    } on JWTExpiredException catch (e, s) {
+      print(e);
+      print(s);
       return (
         false,
         {
@@ -86,7 +90,21 @@ class KioskClient {
           "nametagUrl": ""
         }
       );
-    } on JWTException catch (e) {
+    } on JWTException catch (e, s) {
+      print(e);
+      print(s);
+      return (
+        false,
+        {
+          "nametagName": "[X]",
+          "nametagAffiliation": "",
+          "nametagRole": "QR 코드 처리 오류.",
+          "nametagUrl": ""
+        }
+      );
+    } catch (e, s) {
+      print(e);
+      print(s);
       return (
         false,
         {
