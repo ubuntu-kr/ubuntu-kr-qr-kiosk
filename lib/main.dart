@@ -162,7 +162,9 @@ class _KioskMainPageState extends State<KioskMainPage> {
           var qrContent = qrCode.content!.text;
           if (!isKioskConfigured) {
             try {
-              var clientConfig = jsonDecode(qrContent);
+              // base64 decode into string
+              var decodedQrContent = base64.decode(qrContent);
+              var clientConfig = jsonDecode(decodedQrContent.toString());
               if (clientConfig.containsKey('config_endpoint') &&
                   clientConfig.containsKey('token')) {
                 setState(() {
