@@ -21,10 +21,10 @@ Future<void> configureKiosk(String host, String apiToken) async {
 
 Future<bool> checkIsKioskConfigured() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  var hostCheck = prefs.getString('host')?.isEmpty ?? false;
-  var apiTokenCheck = prefs.getString('apiToken')?.isEmpty ?? false;
-  var jwtKeyCheck = prefs.getString('jwtKey')?.isEmpty ?? false;
-  var jwtKeyAlgoCheck = prefs.getString('jwtKeyAlgo')?.isEmpty ?? false;
+  var hostCheck = prefs.getString('host') ?? false;
+  var apiTokenCheck = prefs.getString('apiToken') ?? false;
+  var jwtKeyCheck = prefs.getString('jwtKey') ?? false;
+  var jwtKeyAlgoCheck = prefs.getString('jwtKeyAlgo') ?? false;
   return hostCheck && apiTokenCheck && jwtKeyCheck && jwtKeyAlgoCheck;
 }
 
