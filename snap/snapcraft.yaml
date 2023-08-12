@@ -2,6 +2,7 @@ name: ubuntu-kr-qr-kiosk
 version: 0.1.0
 summary: Kiosk app for Ubuntu KR event QR Check in
 description: Kiosk app for Ubuntu KR event QR Check in
+compression: lzo
 
 confinement: strict
 base: core22
@@ -29,16 +30,29 @@ apps:
   ubuntu-kr-qr-kiosk:
     command-chain: &_command-chain
     - bin/graphics-core22-wrapper
+    - bin/wayland-launch
     command: bin/ubuntu_kr_qr_kiosk
     # extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
     extensions: [gnome] 
-    plugs:
+    plugs: &_plugs
+    - opengl
+    - wayland
     - network
     - raw-usb
     - camera
     - home
     slots:
       - dbus-ubuntu-kr-qr-kiosk
+
+  daemon:
+    daemon: simple
+    restart-delay: 3s
+    restart-condition: always
+    command-chain: *_command-chain
+    command: *_command
+    plugs: *_plugs
+    environment: *_environment
+
 parts:
   flutter-git:
     source: https://github.com/flutter/flutter.git
@@ -95,7 +109,21 @@ parts:
       flutter pub get
       flutter build linux --release -v
       cp -r build/linux/*/release/bundle/* $CRAFT_PART_INSTALL/bin/
-    
+
+  # Some utility scripts for setting up the Wayland environment
+  setup:
+    plugin: dump
+    source: wayland-launch
+    override-build: |
+      # The plugs needed to run Wayland. (wayland-launch checks them, setup.sh connects them)
+      # You may add further plugs here if you want these options
+      PLUGS="opengl wayland graphics-core22"
+      sed --in-place "s/%PLUGS%/$PLUGS/g" $CRAFT_PART_BUILD/bin/wayland-launch
+      sed --in-place "s/%PLUGS%/$PLUGS/g" $CRAFT_PART_BUILD/bin/setup.sh
+      craftctl default
+    stage-packages:
+      - inotify-tools
+
   graphics-core22:
     after: [ubuntu-kr-qr-kiosk]
     source: https://github.com/MirServer/graphics-core22.git
