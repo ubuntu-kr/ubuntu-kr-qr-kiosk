@@ -31,7 +31,7 @@ apps:
     command-chain: &_command-chain
     - bin/graphics-core22-wrapper
     - bin/wayland-launch
-    command: bin/ubuntu_kr_qr_kiosk
+    command: &_command bin/ubuntu_kr_qr_kiosk
     # extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
     extensions: [gnome] 
     plugs: &_plugs
@@ -43,6 +43,10 @@ apps:
     - home
     slots:
       - dbus-ubuntu-kr-qr-kiosk
+    environment: &_environment
+      XDG_DATA_HOME: $SNAP_USER_DATA
+      XDG_DATA_DIRS: $SNAP/usr/share
+      GDK_GL: gles
 
   daemon:
     daemon: simple
