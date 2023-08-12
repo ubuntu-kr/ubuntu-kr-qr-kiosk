@@ -7,9 +7,17 @@ confinement: strict
 base: core22
 grade: stable
 
+plugs:
+  graphics-core22:
+    interface: content
+    target: $SNAP/graphics
+    default-provider: mesa-core22
+
 layout:
   /usr/share/libdrm:
-    bind: $SNAP/usr/share/libdrm
+    bind: $SNAP/graphics/libdrm
+  /usr/share/drirc.d:
+    symlink: $SNAP/graphics/drirc.d
 
 slots:
   dbus-ubuntu-kr-qr-kiosk: # adjust accordingly to your app name
@@ -19,6 +27,8 @@ slots:
     
 apps:
   ubuntu-kr-qr-kiosk:
+    command-chain: &_command-chain
+    - bin/graphics-core22-wrapper
     command: bin/ubuntu_kr_qr_kiosk
     # extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
     extensions: [gnome] 
@@ -85,4 +95,14 @@ parts:
       flutter pub get
       flutter build linux --release -v
       cp -r build/linux/*/release/bundle/* $CRAFT_PART_INSTALL/bin/
+    
+  graphics-core22:
+    after: [ubuntu-kr-qr-kiosk]
+    source: https://github.com/MirServer/graphics-core22.git
+    plugin: dump
+    override-prime: |
+      craftctl default
+      ${CRAFT_PART_SRC}/bin/graphics-core22-cleanup mesa-core22 nvidia-core22
+    prime:
+    - bin/graphics-core22-wrapper
 
