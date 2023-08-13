@@ -135,6 +135,7 @@ parts:
       - gstreamer1.0-pulseaudio
       - libgtk-3-0
       - libgl1
+      - fonts-noto-cjk
       # - libdrm-common
     override-build: |
       set -eux
