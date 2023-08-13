@@ -23,12 +23,20 @@ apps:
     - raw-usb
     - camera
     - home
-    slots:
-      - dbus-ubuntu-kr-qr-kiosk
+    # slots:
+    #   - dbus-ubuntu-kr-qr-kiosk
     environment: &_environment
       XDG_DATA_HOME: $SNAP_USER_DATA
       XDG_DATA_DIRS: $SNAP/usr/share
       GDK_GL: gles
+  daemon:
+    daemon: simple
+    restart-delay: 3s
+    restart-condition: always
+    command-chain: *_command-chain
+    command: *_command
+    plugs: *_plugs
+    environment: *_environment
 
 plugs:
   graphics-core22:
@@ -70,23 +78,12 @@ layout:
   /etc/gtk-3.0:
     bind: $SNAP/etc/gtk-3.0
 
-slots:
-  dbus-ubuntu-kr-qr-kiosk: # adjust accordingly to your app name
-    interface: dbus
-    bus: session
-    name: org.ubuntu-kr.kiosk # adjust accordingly to your app name and
-    
-
-
-  daemon:
-    daemon: simple
-    restart-delay: 3s
-    restart-condition: always
-    command-chain: *_command-chain
-    command: *_command
-    plugs: *_plugs
-    environment: *_environment
-
+# slots:
+  # dbus-ubuntu-kr-qr-kiosk: # adjust accordingly to your app name
+  #   interface: dbus
+  #   bus: session
+  #   name: org.ubuntu-kr.kiosk # adjust accordingly to your app name and
+  
 parts:
   flutter-git:
     source: https://github.com/flutter/flutter.git
@@ -175,7 +172,7 @@ parts:
       QUERY_LOADERS=/usr/lib/${CRAFT_ARCH_TRIPLET}/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders
       GDK_PIXBUF_MODULEDIR=${LOADERS_PATH} ${QUERY_LOADERS} > ${LOADERS_PATH}/../loaders.cache
       sed s!$CRAFT_PRIME!!g --in-place ${LOADERS_PATH}/../loaders.cache
-      
+
   # Some utility scripts for setting up the Wayland environment
   setup:
     plugin: dump
