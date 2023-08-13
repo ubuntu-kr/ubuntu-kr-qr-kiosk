@@ -129,12 +129,18 @@ parts:
       - inotify-tools
 
   graphics-core22:
-    after: [ubuntu-kr-qr-kiosk]
+    after:
+      - ubuntu-kr-qr-kiosk
+      - setup
     source: https://github.com/MirServer/graphics-core22.git
     plugin: dump
     override-prime: |
       craftctl default
       ${CRAFT_PART_SRC}/bin/graphics-core22-cleanup mesa-core22 nvidia-core22
+      cd "$CRAFT_PRIME/usr/share/"
+      rm -rf bug drirc.d glvnd libdrm lintian man
+      rm -rf applications apport bash-completion dbus-1 doc-base doc gtk-doc\
+             help pkgconfig libthai metainfo themes thumbnailers xml
     prime:
-    - bin/graphics-core22-wrapper
+      - bin/graphics-core22-wrapper
 
