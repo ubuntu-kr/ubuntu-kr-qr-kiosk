@@ -106,6 +106,8 @@ parts:
       - gstreamer1.0-gtk3
       - gstreamer1.0-qt5
       - gstreamer1.0-pulseaudio
+      - libgtk-3-0
+      - libgl1
       # - libdrm-common
     override-build: |
       set -eux
