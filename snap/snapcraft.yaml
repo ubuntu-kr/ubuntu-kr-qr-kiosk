@@ -191,6 +191,7 @@ parts:
   graphics-core22:
     after:
       - ubuntu-kr-qr-kiosk
+      - gsettings+pixbuf+immodules
       - setup
     source: https://github.com/MirServer/graphics-core22.git
     plugin: dump
