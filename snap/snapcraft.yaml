@@ -15,7 +15,7 @@ apps:
     - bin/wayland-launch
     command: &_command bin/ubuntu_kr_qr_kiosk
     # extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
-    extensions: [gnome] 
+    # extensions: [gnome] 
     plugs: &_plugs
     - opengl
     - wayland
