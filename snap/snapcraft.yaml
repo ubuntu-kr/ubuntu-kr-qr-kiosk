@@ -45,6 +45,11 @@ plugs:
     default-provider: mesa-core22
 
 environment:
+  # This is one of four snippets that relate to providing the userspace graphics needed by your application.
+  LD_LIBRARY_PATH:    $SNAP/graphics/lib
+  LIBGL_DRIVERS_PATH: $SNAP/graphics/dri
+  LIBVA_DRIVERS_PATH: $SNAP/graphics/dri
+  __EGL_VENDOR_LIBRARY_DIRS: $SNAP/graphics/glvnd/egl_vendor.d
   # Other, generally useful environment settings...
   # XDG config
   XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
