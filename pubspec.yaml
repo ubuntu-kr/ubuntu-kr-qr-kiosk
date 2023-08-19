@@ -35,7 +35,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  quick_usb: 0.3.1
+  # quick_usb: 0.3.1
   convert: ^3.0.1
   yaru: ^0.4.8
   provider: ^6.0.5
@@ -50,6 +50,10 @@ dependencies:
   sqlite3: ^2.0.0
   shared_preferences: ^2.2.0
   http: ^1.1.0
+  quick_usb:
+    git:
+      url: https://github.com/ubuntu-kr/quick.flutter.git
+      path: packages/quick_usb
 
 dev_dependencies:
   flutter_test:
