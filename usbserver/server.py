@@ -18,6 +18,7 @@ def get_device_list():
 
 @app.route('/write_usb/<int:vendor_id>/<int:product_id>', methods=['POST'])
 def write_usb(vendor_id, product_id):
+    file = request.files['file']
     # find our device
     dev = usb.core.find(idVendor=vendor_id, idProduct=product_id)
 
