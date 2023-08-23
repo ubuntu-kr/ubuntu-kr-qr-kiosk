@@ -53,6 +53,9 @@ environment:
   XDG_DATA_DIRS:   $SNAP/usr/local/share:$SNAP/usr/share
   # XKB config
   XKB_CONFIG_ROOT: $SNAP/usr/share/X11/xkb
+  # GStreamer
+  GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
+  GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner 
 
 layout:
   /usr/share/libdrm:
