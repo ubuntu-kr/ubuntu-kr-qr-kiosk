@@ -56,6 +56,9 @@ environment:
   # GStreamer
   GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
   GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner 
+  # Font
+  FONTCONFIG_PATH: ${SNAP}/etc/fonts/conf.d
+  FONTCONFIG_FILE: ${SNAP}/etc/fonts/fonts.conf
 
 layout:
   /usr/share/libdrm:
@@ -71,6 +74,8 @@ layout:
     bind: $SNAP/usr/share/sounds
   /etc/fonts:
     bind: $SNAP/etc/fonts
+  /usr/local/share/fonts: 
+    bind: $SNAP/usr/share/fonts
   # GTK
   /usr/lib/$CRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0:
     bind: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/gdk-pixbuf-2.0
