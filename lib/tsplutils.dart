@@ -14,11 +14,11 @@ Uint8List buildBitmapPrintTsplCmd(int x, int y, int imgWidthPx, int imgHeightPx,
   return Uint8List.fromList(cmddata);
 }
 
-void sendTsplData(Uint8List tsplData) {
-  var url = Uri.parse("http://0.0.0.0:5000/write_usb/<vendorid>/<productid>");
-  var request = new http.MultipartRequest("POST", url);
-  request.files.add(new http.MultipartFile.fromBytes("file", tsplData));
-  request.send().then((response) {
-    if (response.statusCode == 200) print("Uploaded!");
-  });
+Future<void> sendTsplData(
+    Uint8List tsplData, int vendorId, int productId) async {
+  var url = Uri.parse("http://0.0.0.0:5000/write_usb/${vendorId}/${productId}");
+
+  var request = new http.Request("POST", url);
+  request.bodyBytes = tsplData;
+  var response = await request.send();
 }

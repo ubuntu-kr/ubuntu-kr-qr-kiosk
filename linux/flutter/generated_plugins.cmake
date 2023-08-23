@@ -4,7 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   flutter_gstreamer_player
-  quick_usb
   yaru
 )
 

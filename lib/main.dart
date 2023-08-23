@@ -7,7 +7,6 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:yaru/yaru.dart';
-import 'package:quick_usb/quick_usb.dart';
 import 'package:flutter_gstreamer_player/flutter_gstreamer_player.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qr_code_vision/qr_code_vision.dart' as qrvision;
@@ -86,7 +85,6 @@ class _KioskMainPageState extends State<KioskMainPage> {
       }
     });
 
-    QuickUsb.init().whenComplete(() => print("QuickUsb Init"));
     print('initState is called');
   }
 
@@ -119,7 +117,6 @@ class _KioskMainPageState extends State<KioskMainPage> {
   void dispose() {
     _timer.cancel();
     kioskClient.closeDb();
-    QuickUsb.exit().whenComplete(() => print("QuickUsb exit"));
     super.dispose();
     print('dispose is called');
   }
@@ -221,31 +218,12 @@ class _KioskMainPageState extends State<KioskMainPage> {
     setState(() {
       printStatus = "인쇄 중...";
     });
-    var descriptions = await QuickUsb.getDevicesWithDescription();
-    var devList = descriptions.map((e) => e.device).toList();
-    deviceList = devList.join("\n");
-    var labelPrinter =
-        devList.firstWhere((e) => e.vendorId == 8137 && e.productId == 8214);
-    var openDevice = await QuickUsb.openDevice(labelPrinter);
-    print('openDevice $openDevice');
-    await QuickUsb.setAutoDetachKernelDriver(true);
-
-    var usbConfig = await QuickUsb.getConfiguration(0);
-    var claimInterface = await QuickUsb.claimInterface(usbConfig.interfaces[0]);
-    setState(() {
-      deviceList = usbConfig.interfaces[0].endpoints.toString();
-    });
-    var endpoint = usbConfig.interfaces[0].endpoints
-        .firstWhere((e) => e.direction == UsbEndpoint.DIRECTION_OUT);
 
     var uiImage = await _capturePng();
     var imageUint8 = await convertImageToMonochrome(uiImage);
-    var bulkTransferOut = await QuickUsb.bulkTransferOut(
-        endpoint,
-        buildBitmapPrintTsplCmd(
-            0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8));
-    print('bulkTransferOut $bulkTransferOut');
-    await QuickUsb.closeDevice();
+    var tsplBitmapData = buildBitmapPrintTsplCmd(
+        0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8);
+    sendTsplData(tsplBitmapData, 8173, 8214);
     setState(() {
       printStatus = "";
       isProcessingQrCheckin = false;
