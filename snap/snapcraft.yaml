@@ -46,6 +46,7 @@ plugs:
 
 environment:
   # Other, generally useful environment settings...
+  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib
   # XDG config
   XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
   XDG_CONFIG_HOME: $SNAP_USER_DATA/.config
@@ -54,7 +55,7 @@ environment:
   # XKB config
   XKB_CONFIG_ROOT: $SNAP/usr/share/X11/xkb
   # GStreamer
-  GST_PLUGIN_PATH: usr/lib/gstreamer-1.0
+  GST_PLUGIN_PATH: $SNAP/usr/lib/gstreamer-1.0
   GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/gstreamer-1.0
   GST_PLUGIN_SCANNER: $SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
   # Font
