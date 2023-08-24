@@ -139,78 +139,82 @@ class _KioskMainPageState extends State<KioskMainPage> {
       return;
     }
 
-    RenderRepaintBoundary boundary =
-        cameraKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-    ui.Image image = await boundary.toImage();
+    try {
+      RenderRepaintBoundary boundary =
+          cameraKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage();
 
-    final qrCode = qrvision.QrCode();
-    final byteData =
-        (await image.toByteData(format: ui.ImageByteFormat.rawRgba))!
-            .buffer
-            .asUint8List();
-    qrCode.scanRgbaBytes(byteData, image.width, image.height);
+      final qrCode = qrvision.QrCode();
+      final byteData =
+          (await image.toByteData(format: ui.ImageByteFormat.rawRgba))!
+              .buffer
+              .asUint8List();
+      qrCode.scanRgbaBytes(byteData, image.width, image.height);
 
-    if (qrCode.location != null) {
-      // print('QR code here: ${qrCode.location}');
-      if (qrCode.content != null) {
-        try {
-          print('QR Content found!');
-          print('QR Content: ${qrCode.content?.text}');
-          var qrContent = qrCode.content!.text;
-          if (!isKioskConfigured) {
-            try {
-              // base64 decode into string
-              var decodedQrContent = utf8.decode(base64.decode(qrContent));
-              print(decodedQrContent);
-              var clientConfig = jsonDecode(decodedQrContent.toString());
-              if (clientConfig.containsKey('config_endpoint') &&
-                  clientConfig.containsKey('token')) {
-                setState(() {
-                  nametagRole = "키오스크 설정 중입니다.";
-                });
-                await configureKiosk(
-                    clientConfig['config_endpoint'], clientConfig['token']);
-                Map<String, String> envVars = Platform.environment;
-                final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                var newKioskClient = KioskClient(
-                    envVars['HOME']! + "/ubuntu_kr_qr_kiosk_check_in_db.db",
-                    prefs.getString('host') ?? '',
-                    prefs.getString('apiToken') ?? '',
-                    prefs.getString('jwtKey') ?? '',
-                    prefs.getString('jwtKeyAlgo') ?? '');
-                setState(() {
-                  isKioskConfigured = true;
-                  nametagRole = "체크인 QR을 스캔하세요.";
-                  kioskClient = newKioskClient;
-                });
+      if (qrCode.location != null) {
+        // print('QR code here: ${qrCode.location}');
+        if (qrCode.content != null) {
+          try {
+            print('QR Content found!');
+            print('QR Content: ${qrCode.content?.text}');
+            var qrContent = qrCode.content!.text;
+            if (!isKioskConfigured) {
+              try {
+                // base64 decode into string
+                var decodedQrContent = utf8.decode(base64.decode(qrContent));
+                print(decodedQrContent);
+                var clientConfig = jsonDecode(decodedQrContent.toString());
+                if (clientConfig.containsKey('config_endpoint') &&
+                    clientConfig.containsKey('token')) {
+                  setState(() {
+                    nametagRole = "키오스크 설정 중입니다.";
+                  });
+                  await configureKiosk(
+                      clientConfig['config_endpoint'], clientConfig['token']);
+                  Map<String, String> envVars = Platform.environment;
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  var newKioskClient = KioskClient(
+                      envVars['HOME']! + "/ubuntu_kr_qr_kiosk_check_in_db.db",
+                      prefs.getString('host') ?? '',
+                      prefs.getString('apiToken') ?? '',
+                      prefs.getString('jwtKey') ?? '',
+                      prefs.getString('jwtKeyAlgo') ?? '');
+                  setState(() {
+                    isKioskConfigured = true;
+                    nametagRole = "체크인 QR을 스캔하세요.";
+                    kioskClient = newKioskClient;
+                  });
+                }
+              } on Exception catch (e) {
+                print(e);
               }
-            } on Exception catch (e) {
-              print(e);
-            }
-          } else {
-            setState(() {
-              isProcessingQrCheckin = true;
-            });
-            var (result, payload) = kioskClient.checkInLocally(qrContent);
-            setState(() {
-              nametagName = payload['nametagName'];
-              nametagAffiliation = payload['nametagAffiliation'];
-              nametagRole = payload['nametagRole'];
-              nametagQrUrl = payload['nametagUrl'];
-            });
-            if (result) {
-              Timer(Duration(seconds: 1), () {
-                printNametag();
+            } else {
+              setState(() {
+                isProcessingQrCheckin = true;
               });
-              await kioskClient.checkInOnServer(qrContent);
+              var (result, payload) = kioskClient.checkInLocally(qrContent);
+              setState(() {
+                nametagName = payload['nametagName'];
+                nametagAffiliation = payload['nametagAffiliation'];
+                nametagRole = payload['nametagRole'];
+                nametagQrUrl = payload['nametagUrl'];
+              });
+              if (result) {
+                Timer(Duration(seconds: 1), () {
+                  printNametag();
+                });
+                await kioskClient.checkInOnServer(qrContent);
+              }
             }
+          } catch (e, s) {
+            print(e);
+            print(s);
           }
-        } catch (e, s) {
-          print(e);
-          print(s);
         }
       }
+    } catch (e) {
+      print(e);
     }
   }
 
