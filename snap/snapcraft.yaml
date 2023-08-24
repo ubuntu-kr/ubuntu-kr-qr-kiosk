@@ -15,7 +15,7 @@ apps:
     - bin/wayland-launch
     command: &_command bin/ubuntu_kr_qr_kiosk
     # extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
-    extensions: [gnome] 
+    # extensions: [gnome] 
     plugs: &_plugs
     - opengl
     - wayland
@@ -176,12 +176,18 @@ parts:
       - libgstreamer-plugins-base1.0-dev
       - libgstreamer-plugins-good1.0-dev
       - libgstreamer-plugins-bad1.0-dev
+      - libgstreamer-plugins-base1.0-0
+      - libgstreamer-plugins-good1.0-0
+      - libgstreamer-plugins-bad1.0-0
     stage-packages:
       - libusb-1.0-0
       - gstreamer1.0-libav
       - gstreamer1.0-plugins-base
       - gstreamer1.0-plugins-good
       - gstreamer1.0-plugins-bad
+      - libgstreamer-plugins-base1.0-0
+      - libgstreamer-plugins-good1.0-0
+      - libgstreamer-plugins-bad1.0-0
       - gstreamer1.0-x
       - gstreamer1.0-alsa
       - gstreamer1.0-gl
