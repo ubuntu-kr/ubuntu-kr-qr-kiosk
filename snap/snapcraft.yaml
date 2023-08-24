@@ -15,7 +15,7 @@ apps:
     - bin/wayland-launch
     command: &_command bin/ubuntu_kr_qr_kiosk
     # extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
-    # extensions: [gnome] 
+    extensions: [gnome] 
     plugs: &_plugs
     - opengl
     - wayland
@@ -46,7 +46,7 @@ plugs:
 
 environment:
   # Other, generally useful environment settings...
-  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib
+  # LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib
   # XDG config
   XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
   XDG_CONFIG_HOME: $SNAP_USER_DATA/.config
