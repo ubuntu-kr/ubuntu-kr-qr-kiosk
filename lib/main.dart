@@ -251,7 +251,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
                         key: cameraKey,
                         child: GstPlayer(
                           pipeline:
-                              '''v4l2src device=/dev/video0  ! videoconvert ! video/x-raw,format=RGBA ! appsink name=sink''',
+                              '''v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,width=550,height=500,format=RGBA ! appsink name=sink''',
                         )))
               ],
             ),
