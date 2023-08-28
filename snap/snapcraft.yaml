@@ -23,6 +23,8 @@ apps:
     - raw-usb
     - camera
     - home
+    - process-control
+    - system-observe
     # slots:
     #   - dbus-ubuntu-kr-qr-kiosk
     environment: &_environment
