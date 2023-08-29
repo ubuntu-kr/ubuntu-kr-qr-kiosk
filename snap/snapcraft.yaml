@@ -25,6 +25,7 @@ apps:
     - home
     - process-control
     - system-observe
+    - hardware-observe
     # slots:
     #   - dbus-ubuntu-kr-qr-kiosk
     environment: &_environment
