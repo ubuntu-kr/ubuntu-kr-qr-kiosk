@@ -6,7 +6,7 @@ import 'dart:ui' as ui;
 Future<Uint8List> convertImageToMonochrome(ui.Image image) async {
   ByteData? byteData = await image.toByteData();
   var imglibImage = imglib.Image.fromBytes(
-      image.width, image.height, byteData!.buffer.asUint8List());
+      width: image.width, height: image.height, bytes: byteData!.buffer);
   // var imglibImage = imglib.Image.fromBytes(
   //     width: image.width,
   //     height: image.height,
@@ -23,8 +23,8 @@ Future<Uint8List> convertImageToMonochrome(ui.Image image) async {
       for (var x = b * 8; x < (b + 1) * 8; x++) {
         var lum = 255.0;
         try {
-          var pix = Color(imglibImage.getPixel(x, y));
-          lum = (0.2126 * pix.red) + (0.7152 * pix.green) + (0.0722 * pix.blue);
+          var pix = imglibImage.getPixel(x, y);
+          lum = (0.2126 * pix.r) + (0.7152 * pix.g) + (0.0722 * pix.b);
         } on RangeError {
           lum = 255.0;
         }

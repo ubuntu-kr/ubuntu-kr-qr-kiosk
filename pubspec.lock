@@ -85,10 +85,10 @@ packages:
     dependency: "direct main"
     description:
       name: cupertino_icons
-      sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
+      sha256: d57953e10f9f8327ce64a508a355f0b1ec902193f66288e8cb5070e7c47eeb2d
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.6"
   dart_jsonwebtoken:
     dependency: "direct main"
     description:
@@ -97,14 +97,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.8.2"
-  dart_reed_solomon_nullsafety:
-    dependency: transitive
-    description:
-      name: dart_reed_solomon_nullsafety
-      sha256: fa4b160112567377225a65d55a9cb59df048a58acfcf356b56be5a8dbcbbdb1e
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0"
   ed25519_edwards:
     dependency: transitive
     description:
@@ -113,14 +105,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
-  equatable:
-    dependency: transitive
-    description:
-      name: equatable
-      sha256: c2b87cb7756efdf69892005af546c56c0b5037f54d2a88269b4f347a505e3ca2
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.5"
   fake_async:
     dependency: transitive
     description:
@@ -133,10 +117,10 @@ packages:
     dependency: transitive
     description:
       name: ffi
-      sha256: "13a6ccf6a459a125b3fcdb6ec73bd5ff90822e071207c663bfd1f70062d51d18"
+      sha256: "7bf0adc28a23d395f19f3f1eb21dd7cfd1dd9f8e1c50051c069122e6853bc878"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.1"
+    version: "2.1.0"
   file:
     dependency: transitive
     description:
@@ -158,14 +142,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_gstreamer_player:
-    dependency: "direct main"
-    description:
-      name: flutter_gstreamer_player
-      sha256: d4b406ae9b36a3c641169ad4eeae7bb48e79962839589b7be0cabba77767c0b4
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.3"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -184,6 +160,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  gtk:
+    dependency: transitive
+    description:
+      name: gtk
+      sha256: e8ce9ca4b1df106e4d72dad201d345ea1a036cc12c360f1a7d5a758f78ffa42c
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   http:
     dependency: "direct main"
     description:
@@ -204,10 +188,10 @@ packages:
     dependency: "direct main"
     description:
       name: image
-      sha256: "8e9d133755c3e84c73288363e6343157c383a0c6c56fc51afcc5d4d7180306d6"
+      sha256: a72242c9a0ffb65d03de1b7113bc4e189686fc07c7147b8b41811d0dd0e0d9bf
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.0"
+    version: "4.0.17"
   js:
     dependency: transitive
     description:
@@ -216,22 +200,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
-  libusb:
-    dependency: transitive
-    description:
-      name: libusb
-      sha256: ca24c95f475eb53fac4dcdcd754b5a0b1b04d0bbf744f61163ae5d59197471c6
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.23+2"
-  lightstreamer_flutter_client:
-    dependency: "direct main"
-    description:
-      name: lightstreamer_flutter_client
-      sha256: "72f87a2209a2ec00e19fc1866ec047191e84d3573c32f3edb8eaa2a371720185"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
   lints:
     dependency: transitive
     description:
@@ -300,10 +268,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_windows
-      sha256: a34ecd7fb548f8e57321fd8e50d865d266941b54e6c3b7758cf8f37c24116905
+      sha256: "1cb68ba4cd3a795033de62ba1b7b4564dace301f952de6bfb3cd91b202b6ee96"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.7"
+    version: "2.1.7"
   petitparser:
     dependency: transitive
     description:
@@ -352,14 +320,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
-  qr_code_vision:
-    dependency: "direct main"
-    description:
-      name: qr_code_vision
-      sha256: eae2b712d97dd10061f0e0d94ed1b95b38d081ae49c4381fd9ca494f03ff8ce3
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
   qr_flutter:
     dependency: "direct main"
     description:
@@ -368,14 +328,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
-  quick_usb:
-    dependency: "direct main"
-    description:
-      name: quick_usb
-      sha256: ebc26ec1e9d74594441e03a86060a468197caba19e69060cf0e86348930b9ac4
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -513,10 +465,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: c0e3a4f7be7dae51d8f152230b86627e3397c1ba8c3fa58e63d44a9f3edc9cef
+      sha256: "9e82a402b7f3d518fb9c02d0e9ae45952df31b9bf34d77baf19da2de03fc2aaa"
       url: "https://pub.dev"
     source: hosted
-    version: "2.6.1"
+    version: "5.0.7"
   xdg_directories:
     dependency: transitive
     description:
@@ -537,26 +489,10 @@ packages:
     dependency: "direct main"
     description:
       name: yaru
-      sha256: ee6719a5fef9dcb0b2795270ce1245ecb86217d62a4211ab2587aed3e1ca11f1
+      sha256: "24047f0de452784840a326874192d26cb5ebd8cf5eac7864086e5bc9272a28db"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.8"
-  yaru_color_generator:
-    dependency: transitive
-    description:
-      name: yaru_color_generator
-      sha256: "78b96cefc4eef763e4786f891ce336cdd55ef8edc55494c4bea2bc9d10ef9c96"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
-  yaru_colors:
-    dependency: transitive
-    description:
-      name: yaru_colors
-      sha256: "42814cafa3c4a6876962559ae9d8b9ff088a59635e649e4eae86d35905496063"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.7"
+    version: "1.1.0"
 sdks:
   dart: ">=3.0.5 <4.0.0"
-  flutter: ">=3.7.0"
+  flutter: ">=3.10.0"
