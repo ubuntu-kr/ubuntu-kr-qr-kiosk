@@ -147,10 +147,13 @@ class KioskClient {
     return (status == 200, searchResults);
   }
 
-  Future<(bool, String)> checkInBySearch(String jwt) async {
-    var url = Uri.parse("$host/checkin/");
-    var response = await http.post(url,
-        headers: {'Authorization': 'Token $apiToken', "ParticipantToken": jwt});
+  Future<(bool, String)> checkInBySearch(
+      int participantId, String passcode) async {
+    var url = Uri.parse("$host/checkin_passcode/?participantId=$participantId");
+    var response = await http.post(
+      url,
+      body: {"passcode": passcode},
+    );
     var status = response.statusCode;
     var jsonBody = jsonDecode(response.body);
     String resultMsg = jsonBody["result"];

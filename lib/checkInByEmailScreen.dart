@@ -153,11 +153,10 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
                                         });
                                         Navigator.pop(context, 'Cancel');
                                       },
-                                      child: const Text('Cancel'),
+                                      child: const Text('취소 (X)'),
                                     ),
                                     TextButton(
-                                      onPressed: () {
-                                        print(verifyCodeInput);
+                                      onPressed: () async {
                                         showDialog<String>(
                                             barrierDismissible: false,
                                             context: context,
@@ -172,15 +171,22 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
                                                     )
                                                   ],
                                                 )));
-                                        Timer(const Duration(seconds: 5), () {
-                                          setState(() {
-                                            verifyCodeInput = "";
-                                          });
-                                          Navigator.pop(context, 'OK');
-                                          Navigator.pop(context, 'OK');
+                                        var result =
+                                            await kioskClient.checkInBySearch(
+                                                resultItem['id'],
+                                                verifyCodeInput);
+                                        setState(() {
+                                          verifyCodeInput = "";
                                         });
+                                        Navigator.pop(context, 'OK');
+                                        Navigator.pop(context, 'OK');
+                                        var snackBar = SnackBar(
+                                          content: Text(result.$2),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
                                       },
-                                      child: const Text('OK'),
+                                      child: const Text('확인 (O)'),
                                     ),
                                   ],
                                 ))
