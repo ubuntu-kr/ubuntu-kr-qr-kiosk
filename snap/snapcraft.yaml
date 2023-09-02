@@ -21,7 +21,6 @@ apps:
     - wayland
     - network
     - raw-usb
-    - camera
     - home
     - process-control
     - system-observe
@@ -57,10 +56,6 @@ environment:
   XDG_DATA_DIRS:   $SNAP/usr/local/share:$SNAP/usr/share
   # XKB config
   XKB_CONFIG_ROOT: $SNAP/usr/share/X11/xkb
-  # GStreamer
-  GST_PLUGIN_PATH: $SNAP/usr/lib/${CRAFT_ARCH_TRIPLET}/gstreamer-1.0
-  GST_PLUGIN_SYSTEM_PATH: $SNAP/usr/lib/${CRAFT_ARCH_TRIPLET}/gstreamer-1.0
-  GST_PLUGIN_SCANNER: $SNAP/usr/lib/${CRAFT_ARCH_TRIPLET}/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner
   # Font
   FONTCONFIG_PATH: ${SNAP}/etc/fonts/conf.d
   FONTCONFIG_FILE: ${SNAP}/etc/fonts/fonts.conf
@@ -175,28 +170,8 @@ parts:
     build-packages:
       - libusb-1.0-0-dev
       - libsqlite3-dev
-      - libgstreamer1.0-dev
-      - libgstreamer-plugins-base1.0-dev
-      - libgstreamer-plugins-good1.0-dev
-      - libgstreamer-plugins-bad1.0-dev
-      - libgstreamer-plugins-base1.0-0
-      - libgstreamer-plugins-good1.0-0
-      - libgstreamer-plugins-bad1.0-0
     stage-packages:
       - libusb-1.0-0
-      - gstreamer1.0-libav
-      - gstreamer1.0-plugins-base
-      - gstreamer1.0-plugins-good
-      - gstreamer1.0-plugins-bad
-      - libgstreamer-plugins-base1.0-0
-      - libgstreamer-plugins-good1.0-0
-      - libgstreamer-plugins-bad1.0-0
-      - gstreamer1.0-x
-      - gstreamer1.0-alsa
-      - gstreamer1.0-gl
-      - gstreamer1.0-gtk3
-      - gstreamer1.0-qt5
-      - gstreamer1.0-pulseaudio
       - libgtk-3-0
       - libgl1
       # - libdrm-common
