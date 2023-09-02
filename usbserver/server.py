@@ -47,8 +47,8 @@ def write_usb(vendor_id, product_id):
         usb.util.endpoint_direction(e.bEndpointAddress) == \
         usb.util.ENDPOINT_OUT)
     bytes_to_write = request.get_data()
-    print(bytes_to_write)
     ep.write(bytes_to_write)
+    usb.util.dispose_resources(dev)
     return {"result": "success", "reason": "Data sent to the usb device"}
 
 if __name__ == '__main__':
