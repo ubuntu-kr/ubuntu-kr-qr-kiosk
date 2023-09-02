@@ -175,6 +175,7 @@ parts:
       - libusb-1.0-0
       - libgtk-3-0
       - libgl1
+      - fonts-noto-cjk
       # - libdrm-common
     override-build: |
       set -eux
@@ -186,10 +187,6 @@ parts:
   usbserver:
     plugin: python
     source: ./usbserver
-    install: |
-      mkdir -p $SNAPCRAFT_PART_INSTALL/usbserver
-      python3 ./manage.py collectstatic --no-input
-      cp -r ./* $SNAPCRAFT_PART_INSTALL/usbserver/
 
   graphics-core22:
     after:
@@ -207,8 +204,6 @@ parts:
              help pkgconfig libthai metainfo themes thumbnailers xml
     prime:
       - bin/graphics-core22-wrapper
-    stage-packages:
-      - fonts-noto-cjk
 
 architectures:
   - build-on: amd64
