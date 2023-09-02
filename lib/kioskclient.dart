@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:sqlite3/sqlite3.dart' as sqlite3lib;
 import 'dbcommands.dart';
 
@@ -21,30 +22,40 @@ Future<void> configureKiosk(String host, String apiToken) async {
 
 Future<bool> checkIsKioskConfigured() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  var hostCheck = prefs.getString('host') != null;
-  var apiTokenCheck = prefs.getString('apiToken') != null;
   var jwtKeyCheck = prefs.getString('jwtKey') != null;
   var jwtKeyAlgoCheck = prefs.getString('jwtKeyAlgo') != null;
-  print(
-      "hostCheck: $hostCheck, apiTokenCheck: $apiTokenCheck, jwtKeyCheck: $jwtKeyCheck, jwtKeyAlgoCheck: $jwtKeyAlgoCheck");
-  return hostCheck && apiTokenCheck && jwtKeyCheck && jwtKeyAlgoCheck;
+  print("jwtKeyCheck: $jwtKeyCheck, jwtKeyAlgoCheck: $jwtKeyAlgoCheck");
+  return jwtKeyCheck && jwtKeyAlgoCheck;
 }
 
 class KioskClient {
+  static final KioskClient _instance = KioskClient._internal();
   late sqlite3lib.Database db;
   late String host;
   late String apiToken;
   late String jwtKey;
   late String jwtKeyAlgo;
 
-  KioskClient(String dbpath, String host, String apiToken, String jwtKey,
-      String jwtKeyAlgo) {
-    this.db = sqlite3lib.sqlite3.open(dbpath);
-    this.host = host;
-    this.apiToken = apiToken;
-    this.jwtKey = jwtKey;
-    this.jwtKeyAlgo = jwtKeyAlgo;
-    createTable(db);
+  // using a factory is important
+  // because it promises to return _an_ object of this type
+  // but it doesn't promise to make a new one.
+  factory KioskClient() {
+    return _instance;
+  }
+
+  // This named constructor is the "real" constructor
+  // It'll be called exactly once, by the static property assignment above
+  // it's also private, so it can only be called in this class
+  KioskClient._internal() {
+    // initialization logic
+    Map<String, String> envVars = Platform.environment;
+    db = sqlite3lib.sqlite3.open('${envVars["HOME"]}/ukckiosk_checkin_db.db');
+    host = envVars['KIOSK_HOST'] ?? "http://localhost:8000";
+    apiToken = envVars['KIOSK_API_TOKEN'] ?? "";
+    SharedPreferences.getInstance().then((prefs) {
+      jwtKey = prefs.getString('jwtKey') ?? "";
+      jwtKeyAlgo = prefs.getString('jwtKeyAlgo') ?? "";
+    });
   }
 
   dynamic verifyQrToken(String token) {
@@ -127,7 +138,26 @@ class KioskClient {
     return (status == 200, resultMsg);
   }
 
+  Future<(bool, List)> searchByEmailKeyword(String keyword) async {
+    var url = Uri.parse("$host/participants/?format=json&keyword=$keyword");
+    var response =
+        await http.get(url, headers: {'Authorization': 'Token $apiToken'});
+    var status = response.statusCode;
+    var searchResults = jsonDecode(response.body) as List;
+    return (status == 200, searchResults);
+  }
+
+  Future<(bool, String)> checkInBySearch(String jwt) async {
+    var url = Uri.parse("$host/checkin/");
+    var response = await http.post(url,
+        headers: {'Authorization': 'Token $apiToken', "ParticipantToken": jwt});
+    var status = response.statusCode;
+    var jsonBody = jsonDecode(response.body);
+    String resultMsg = jsonBody["result"];
+    return (status == 200, resultMsg);
+  }
+
   void closeDb() {
-    this.db.dispose();
+    db.dispose();
   }
 }
