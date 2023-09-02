@@ -6,7 +6,10 @@ import 'dart:ui' as ui;
 Future<Uint8List> convertImageToMonochrome(ui.Image image) async {
   ByteData? byteData = await image.toByteData();
   var imglibImage = imglib.Image.fromBytes(
-      width: image.width, height: image.height, bytes: byteData!.buffer);
+      width: image.width,
+      height: image.height,
+      bytes: byteData!.buffer,
+      numChannels: 4);
   // var imglibImage = imglib.Image.fromBytes(
   //     width: image.width,
   //     height: image.height,
