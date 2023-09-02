@@ -23,8 +23,14 @@ def write_usb(vendor_id, product_id):
 
     # was it found?
     if dev is None:
+        print("Device not found")
         return {"result": "error", "reason": "Device not found"}
 
+    if dev.is_kernel_driver_active(0):
+        try:
+            dev.detach_kernel_driver(0)
+        except usb.core.USBError as e:
+            print("Could not detatch kernel driver from interface({0}): {1}".format(0, str(e)))
     # set the active configuration. With no arguments, the first
     # configuration will be the active one
     dev.set_configuration()
@@ -41,6 +47,7 @@ def write_usb(vendor_id, product_id):
         usb.util.endpoint_direction(e.bEndpointAddress) == \
         usb.util.ENDPOINT_OUT)
     bytes_to_write = request.get_data()
+    print(bytes_to_write)
     ep.write(bytes_to_write)
     return {"result": "success", "reason": "Data sent to the usb device"}
 

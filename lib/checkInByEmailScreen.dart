@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:ubuntu_kr_qr_kiosk/printScreen.dart';
 import 'package:yaru/yaru.dart';
 import 'package:flutter/material.dart';
 import 'kioskclient.dart';
+import 'printScreen.dart';
 
 class CheckInByEmailScreen extends StatefulWidget {
   const CheckInByEmailScreen({Key? key}) : super(key: key);
@@ -185,6 +187,16 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
                                         );
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBar);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => PrintPage(
+                                                  nametagData: NametagData(
+                                                      resultItem['name'],
+                                                      resultItem['affilation'],
+                                                      resultItem['role'],
+                                                      resultItem['qrUrl']))),
+                                        );
                                       },
                                       child: const Text('확인 (O)'),
                                     ),

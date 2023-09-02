@@ -11,33 +11,26 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'imgutil.dart';
 import 'tsplutils.dart';
 import 'kioskclient.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-void main() {
-  runApp(const MyApp());
-}
 
 GlobalKey globalKey = GlobalKey();
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NametagData {
+  final String name;
+  final String affiliation;
+  final String role;
+  final String qrUrl;
 
-  @override
-  Widget build(BuildContext context) {
-    return YaruTheme(builder: (context, yaru, child) {
-      return MaterialApp(
-          theme: yaru.theme, darkTheme: yaru.darkTheme, home: KioskMainPage());
-    });
-  }
+  const NametagData(this.name, this.affiliation, this.role, this.qrUrl);
 }
 
-class KioskMainPage extends StatefulWidget {
-  const KioskMainPage({Key? key}) : super(key: key);
+class PrintPage extends StatefulWidget {
+  const PrintPage({Key? key, required this.nametagData}) : super(key: key);
+  final NametagData nametagData;
   @override
-  _KioskMainPageState createState() => _KioskMainPageState();
+  _PrintPageState createState() => _PrintPageState(nametagData);
 }
 
-class _KioskMainPageState extends State<KioskMainPage> {
+class _PrintPageState extends State<PrintPage> {
   var deviceList = "";
   var qrCodeContent = "";
   var nametagName = "";
@@ -46,42 +39,19 @@ class _KioskMainPageState extends State<KioskMainPage> {
   var nametagQrUrl = "";
   var printStatus = "";
   var isKioskConfigured = false;
-  late KioskClient kioskClient;
   bool isProcessingQrCheckin = false;
-  late Timer _timer;
-
+  _PrintPageState(NametagData nametagData) {
+    nametagName = nametagData.name;
+    nametagAffiliation = nametagData.affiliation;
+    nametagRole = nametagData.role;
+    nametagQrUrl = nametagData.qrUrl;
+  }
   @override
   void initState() {
     super.initState();
-    Map<String, String> envVars = Platform.environment;
-    var timer = Timer.periodic(Duration(milliseconds: 1), (timer) {
-      _getQrCodeContentFromCamera();
+    Timer(Duration(seconds: 1), () {
+      printNametag();
     });
-    checkIsKioskConfigured().then((checkKioskConfig) {
-      print("Is Kiosk configured? ${checkKioskConfig}");
-      if (checkKioskConfig) {
-        SharedPreferences.getInstance().then((prefs) {
-          setState(() {
-            isKioskConfigured = checkKioskConfig;
-            nametagRole = "체크인 QR을 스캔하세요.";
-            kioskClient = KioskClient(
-                envVars['HOME']! + "/ubuntu_kr_qr_kiosk_check_in_db.db",
-                prefs.getString('host') ?? '',
-                prefs.getString('apiToken') ?? '',
-                prefs.getString('jwtKey') ?? '',
-                prefs.getString('jwtKeyAlgo') ?? '');
-            _timer = timer;
-          });
-        });
-      } else {
-        setState(() {
-          isKioskConfigured = checkKioskConfig;
-          nametagRole = "키오스크 설정 QR을 스캔하세요.";
-          _timer = timer;
-        });
-      }
-    });
-
     print('initState is called');
   }
 
@@ -98,7 +68,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
   }
 
   @override
-  void didUpdateWidget(covariant KioskMainPage oldWidget) {
+  void didUpdateWidget(covariant PrintPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     print('didUpdateWidget');
   }
@@ -112,8 +82,6 @@ class _KioskMainPageState extends State<KioskMainPage> {
   // dispose 메서드는 위젯이 위젯 트리에서 완전히 제거될 때 호출된다
   @override
   void dispose() {
-    _timer.cancel();
-    kioskClient.closeDb();
     super.dispose();
     print('dispose is called');
   }
@@ -131,68 +99,6 @@ class _KioskMainPageState extends State<KioskMainPage> {
     return image;
   }
 
-  Future<void> _getQrCodeContentFromCamera() async {
-    if (isProcessingQrCheckin) {
-      return;
-    }
-
-    try {
-      var qrContent = "QR CONTENT HERE";
-      if (!isKioskConfigured) {
-        try {
-          // base64 decode into string
-          var decodedQrContent = utf8.decode(base64.decode(qrContent));
-          print(decodedQrContent);
-          var clientConfig = jsonDecode(decodedQrContent.toString());
-          if (clientConfig.containsKey('config_endpoint') &&
-              clientConfig.containsKey('token')) {
-            setState(() {
-              nametagRole = "키오스크 설정 중입니다.";
-            });
-            await configureKiosk(
-                clientConfig['config_endpoint'], clientConfig['token']);
-            Map<String, String> envVars = Platform.environment;
-            final SharedPreferences prefs =
-                await SharedPreferences.getInstance();
-            var newKioskClient = KioskClient(
-                envVars['HOME']! + "/ubuntu_kr_qr_kiosk_check_in_db.db",
-                prefs.getString('host') ?? '',
-                prefs.getString('apiToken') ?? '',
-                prefs.getString('jwtKey') ?? '',
-                prefs.getString('jwtKeyAlgo') ?? '');
-            setState(() {
-              isKioskConfigured = true;
-              nametagRole = "체크인 QR을 스캔하세요.";
-              kioskClient = newKioskClient;
-            });
-          }
-        } on Exception catch (e) {
-          print(e);
-        }
-      } else {
-        setState(() {
-          isProcessingQrCheckin = true;
-        });
-        var (result, payload) = kioskClient.checkInLocally(qrContent);
-        setState(() {
-          nametagName = payload['nametagName'];
-          nametagAffiliation = payload['nametagAffiliation'];
-          nametagRole = payload['nametagRole'];
-          nametagQrUrl = payload['nametagUrl'];
-        });
-        if (result) {
-          Timer(Duration(seconds: 1), () {
-            printNametag();
-          });
-          await kioskClient.checkInOnServer(qrContent);
-        }
-      }
-    } catch (e, s) {
-      print(e);
-      print(s);
-    }
-  }
-
   void printNametag() async {
     setState(() {
       printStatus = "인쇄 중...";
@@ -202,7 +108,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
     var imageUint8 = await convertImageToMonochrome(uiImage);
     var tsplBitmapData = buildBitmapPrintTsplCmd(
         0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8);
-    sendTsplData(tsplBitmapData, 8173, 8214);
+    sendTsplData(tsplBitmapData, 8137, 8214);
     setState(() {
       printStatus = "";
       isProcessingQrCheckin = false;
@@ -213,7 +119,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('UbuCon KR 체크인 키오스크'),
+          title: Text('명찰 출력'),
         ),
         body: Row(
           children: [
@@ -221,11 +127,6 @@ class _KioskMainPageState extends State<KioskMainPage> {
               children: [
                 Text(deviceList),
                 Text(printStatus),
-                ElevatedButton(
-                    child: const Text("Get List"),
-                    onPressed: () async {
-                      printNametag();
-                    }),
                 SizedBox(
                     width: 550.0,
                     height: 500.0,

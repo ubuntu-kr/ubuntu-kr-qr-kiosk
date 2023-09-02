@@ -16,9 +16,10 @@ Uint8List buildBitmapPrintTsplCmd(int x, int y, int imgWidthPx, int imgHeightPx,
 
 Future<void> sendTsplData(
     Uint8List tsplData, int vendorId, int productId) async {
-  var url = Uri.parse("http://0.0.0.0:5000/write_usb/${vendorId}/${productId}");
+  var url = Uri.parse("http://0.0.0.0:5000/write_usb/$vendorId/$productId");
 
   var request = new http.Request("POST", url);
+  print(tsplData);
   request.bodyBytes = tsplData;
   var response = await request.send();
 }
