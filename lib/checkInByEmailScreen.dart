@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:yaru/yaru.dart';
 import 'package:flutter/material.dart';
+import 'kioskclient.dart';
 
 class CheckInByEmailScreen extends StatefulWidget {
   const CheckInByEmailScreen({Key? key}) : super(key: key);
@@ -10,10 +14,24 @@ class CheckInByEmailScreen extends StatefulWidget {
 }
 
 class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
+  late KioskClient kioskClient;
+  List searchResults = [
+    {
+      "id": 2,
+      "name": "Youngbin Han",
+      "email": "sukso96100@gmail.com",
+      "affilation": "Ubuntu Korea",
+      "role": "Organizer",
+      "qrUrl": "https://discourse.ubuntu-kr.org/u/sukso96100"
+    }
+  ];
+  var verifyCodeInput = "";
+  var verifyCodeFinal = "";
+  var showModalProgress = false;
   @override
   void initState() {
     super.initState();
-
+    kioskClient = KioskClient();
     print('initState is called');
   }
 
@@ -76,6 +94,13 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
                           border: OutlineInputBorder(),
                           labelText: 'E-Mail 주소 입력',
                         ),
+                        onChanged: (text) async {
+                          var result =
+                              await kioskClient.searchByEmailKeyword(text);
+                          setState(() {
+                            searchResults = result.$2;
+                          });
+                        },
                       ),
                     ))
               ],
@@ -83,24 +108,86 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
             Row(
               children: [
                 Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: const <Widget>[
-                      ListTile(
-                        leading: Icon(Icons.map),
-                        title: Text('Map'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.photo_album),
-                        title: Text('Album'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.phone),
-                        title: Text('Phone'),
-                      ),
-                    ],
-                  ),
-                )
+                    child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: searchResults == null ? 0 : searchResults.length,
+                  itemBuilder: (context, index) {
+                    var resultItem = searchResults[index];
+                    return ListTile(
+                      title: Text(
+                          '${resultItem["name"]} (${resultItem['email']})'),
+                      onTap: () => {
+                        showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                                  title: Text(resultItem['name']),
+                                  content: Column(
+                                    children: [
+                                      Visibility(
+                                          visible: showModalProgress,
+                                          child: LinearProgressIndicator(
+                                              value: null)),
+                                      Text(resultItem['email']),
+                                      Text(resultItem['affilation']),
+                                      Text(resultItem['role']),
+                                      TextField(
+                                        readOnly: showModalProgress,
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: '인증코드 입력',
+                                        ),
+                                        onChanged: (value) => {
+                                          setState(() {
+                                            verifyCodeInput = value;
+                                          })
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          verifyCodeInput = "";
+                                        });
+                                        Navigator.pop(context, 'Cancel');
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        print(verifyCodeInput);
+                                        showDialog<String>(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                AlertDialog(
+                                                    content: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    CircularProgressIndicator(
+                                                      value: null,
+                                                    )
+                                                  ],
+                                                )));
+                                        Timer(const Duration(seconds: 5), () {
+                                          setState(() {
+                                            verifyCodeInput = "";
+                                          });
+                                          Navigator.pop(context, 'OK');
+                                          Navigator.pop(context, 'OK');
+                                        });
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ))
+                      },
+                    );
+                  },
+                ))
               ],
             )
           ],
