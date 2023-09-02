@@ -39,6 +39,9 @@ apps:
     command: *_command
     plugs: *_plugs
     environment: *_environment
+  usbserver:
+    command: bin/usbserver
+    daemon: simple
 
 plugs:
   graphics-core22:
@@ -92,8 +95,6 @@ layout:
   #   name: org.ubuntu-kr.kiosk # adjust accordingly to your app name and
   
 parts:
- 
-
   # gsettings, pixbuf and immodules are not needed by all snaps,
   # but they are so common a requirement include them here
   gsettings+pixbuf+immodules:
@@ -127,7 +128,7 @@ parts:
   # Some utility scripts for setting up the Wayland environment
   setup:
     plugin: dump
-    source: wayland-launch
+    source: snap-launch
     override-build: |
       # The plugs needed to run Wayland. (wayland-launch checks them, setup.sh connects them)
       # You may add further plugs here if you want these options
@@ -182,6 +183,13 @@ parts:
       flutter pub get
       flutter build linux --release -v
       cp -r build/linux/*/release/bundle/* $CRAFT_PART_INSTALL/bin/
+  usbserver:
+    plugin: python
+    source: ./usbserver
+    install: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usbserver
+      python3 ./manage.py collectstatic --no-input
+      cp -r ./* $SNAPCRAFT_PART_INSTALL/usbserver/
 
   graphics-core22:
     after:
