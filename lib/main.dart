@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'checkInByEmailScreen.dart';
 import 'package:yaru/yaru.dart';
+import 'kioskclient.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +33,10 @@ class _KioskMainPageState extends State<KioskMainPage> {
   @override
   void initState() {
     super.initState();
-
+    Map<String, String> envVars = Platform.environment;
+    var host = envVars['KIOSK_HOST'] ?? "http://localhost:8000";
+    var apiToken = envVars['KIOSK_API_TOKEN'] ?? "";
+    configureKiosk(host, apiToken);
     print('initState is called');
   }
 
