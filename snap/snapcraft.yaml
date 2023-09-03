@@ -164,7 +164,7 @@ parts:
   #   override-prime: ''
 
   ubuntu-kr-qr-kiosk:
-    after: [flutter-git]
+    # after: [flutter-git]
     source: .
     source-type: git
     plugin: nil
