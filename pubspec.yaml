@@ -91,10 +91,11 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Noto Sans CJK
+    - family: NotoSansCJK
       fonts:
         - asset: fonts/NotoSansCJK-Regular.ttc
         - asset: fonts/NotoSansCJK-Bold.ttc
+          weight: 700
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

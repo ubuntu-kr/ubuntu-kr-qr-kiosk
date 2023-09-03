@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         builder: (context, yaru, child) {
           return DefaultTextStyle(
               style: const TextStyle(
-                  fontFamily: "Ubuntu", fontFamilyFallback: ["Noto Sans CJK"]),
+                  fontFamily: "Ubuntu", fontFamilyFallback: ["NotoSansCJK"]),
               child: MaterialApp(
                   theme: yaru.theme,
                   darkTheme: yaru.darkTheme,
