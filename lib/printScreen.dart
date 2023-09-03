@@ -108,11 +108,19 @@ class _PrintPageState extends State<PrintPage> {
     var imageUint8 = await convertImageToMonochrome(uiImage);
     var tsplBitmapData = buildBitmapPrintTsplCmd(
         0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8);
-    sendTsplData(tsplBitmapData, 8137, 8214);
+    var result = await sendTsplData(tsplBitmapData, 8137, 8214);
     setState(() {
       printStatus = "";
       isProcessingQrCheckin = false;
     });
+    if (result == 200) {
+      var snackBar = const SnackBar(
+        content: Text("명찰 인쇄 완료. Nametag has been printed."),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pop(context, 'ERROR');
+      Navigator.pop(context, 'OK');
+    }
   }
 
   @override

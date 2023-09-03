@@ -105,8 +105,36 @@ class _CheckInByBarcodeScreenState extends State<CheckInByBarcodeScreen> {
                         border: OutlineInputBorder(),
                         labelText: 'Barcode data',
                       ),
-                      onSubmitted: (value) {
-                        print(value);
+                      onSubmitted: (value) async {
+                        var localResult = kioskClient.checkInLocally(value);
+                        if (!localResult.$1) {
+                          var snackBar = SnackBar(
+                            content: Text(localResult.$2),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          Navigator.pop(context, 'ERROR');
+                          return;
+                        }
+                        var serverResult =
+                            await kioskClient.checkInOnServer(value);
+                        if (!serverResult.$1) {
+                          var snackBar = SnackBar(
+                            content: Text(localResult.$2),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          Navigator.pop(context, 'ERROR');
+                          return;
+                        }
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PrintPage(
+                                  nametagData: NametagData(
+                                      serverResult.$2['name'],
+                                      serverResult.$2['affilation'],
+                                      serverResult.$2['role'],
+                                      serverResult.$2['qrUrl']))),
+                        );
                       },
                     ))
               ],

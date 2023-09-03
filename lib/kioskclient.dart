@@ -50,6 +50,7 @@ class KioskClient {
     // initialization logic
     Map<String, String> envVars = Platform.environment;
     db = sqlite3lib.sqlite3.open('${envVars["HOME"]}/ukckiosk_checkin_db.db');
+    createTable(db);
     host = envVars['KIOSK_HOST'] ?? "http://localhost:8000";
     apiToken = envVars['KIOSK_API_TOKEN'] ?? "";
     SharedPreferences.getInstance().then((prefs) {
@@ -70,72 +71,40 @@ class KioskClient {
       var payload = verifyQrToken(token);
       var tid = payload["tid"];
       if (isCheckedIn(db, tid)) {
-        return (
-          false,
-          {
-            "nametagName": "[X]",
-            "nametagAffiliation": "",
-            "nametagRole": "이미 사용된 QR 코드 입니다.",
-            "nametagUrl": ""
-          }
-        );
+        return (false, "이미 사용된 QR 코드 입니다. Already redeemed QR code.");
       }
       markAsCheckedIn(
           db,
           payload['tid'],
-          payload['nametagName'],
-          payload['nametagAffiliation'],
-          payload['nametagRole'],
-          payload['nametagUrl'],
+          "payload['nametagName']",
+          "payload['nametagAffiliation']",
+          "payload['nametagRole']",
+          "payload['nametagUrl']",
           payload['sub']);
       return (true, payload);
     } on JWTExpiredException catch (e, s) {
       print(e);
       print(s);
-      return (
-        false,
-        {
-          "nametagName": "[X]",
-          "nametagAffiliation": "",
-          "nametagRole": "만료된 QR 코드 입니다.",
-          "nametagUrl": ""
-        }
-      );
+      return (false, "만료된 QR 코드 입니다. You've scanned expired QR code.");
     } on JWTException catch (e, s) {
       print(e);
       print(s);
-      return (
-        false,
-        {
-          "nametagName": "[X]",
-          "nametagAffiliation": "",
-          "nametagRole": "QR 코드 처리 오류.",
-          "nametagUrl": ""
-        }
-      );
+      return (false, "QR 코드 처리 오류. Error processing QR code.");
     } catch (e, s) {
       print(e);
       print(s);
-      return (
-        false,
-        {
-          "nametagName": "[X]",
-          "nametagAffiliation": "",
-          "nametagRole": "QR 코드 처리 오류.",
-          "nametagUrl": ""
-        }
-      );
+      return (false, "QR 코드 처리 오류. Error processing QR code.");
     }
   }
 
-  Future<(bool, String)> checkInOnServer(String jwt) async {
+  Future<(bool, dynamic)> checkInOnServer(String jwt) async {
     var url = Uri.parse("$host/checkin/");
     var response = await http.post(url,
         headers: {'Authorization': 'Token $apiToken', "ParticipantToken": jwt});
     var status = response.statusCode;
     var jsonBody = jsonDecode(response.body);
-    String resultMsg = jsonBody["result"];
-    return (status == 200, resultMsg);
+    // String resultMsg = jsonBody["result"];
+    return (status == 200, jsonBody);
   }
 
   Future<(bool, List)> searchByEmailKeyword(String keyword) async {
