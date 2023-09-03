@@ -181,6 +181,7 @@ parts:
       - libusb-1.0-0-dev
       - libsqlite3-dev
       - libsqlite3-0
+      - fonts-noto-cjk
     stage-packages:
       - libusb-1.0-0
       - libgtk-3-0

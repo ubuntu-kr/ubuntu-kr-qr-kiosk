@@ -1,6 +1,6 @@
 #!/bin/sh
 set -x
-
+fc-cache -f -v
 if [ "$(snapctl get daemon)" = "" ]
 then
   if grep -q -e snap_core= -e snapd_recovery_mode= /proc/cmdline
