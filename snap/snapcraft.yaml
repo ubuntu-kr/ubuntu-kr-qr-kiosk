@@ -176,6 +176,7 @@ parts:
       - libgtk-3-0
       - libgl1
       - fonts-noto-cjk
+      - libsqlite3-0
       # - libdrm-common
     override-build: |
       set -eux
