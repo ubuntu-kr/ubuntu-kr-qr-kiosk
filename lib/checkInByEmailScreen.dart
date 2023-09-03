@@ -187,16 +187,21 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
                                         );
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBar);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => PrintPage(
-                                                  nametagData: NametagData(
-                                                      resultItem['name'],
-                                                      resultItem['affilation'],
-                                                      resultItem['role'],
-                                                      resultItem['qrUrl']))),
-                                        );
+                                        if (result.$1) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => PrintPage(
+                                                    nametagData: NametagData(
+                                                        resultItem['name'],
+                                                        resultItem[
+                                                            'affilation'],
+                                                        resultItem['role'],
+                                                        resultItem['qrUrl']))),
+                                          );
+                                        } else {
+                                          Navigator.pop(context, 'ERROR');
+                                        }
                                       },
                                       child: const Text('확인 (O)'),
                                     ),
