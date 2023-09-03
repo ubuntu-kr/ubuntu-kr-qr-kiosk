@@ -189,11 +189,12 @@ parts:
       - fonts-noto-cjk
       - libsqlite3-0
       - libsqlite3-dev
-      - fontconfig
       # - libdrm-common
     override-build: |
       set -eux
       mkdir -p $CRAFT_PART_INSTALL/bin/lib
+      mkdir fonts
+      cp -r /usr/share/fonts/opentype/noto/* fonts/
       flutter channel stable
       flutter upgrade
       flutter config --enable-linux-desktop

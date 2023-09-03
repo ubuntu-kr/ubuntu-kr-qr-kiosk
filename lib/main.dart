@@ -21,10 +21,13 @@ class MyApp extends StatelessWidget {
         data: const YaruThemeData(
             variant: YaruVariant.orange, useMaterial3: true),
         builder: (context, yaru, child) {
-          return MaterialApp(
-              theme: yaru.theme,
-              darkTheme: yaru.darkTheme,
-              home: const KioskMainPage());
+          return DefaultTextStyle(
+              style: const TextStyle(
+                  fontFamily: "Ubuntu", fontFamilyFallback: ["Noto Sans CJK"]),
+              child: MaterialApp(
+                  theme: yaru.theme,
+                  darkTheme: yaru.darkTheme,
+                  home: const KioskMainPage()));
         });
   }
 }
