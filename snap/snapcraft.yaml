@@ -190,6 +190,12 @@ parts:
   usbserver:
     plugin: python
     source: ./usbserver
+    python-requirements:
+    - requirements.txt
+    override-build: |
+      set -eux
+      mkdir -p $CRAFT_PART_INSTALL/bin/usbserver
+      cp -r ./* $SNAPCRAFT_PART_INSTALL/bin/usbserver
 
   graphics-core22:
     after:
