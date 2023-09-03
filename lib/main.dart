@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'checkInByEmailScreen.dart';
+import 'checkInByBarcodeScreen.dart';
 import 'package:yaru/yaru.dart';
 import 'kioskclient.dart';
 
@@ -90,7 +91,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.print,
+                  Icons.fact_check,
                   size: 100.0,
                   semanticLabel: 'Text to announce in accessibility modes',
                 ),
@@ -111,7 +112,14 @@ class _KioskMainPageState extends State<KioskMainPage> {
                 Container(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const CheckInByBarcodeScreen()),
+                          );
+                        },
                         child: Text(
                           "QR 코드",
                           style: TextStyle(fontSize: 40),
