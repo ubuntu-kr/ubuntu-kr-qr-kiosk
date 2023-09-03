@@ -1,0 +1,35 @@
+#!/bin/sh
+
+DEFAULT_SERVER_HOST="http://localhost:8000"
+
+server_host()
+{
+        host="$(snapctl get server.host)"
+        if [ -z "$host" ]; then
+                host="$DEFAULT_SERVER_HOST"
+                set_server_host $host
+        fi
+        echo "$host"
+}
+
+set_server_host()
+{
+        snapctl set server.host="$1"
+}
+
+DEFAULT_API_TOKEN="APIKEY"
+
+api_token()
+{
+        apitoken="$(snapctl get server.apitoken)"
+        if [ -z "$apitoken" ]; then
+                apitoken="$DEFAULT_API_TOKEN"
+                set_api_token $apitoken
+        fi
+        echo "$apitoken"
+}
+
+set_api_token()
+{
+        snapctl set server.apitoken="$1"
+}

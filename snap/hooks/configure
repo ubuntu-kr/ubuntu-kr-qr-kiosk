@@ -18,3 +18,20 @@ case "$daemon" in
     exit 1
     ;;
 esac
+
+# source the management script
+. $SNAP/snap/hooks/management
+
+handle_server_config()
+{
+        server_host="$(server_host)"
+        api_token="$(api_token)"
+
+       # run function from management script
+        set_server_host "$server_host"
+        set_api_token "$api_token"
+
+        # Restart example-server to apply new config
+        snapctl restart ubuntu-kr-qr-kiosk
+}
+handle_server_config
