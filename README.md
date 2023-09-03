@@ -19,16 +19,12 @@ samples, guidance on mobile development, and a full API reference.
 
 - libusb-1.0-0
 - libusb-1.0-0-dev
-- v4l-utils
-- gstreamer1.0-plugins-good
 - libsqlite3-dev
-- Gstreamer: [See here](https://gstreamer.freedesktop.org/documentation/installing/on-linux.html?gi-language=c)
 
 ## Snap interface setup
 
-USB and Camera interface connections are required to make kiosk app work. Use following commands to configure.
+Various interface connections are required to make kiosk app work. Use following commands to configure.
 
 ```bash
-sudo snap connect ubuntu-kr-qr-kiosk:camera
-sudo snap connect ubuntu-kr-qr-kiosk:raw-usb
+sudo /snap/ubuntu-kr-qr-kiosk/current/bin/setup.sh
 ```
