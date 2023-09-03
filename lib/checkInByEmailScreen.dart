@@ -88,8 +88,8 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
               children: [
                 Container(
                     padding: const EdgeInsets.all(16.0),
-                    child: SizedBox(
-                      width: 500,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 600),
                       child: TextField(
                         style: TextStyle(fontSize: 30),
                         decoration: InputDecoration(
@@ -108,109 +108,123 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                    child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: searchResults == null ? 0 : searchResults.length,
-                  itemBuilder: (context, index) {
-                    var resultItem = searchResults[index];
-                    return ListTile(
-                      title: Text(
-                          '${resultItem["name"]} (${resultItem['email']})'),
-                      onTap: () => {
-                        showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                                  title: Text(resultItem['name']),
-                                  content: Column(
-                                    children: [
-                                      Visibility(
-                                          visible: showModalProgress,
-                                          child: LinearProgressIndicator(
-                                              value: null)),
-                                      Text(resultItem['email']),
-                                      Text(resultItem['affilation']),
-                                      Text(resultItem['role']),
-                                      TextField(
-                                        readOnly: showModalProgress,
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: '인증코드 입력',
-                                        ),
-                                        onChanged: (value) => {
-                                          setState(() {
-                                            verifyCodeInput = value;
-                                          })
-                                        },
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 600),
+                    child: Expanded(
+                        child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount:
+                          searchResults == null ? 0 : searchResults.length,
+                      itemBuilder: (context, index) {
+                        var resultItem = searchResults[index];
+                        return ListTile(
+                          title: Text(
+                            '${resultItem["name"]} (${resultItem['email']})',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          onTap: () => {
+                            showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                      title: Text(resultItem['name']),
+                                      content: Column(
+                                        children: [
+                                          Visibility(
+                                              visible: showModalProgress,
+                                              child: LinearProgressIndicator(
+                                                  value: null)),
+                                          Text(resultItem['email']),
+                                          Text(resultItem['affilation']),
+                                          Text(resultItem['role']),
+                                          Container(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: TextField(
+                                              style: TextStyle(fontSize: 30),
+                                              readOnly: showModalProgress,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                labelText: '인증코드 입력',
+                                              ),
+                                              onChanged: (value) => {
+                                                setState(() {
+                                                  verifyCodeInput = value;
+                                                })
+                                              },
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          verifyCodeInput = "";
-                                        });
-                                        Navigator.pop(context, 'Cancel');
-                                      },
-                                      child: const Text('취소 (X)'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        showDialog<String>(
-                                            barrierDismissible: false,
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                AlertDialog(
-                                                    content: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    CircularProgressIndicator(
-                                                      value: null,
-                                                    )
-                                                  ],
-                                                )));
-                                        var result =
-                                            await kioskClient.checkInBySearch(
-                                                resultItem['id'],
-                                                verifyCodeInput);
-                                        setState(() {
-                                          verifyCodeInput = "";
-                                        });
-                                        Navigator.pop(context, 'OK');
-                                        Navigator.pop(context, 'OK');
-                                        var snackBar = SnackBar(
-                                          content: Text(result.$2),
-                                        );
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(snackBar);
-                                        if (result.$1) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => PrintPage(
-                                                    nametagData: NametagData(
-                                                        resultItem['name'],
-                                                        resultItem[
-                                                            'affilation'],
-                                                        resultItem['role'],
-                                                        resultItem['qrUrl']))),
-                                          );
-                                        } else {
-                                          Navigator.pop(context, 'ERROR');
-                                        }
-                                      },
-                                      child: const Text('확인 (O)'),
-                                    ),
-                                  ],
-                                ))
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              verifyCodeInput = "";
+                                            });
+                                            Navigator.pop(context, 'Cancel');
+                                          },
+                                          child: const Text('취소 (X)'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            showDialog<String>(
+                                                barrierDismissible: false,
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        const AlertDialog(
+                                                            content: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            CircularProgressIndicator(
+                                                              value: null,
+                                                            )
+                                                          ],
+                                                        )));
+                                            var result = await kioskClient
+                                                .checkInBySearch(
+                                                    resultItem['id'],
+                                                    verifyCodeInput);
+                                            setState(() {
+                                              verifyCodeInput = "";
+                                            });
+                                            Navigator.pop(context, 'OK');
+                                            Navigator.pop(context, 'OK');
+                                            var snackBar = SnackBar(
+                                              content: Text(result.$2),
+                                            );
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(snackBar);
+                                            if (result.$1) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => PrintPage(
+                                                        nametagData: NametagData(
+                                                            resultItem['name'],
+                                                            resultItem[
+                                                                'affilation'],
+                                                            resultItem['role'],
+                                                            resultItem[
+                                                                'qrUrl']))),
+                                              );
+                                            } else {
+                                              Navigator.pop(context, 'ERROR');
+                                            }
+                                          },
+                                          child: const Text('확인 (O)'),
+                                        ),
+                                      ],
+                                    ))
+                          },
+                        );
                       },
-                    );
-                  },
-                ))
+                    )))
               ],
             )
           ],

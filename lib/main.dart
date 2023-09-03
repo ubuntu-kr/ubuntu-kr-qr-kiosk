@@ -17,10 +17,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return YaruTheme(builder: (context, yaru, child) {
-      return MaterialApp(
-          theme: yaru.theme, darkTheme: yaru.darkTheme, home: KioskMainPage());
-    });
+    return YaruTheme(
+        data: const YaruThemeData(
+            variant: YaruVariant.orange, useMaterial3: true),
+        builder: (context, yaru, child) {
+          return MaterialApp(
+              theme: yaru.theme,
+              darkTheme: yaru.darkTheme,
+              home: const KioskMainPage());
+        });
   }
 }
 
