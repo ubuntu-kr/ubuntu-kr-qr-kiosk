@@ -90,11 +90,11 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Noto Sans CJK
-      fonts:
-        - asset: /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
-        - asset: /usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc
+  # fonts:
+  #   - family: Noto Sans CJK
+  #     fonts:
+  #       - asset: /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
+  #       - asset: /usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

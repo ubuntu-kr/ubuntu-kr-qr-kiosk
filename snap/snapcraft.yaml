@@ -189,6 +189,7 @@ parts:
       - fonts-noto-cjk
       - libsqlite3-0
       - libsqlite3-dev
+      - fontconfig
       # - libdrm-common
     override-build: |
       set -eux
