@@ -119,7 +119,7 @@ class _CheckInByBarcodeScreenState extends State<CheckInByBarcodeScreen> {
                             await kioskClient.checkInOnServer(value);
                         if (!serverResult.$1) {
                           var snackBar = SnackBar(
-                            content: Text(localResult.$2),
+                            content: Text(localResult.$2["result"]),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           Navigator.pop(context, 'ERROR');
