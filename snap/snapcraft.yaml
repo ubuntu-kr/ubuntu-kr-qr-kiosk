@@ -40,8 +40,10 @@ apps:
     plugs: *_plugs
     environment: *_environment
   usbserver:
-    command: bin/usbserver
+    command: bin/usbserver-launch
     daemon: simple
+    restart-delay: 5s
+    restart-condition: always
 
 plugs:
   graphics-core22:
