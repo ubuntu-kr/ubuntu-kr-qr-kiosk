@@ -17,17 +17,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return YaruTheme(
         data: const YaruThemeData(
             variant: YaruVariant.orange, useMaterial3: true),
         builder: (context, yaru, child) {
-          return DefaultTextStyle(
-              style: const TextStyle(
-                  fontFamily: "Ubuntu", fontFamilyFallback: ["NotoSansCJK"]),
-              child: MaterialApp(
-                  theme: yaru.theme,
+          ThemeData customTheme = yaru.theme!.copyWith(
+              textTheme: yaru.theme!.textTheme.apply(
+                    fontFamily: 'Ubuntu',
+                    fontFamilyFallback: ['NotoSansCJK']
+                  ),
+              primaryTextTheme: yaru.theme!.textTheme.apply(
+                    fontFamily: 'Ubuntu',
+                    fontFamilyFallback: ['NotoSansCJK']
+                  ),
+          );
+          return MaterialApp(
+                  theme: customTheme,
                   darkTheme: yaru.darkTheme,
-                  home: const KioskMainPage()));
+                  home: const KioskMainPage());
         });
   }
 }
