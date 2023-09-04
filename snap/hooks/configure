@@ -19,6 +19,9 @@ case "$daemon" in
     ;;
 esac
 
+# Generate font cache
+ fc-cache -r -v 
+
 # source the management script
 . $SNAP/snap/hooks/management
 
