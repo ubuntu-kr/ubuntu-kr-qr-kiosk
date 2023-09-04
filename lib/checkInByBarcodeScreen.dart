@@ -68,7 +68,7 @@ class _CheckInByBarcodeScreenState extends State<CheckInByBarcodeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('QR코드로 체크인'),
+          title: Text('QR Code Check-in'),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,

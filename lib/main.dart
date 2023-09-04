@@ -5,6 +5,7 @@ import 'checkInByEmailScreen.dart';
 import 'checkInByBarcodeScreen.dart';
 import 'package:yaru/yaru.dart';
 import 'kioskclient.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,26 +18,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    return YaruTheme(
-        data: const YaruThemeData(
-            variant: YaruVariant.orange, useMaterial3: true),
-        builder: (context, yaru, child) {
-          ThemeData customTheme = yaru.theme!.copyWith(
-              textTheme: yaru.theme!.textTheme.apply(
-                    fontFamily: 'Ubuntu',
-                    fontFamilyFallback: ['NotoSansCJK']
-                  ),
-              primaryTextTheme: yaru.theme!.textTheme.apply(
-                    fontFamily: 'Ubuntu',
-                    fontFamilyFallback: ['NotoSansCJK']
-                  ),
-          );
-          return MaterialApp(
-                  theme: customTheme,
-                  darkTheme: yaru.darkTheme,
-                  home: const KioskMainPage());
-        });
+    var yaru = YaruThemeData(variant: YaruVariant.orange, useMaterial3: true);
+    var yaruTheme = yaru.theme!;
+    var yaruDarkTheme = yaru.darkTheme!;
+    ThemeData customTheme = yaruTheme.copyWith(
+      textTheme: GoogleFonts.nanumGothicTextTheme(),
+      primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
+    );
+    ThemeData customThemeDark = yaruDarkTheme.copyWith(
+      textTheme: GoogleFonts.nanumGothicTextTheme(),
+      primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
+    );
+    print(customTheme.textTheme);
+    print(customThemeDark.textTheme);
+    return MaterialApp(
+        theme: customTheme,
+        darkTheme: customThemeDark,
+        home: const KioskMainPage());
   }
 }
 
@@ -98,7 +96,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('UbuCon KR 체크인 키오스크'),
+          title: Text('UbuCon Korea Check-in'),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,

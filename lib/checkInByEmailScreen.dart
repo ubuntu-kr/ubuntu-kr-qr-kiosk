@@ -78,7 +78,7 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('E-Mail 주소로 체크인'),
+          title: Text('E-Mail Check-in'),
         ),
         body: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
