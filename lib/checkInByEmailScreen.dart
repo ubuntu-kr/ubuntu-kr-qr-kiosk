@@ -133,12 +133,8 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
                                           AlertDialog(
                                             title: Text(resultItem['name']),
                                             content: Column(
+                                              mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Visibility(
-                                                    visible: showModalProgress,
-                                                    child:
-                                                        LinearProgressIndicator(
-                                                            value: null)),
                                                 Text(resultItem['email'],
                                                     style: TextStyle(
                                                         fontSize: 20)),
