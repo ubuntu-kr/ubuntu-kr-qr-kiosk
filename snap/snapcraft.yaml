@@ -209,7 +209,9 @@ parts:
     plugin: python
     source: ./usbserver
     python-requirements:
-    - requirements.txt
+      - usbserver/requirements.txt
+    build-packages:
+      - build-essential
     override-build: |
       set -eux
       mkdir -p $CRAFT_PART_INSTALL/bin/usbserver
