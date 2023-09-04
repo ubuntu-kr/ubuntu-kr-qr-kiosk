@@ -64,6 +64,8 @@ environment:
   # Font
   FONTCONFIG_PATH: ${SNAP}/etc/fonts/conf.d
   FONTCONFIG_FILE: ${SNAP}/etc/fonts/fonts.conf
+  # Enforce locale
+  LC_ALL: ko_KR.UTF-8
 
 layout:
   /usr/share/libdrm:
