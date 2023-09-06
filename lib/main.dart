@@ -29,8 +29,6 @@ class MyApp extends StatelessWidget {
       textTheme: GoogleFonts.nanumGothicTextTheme(),
       primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
     );
-    print(customTheme.textTheme);
-    print(customThemeDark.textTheme);
     return MaterialApp(
         theme: customTheme,
         darkTheme: customThemeDark,
