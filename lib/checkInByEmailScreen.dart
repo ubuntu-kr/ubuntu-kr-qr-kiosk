@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:ubuntu_kr_qr_kiosk/printScreen.dart';
-import 'package:yaru/yaru.dart';
 import 'package:flutter/material.dart';
 import 'kioskclient.dart';
 import 'printScreen.dart';
@@ -223,7 +221,9 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
                                                                   resultItem[
                                                                       'role'],
                                                                   resultItem[
-                                                                      'qrUrl']))),
+                                                                      'qrUrl'],
+                                                                  resultItem[
+                                                                      'couponDetail']))),
                                                     );
                                                   } else {
                                                     Navigator.pop(

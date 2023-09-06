@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:ubuntu_kr_qr_kiosk/printScreen.dart';
-import 'package:yaru/yaru.dart';
 import 'package:flutter/material.dart';
 import 'kioskclient.dart';
 import 'printScreen.dart';
@@ -133,7 +131,8 @@ class _CheckInByBarcodeScreenState extends State<CheckInByBarcodeScreen> {
                                       serverResult.$2['name'],
                                       serverResult.$2['affilation'],
                                       serverResult.$2['role'],
-                                      serverResult.$2['qrUrl']))),
+                                      serverResult.$2['qrUrl'],
+                                      serverResult.$2['couponDetail']))),
                         );
                       },
                     ))

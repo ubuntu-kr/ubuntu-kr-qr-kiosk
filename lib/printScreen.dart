@@ -6,21 +6,22 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:yaru/yaru.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'imgutil.dart';
 import 'tsplutils.dart';
-import 'kioskclient.dart';
 
-GlobalKey globalKey = GlobalKey();
+GlobalKey nametagKey = GlobalKey();
+GlobalKey couponKey = GlobalKey();
 
 class NametagData {
   final String name;
   final String affiliation;
   final String role;
   final String qrUrl;
+  final String couponDetail;
 
-  const NametagData(this.name, this.affiliation, this.role, this.qrUrl);
+  const NametagData(
+      this.name, this.affiliation, this.role, this.qrUrl, this.couponDetail);
 }
 
 class PrintPage extends StatefulWidget {
@@ -31,13 +32,13 @@ class PrintPage extends StatefulWidget {
 }
 
 class _PrintPageState extends State<PrintPage> {
-  var deviceList = "";
   var qrCodeContent = "";
   var nametagName = "";
   var nametagAffiliation = "";
   var nametagRole = "";
   var nametagQrUrl = "";
   var printStatus = "";
+  var couponDetail = "";
   var isKioskConfigured = false;
   bool isProcessingQrCheckin = false;
   _PrintPageState(NametagData nametagData) {
@@ -45,12 +46,36 @@ class _PrintPageState extends State<PrintPage> {
     nametagAffiliation = nametagData.affiliation;
     nametagRole = nametagData.role;
     nametagQrUrl = nametagData.qrUrl;
+    couponDetail = nametagData.couponDetail;
   }
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () {
-      printNametag();
+    Timer(Duration(seconds: 1), () async {
+      var result1 = await printNametag(nametagKey);
+      var result1Msg = result1
+          ? "명찰 인쇄 완료. Nametag has been printed."
+          : "명찰 인쇄중 오류 발생. Error while printing nametag.";
+      var snackBar = SnackBar(
+        content: Text(result1Msg),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (couponDetail != "") {
+        var result2 = await printNametag(couponKey);
+        var result2Msg = result2
+            ? "교환권 인쇄 완료. Coupon has been printed."
+            : "교환권 인쇄중 오류 발생. Error while printing Coupon.";
+        var snackBar = SnackBar(
+          content: Text(result1Msg),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+      var resultSnackBar = SnackBar(
+        content: Text("명찰 및 교환권 인쇄 완료. Nametag and coupon have been printed."),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pop(context, 'OK');
+      Navigator.pop(context, 'OK');
     });
     print('initState is called');
   }
@@ -92,19 +117,19 @@ class _PrintPageState extends State<PrintPage> {
     print('reassemble');
   }
 
-  Future<ui.Image> _capturePng() async {
+  Future<ui.Image> _capturePng(GlobalKey globalKey) async {
     RenderRepaintBoundary boundary =
         globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
     return image;
   }
 
-  void printNametag() async {
+  Future<bool> printNametag(GlobalKey globalKey) async {
     setState(() {
       printStatus = "인쇄 중...";
     });
 
-    var uiImage = await _capturePng();
+    var uiImage = await _capturePng(globalKey);
     var imageUint8 = await convertImageToMonochrome(uiImage);
     var tsplBitmapData = buildBitmapPrintTsplCmd(
         0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8);
@@ -113,14 +138,7 @@ class _PrintPageState extends State<PrintPage> {
       printStatus = "";
       isProcessingQrCheckin = false;
     });
-    if (result == 200) {
-      var snackBar = const SnackBar(
-        content: Text("명찰 인쇄 완료. Nametag has been printed."),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      Navigator.pop(context, 'ERROR');
-      Navigator.pop(context, 'OK');
-    }
+    return result == 200;
   }
 
   @override
@@ -133,13 +151,12 @@ class _PrintPageState extends State<PrintPage> {
           children: [
             Column(
               children: [
-                Text(deviceList),
                 Text(printStatus),
                 SizedBox(
                     width: 550.0,
                     height: 500.0,
                     child: RepaintBoundary(
-                        key: globalKey,
+                        key: nametagKey,
                         child: ColorFiltered(
                             colorFilter: greyScaleFilter,
                             child: Container(
@@ -169,6 +186,35 @@ class _PrintPageState extends State<PrintPage> {
                                       data: nametagQrUrl,
                                       version: QrVersions.auto,
                                       size: 150.0),
+                                ],
+                              )),
+                            )))),
+                SizedBox(
+                    width: 550.0,
+                    height: 500.0,
+                    child: RepaintBoundary(
+                        key: couponKey,
+                        child: ColorFiltered(
+                            colorFilter: greyScaleFilter,
+                            child: Container(
+                              color: Colors.white,
+                              child: Center(
+                                  child: Column(
+                                children: [
+                                  Text(
+                                    "교환권",
+                                    style: TextStyle(
+                                        fontWeight: ui.FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                  Text(
+                                    nametagName,
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Text(
+                                    couponDetail,
+                                    style: TextStyle(fontSize: 20),
+                                  ),
                                 ],
                               )),
                             ))))
