@@ -121,36 +121,50 @@ class _KioskMainPageState extends State<KioskMainPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const CheckInByBarcodeScreen()),
-                          );
-                        },
-                        child: Text(
-                          "QR 코드",
-                          style: TextStyle(fontSize: 40),
-                        ))),
-                Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const CheckInByEmailScreen()),
-                          );
-                        },
-                        child: Text(
-                          "E-Mail 주소",
-                          style: TextStyle(fontSize: 40),
-                        ))),
+                Card(
+                    clipBehavior: Clip.hardEdge,
+                    child: InkWell(
+                      splashColor: Colors.orange.withAlpha(30),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const CheckInByBarcodeScreen()),
+                        );
+                      },
+                      child: Container(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Column(children: [
+                            Icon(
+                              Icons.qr_code_scanner,
+                              size: 100.0,
+                            ),
+                            Text("QR 코드", style: TextStyle(fontSize: 40))
+                          ])),
+                    )),
+                Card(
+                    clipBehavior: Clip.hardEdge,
+                    child: InkWell(
+                      splashColor: Colors.orange.withAlpha(30),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const CheckInByEmailScreen()),
+                        );
+                      },
+                      child: Container(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Column(children: [
+                            Icon(
+                              Icons.email_outlined,
+                              size: 100.0,
+                            ),
+                            Text("E-Mail 주소", style: TextStyle(fontSize: 40))
+                          ])),
+                    ))
               ],
             ),
             Row(
