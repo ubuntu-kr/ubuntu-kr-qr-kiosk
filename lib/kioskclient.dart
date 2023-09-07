@@ -102,7 +102,7 @@ class KioskClient {
     var response = await http.post(url,
         headers: {'Authorization': 'Token $apiToken', "ParticipantToken": jwt});
     var status = response.statusCode;
-    var jsonBody = jsonDecode(response.body);
+    var jsonBody = jsonDecode(utf8.decode(response.bodyBytes));
     // String resultMsg = jsonBody["result"];
     return (status == 200, jsonBody);
   }
@@ -112,21 +112,27 @@ class KioskClient {
     var response =
         await http.get(url, headers: {'Authorization': 'Token $apiToken'});
     var status = response.statusCode;
-    var searchResults = jsonDecode(response.body) as List;
+    var searchResults = jsonDecode(utf8.decode(response.bodyBytes)) as List;
     return (status == 200, searchResults);
   }
 
   Future<(bool, String)> checkInBySearch(
       int participantId, String passcode) async {
-    var url = Uri.parse("$host/checkin_passcode/?participantId=$participantId");
+    var url = Uri.parse(
+        "$host/checkin_passcode/?format=json&participantId=$participantId");
     var response = await http.post(
       url,
       body: {"passcode": passcode},
     );
     var status = response.statusCode;
-    var jsonBody = jsonDecode(response.body);
-    String resultMsg = jsonBody["result"];
-    return (status == 200, resultMsg);
+    print(utf8.decode(response.bodyBytes));
+    try {
+      var jsonBody = jsonDecode(utf8.decode(response.bodyBytes));
+      String resultMsg = jsonBody["result"];
+      return (status == 200, resultMsg);
+    } on Exception {
+      return (false, "체크인 중 서버 오류 발생. Error on serer while checking in.");
+    }
   }
 
   void closeDb() {
