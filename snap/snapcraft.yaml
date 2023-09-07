@@ -146,28 +146,6 @@ parts:
     stage-packages:
       - inotify-tools
 
-  # flutter-git:
-  #   source: https://github.com/flutter/flutter.git
-  #   source-tag: 3.13.2
-  #   source-depth: 1
-  #   plugin: nil
-  #   override-build: |
-  #     mkdir -p $CRAFT_PART_INSTALL/usr/bin
-  #     mkdir -p $CRAFT_PART_INSTALL/usr/libexec
-  #     cp -r $CRAFT_PART_SRC $CRAFT_PART_INSTALL/usr/libexec/flutter
-  #     ln -s $CRAFT_PART_INSTALL/usr/libexec/flutter/bin/flutter $CRAFT_PART_INSTALL/usr/bin/flutter
-  #     $CRAFT_PART_INSTALL/usr/bin/flutter doctor
-  #   build-packages:
-  #     - clang
-  #     - cmake
-  #     - curl
-  #     - libgtk-3-dev
-  #     - ninja-build
-  #     - unzip
-  #     - xz-utils
-  #     - zip
-  #   override-prime: ''
-
   ubuntu-kr-qr-kiosk:
     # after: [flutter-git]
     source: .
@@ -183,12 +161,10 @@ parts:
       - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}/snap/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig
       - XDG_DATA_DIRS: /snap/flutter/current/usr/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}
     build-packages:
-      - libusb-1.0-0-dev
       - libsqlite3-dev
       - libsqlite3-0
       - fonts-noto-cjk
     stage-packages:
-      - libusb-1.0-0
       - libgtk-3-0
       - libgl1
       - fonts-noto-cjk
@@ -224,6 +200,9 @@ parts:
       - Werkzeug==2.3.7
     build-packages:
       - build-essential
+      - libusb-1.0-0-dev
+    stage-packages:
+      - libusb-1.0-0
     override-build: |
       craftctl default
       set -eux
