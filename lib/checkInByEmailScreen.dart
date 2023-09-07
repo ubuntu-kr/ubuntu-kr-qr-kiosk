@@ -16,14 +16,14 @@ class CheckInByEmailScreen extends StatefulWidget {
 class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
   late KioskClient kioskClient;
   List searchResults = [
-    {
-      "id": 2,
-      "name": "Youngbin Han",
-      "email": "sukso96100@gmail.com",
-      "affilation": "Ubuntu Korea",
-      "role": "Organizer",
-      "qrUrl": "https://discourse.ubuntu-kr.org/u/sukso96100"
-    }
+    // {
+    //   "id": 2,
+    //   "name": "Youngbin Han",
+    //   "email": "sukso96100@gmail.com",
+    //   "affilation": "Ubuntu Korea",
+    //   "role": "Organizer",
+    //   "qrUrl": "https://discourse.ubuntu-kr.org/u/sukso96100"
+    // }
   ];
   var verifyCodeInput = "";
   var verifyCodeFinal = "";
