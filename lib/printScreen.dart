@@ -147,11 +147,11 @@ class _PrintPageState extends State<PrintPage> {
         appBar: AppBar(
           title: Text('명찰 출력'),
         ),
-        body: Row(
+        body: Column(
           children: [
-            Column(
+            Text(printStatus),
+            Row(
               children: [
-                Text(printStatus),
                 SizedBox(
                     width: 550.0,
                     height: 500.0,

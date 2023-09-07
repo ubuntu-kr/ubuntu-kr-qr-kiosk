@@ -209,7 +209,7 @@ parts:
     plugin: python
     source: ./usbserver
     python-requirements:
-      - usbserver/requirements.txt
+      - requirements.txt
     build-packages:
       - build-essential
     override-build: |
