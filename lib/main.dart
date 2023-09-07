@@ -22,13 +22,21 @@ class MyApp extends StatelessWidget {
     var yaruTheme = yaru.theme!;
     var yaruDarkTheme = yaru.darkTheme!;
     ThemeData customTheme = yaruTheme.copyWith(
-      textTheme: GoogleFonts.nanumGothicTextTheme(),
-      primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
-    );
+        textTheme: GoogleFonts.nanumGothicTextTheme(),
+        primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
+        appBarTheme: yaruTheme.appBarTheme.copyWith(
+            titleTextStyle:
+                GoogleFonts.nanumGothic(color: Colors.black, fontSize: 20)),
+        snackBarTheme: yaruTheme.snackBarTheme.copyWith(
+            contentTextStyle: GoogleFonts.nanumGothic(color: Colors.white)));
     ThemeData customThemeDark = yaruDarkTheme.copyWith(
-      textTheme: GoogleFonts.nanumGothicTextTheme(),
-      primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
-    );
+        textTheme: GoogleFonts.nanumGothicTextTheme(),
+        primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
+        appBarTheme: yaruDarkTheme.appBarTheme.copyWith(
+            titleTextStyle:
+                GoogleFonts.nanumGothic(color: Colors.white, fontSize: 20)),
+        snackBarTheme: yaruDarkTheme.snackBarTheme.copyWith(
+            contentTextStyle: GoogleFonts.nanumGothic(color: Colors.black)));
     return MaterialApp(
         theme: customTheme,
         darkTheme: customThemeDark,

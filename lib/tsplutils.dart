@@ -18,7 +18,7 @@ Future<int> sendTsplData(
     Uint8List tsplData, int vendorId, int productId) async {
   var url = Uri.parse("http://0.0.0.0:5000/write_usb/$vendorId/$productId");
 
-  var request = new http.Request("POST", url);
+  var request = http.Request("POST", url);
   request.bodyBytes = tsplData;
   var response = await request.send();
   return response.statusCode;
