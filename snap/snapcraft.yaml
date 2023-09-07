@@ -44,6 +44,8 @@ apps:
     daemon: simple
     restart-delay: 5s
     restart-condition: always
+    plugs: *_plugs
+    
 
 plugs:
   graphics-core22:
