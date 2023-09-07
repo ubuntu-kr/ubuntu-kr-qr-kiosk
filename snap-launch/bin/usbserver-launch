@@ -6,4 +6,4 @@ export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 export PYTHONPATH=$SNAP/lib/python3.5/site-packages/
 
-exec "$SNAP/bin/gunicorn" --chdir "$SNAP/bin/usbserver" server:app "$@"
+exec "$SNAP/bin/gunicorn" -b 0.0.0.0:5000 --chdir "$SNAP/bin/usbserver" server:app "$@"
