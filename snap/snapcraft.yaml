@@ -222,6 +222,7 @@ parts:
     build-packages:
       - build-essential
     override-build: |
+      craftctl default
       set -eux
       mkdir -p $CRAFT_PART_INSTALL/bin/usbserver
       cp -r ./* $SNAPCRAFT_PART_INSTALL/bin/usbserver
