@@ -123,9 +123,10 @@ class _PrintPageState extends State<PrintPage> {
                                 children: [
                                   Text(
                                     nametagName,
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontWeight: ui.FontWeight.bold,
-                                        fontSize: 80),
+                                        fontSize: 75),
                                   ),
                                   Text(
                                     nametagAffiliation,
@@ -170,6 +171,7 @@ class _PrintPageState extends State<PrintPage> {
                                   ),
                                   Text(
                                     couponDetail,
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: 30),
                                   ),
                                 ],
