@@ -37,7 +37,6 @@ class _PrintPageState extends State<PrintPage> {
   var nametagAffiliation = "";
   var nametagRole = "";
   var nametagQrUrl = "";
-  var printStatus = "";
   var couponDetail = "";
   var isKioskConfigured = false;
   bool isProcessingQrCheckin = false;
@@ -65,56 +64,19 @@ class _PrintPageState extends State<PrintPage> {
         var result2Msg = result2
             ? "교환권 인쇄 완료. Coupon has been printed."
             : "교환권 인쇄중 오류 발생. Error while printing Coupon.";
-        var snackBar = SnackBar(
-          content: Text(result1Msg),
+        var snackBar2 = SnackBar(
+          content: Text(result2Msg),
         );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar2);
       }
       var resultSnackBar = SnackBar(
         content: Text("명찰 및 교환권 인쇄 완료. Nametag and coupon have been printed."),
       );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(resultSnackBar);
       Navigator.pop(context, 'OK');
       Navigator.pop(context, 'OK');
     });
     print('initState is called');
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    print('didChangeDependencies is called');
-  }
-
-  @override
-  void setState(fn) {
-    super.setState(fn);
-    print('setState');
-  }
-
-  @override
-  void didUpdateWidget(covariant PrintPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print('didUpdateWidget');
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    print('deactivate');
-  }
-
-  // dispose 메서드는 위젯이 위젯 트리에서 완전히 제거될 때 호출된다
-  @override
-  void dispose() {
-    super.dispose();
-    print('dispose is called');
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    print('reassemble');
   }
 
   Future<ui.Image> _capturePng(GlobalKey globalKey) async {
@@ -125,17 +87,12 @@ class _PrintPageState extends State<PrintPage> {
   }
 
   Future<bool> printNametag(GlobalKey globalKey) async {
-    setState(() {
-      printStatus = "인쇄 중...";
-    });
-
     var uiImage = await _capturePng(globalKey);
     var imageUint8 = await convertImageToMonochrome(uiImage);
     var tsplBitmapData = buildBitmapPrintTsplCmd(
         0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8);
     var result = await sendTsplData(tsplBitmapData, 8137, 8214);
     setState(() {
-      printStatus = "";
       isProcessingQrCheckin = false;
     });
     return result == 200;
@@ -145,12 +102,12 @@ class _PrintPageState extends State<PrintPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('명찰 출력'),
+          title: const Text('명찰 출력'),
         ),
         body: Column(
           children: [
-            Text(printStatus),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
                     width: 550.0,
@@ -168,7 +125,7 @@ class _PrintPageState extends State<PrintPage> {
                                     nametagName,
                                     style: TextStyle(
                                         fontWeight: ui.FontWeight.bold,
-                                        fontSize: 70),
+                                        fontSize: 80),
                                   ),
                                   Text(
                                     nametagAffiliation,
@@ -205,15 +162,15 @@ class _PrintPageState extends State<PrintPage> {
                                     "교환권",
                                     style: TextStyle(
                                         fontWeight: ui.FontWeight.bold,
-                                        fontSize: 20),
+                                        fontSize: 30),
                                   ),
                                   Text(
                                     nametagName,
-                                    style: TextStyle(fontSize: 20),
+                                    style: TextStyle(fontSize: 30),
                                   ),
                                   Text(
                                     couponDetail,
-                                    style: TextStyle(fontSize: 20),
+                                    style: TextStyle(fontSize: 30),
                                   ),
                                 ],
                               )),
