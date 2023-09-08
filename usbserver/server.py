@@ -1,11 +1,16 @@
 from flask import Flask, request
 import usb
+import os
 
 app = Flask(__name__)
 
 @app.route('/list', methods=['GET'])
 def get_device_list():
-    devices = usb.core.find(find_all=1)
+    if os.getenv("LIBUSB_PATH", None) is not None:
+        backend = usb.backend.libusb1.get_backend(find_library=lambda x: os.getenv("LIBUSB_PATH", ""))
+        devices = usb.core.find(find_all=1, backend=backend)
+    else:
+        devices = usb.core.find(find_all=1)
     device_list_dict = []
     for device in devices:
         device_list_dict.append({
@@ -18,9 +23,12 @@ def get_device_list():
 
 @app.route('/write_usb/<int:vendor_id>/<int:product_id>', methods=['POST'])
 def write_usb(vendor_id, product_id):
+    if os.getenv("LIBUSB_PATH", None) is not None:
+        backend = usb.backend.libusb1.get_backend(find_library=lambda x: os.getenv("LIBUSB_PATH", ""))
     # find our device
-    dev = usb.core.find(idVendor=vendor_id, idProduct=product_id)
-
+        dev = usb.core.find(idVendor=vendor_id, idProduct=product_id, backend=backend)
+    else:
+        dev = usb.core.find(idVendor=vendor_id, idProduct=product_id)
     # was it found?
     if dev is None:
         print("Device not found")

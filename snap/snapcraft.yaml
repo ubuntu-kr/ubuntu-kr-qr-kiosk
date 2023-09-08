@@ -70,6 +70,8 @@ environment:
   FONTCONFIG_FILE: ${SNAP}/etc/fonts/fonts.conf
   # Enforce locale
   LC_ALL: ko_KR.UTF-8
+  LIBUSB_PATH: ${SNAP}/usr/lib/${CRAFT_ARCH_TRIPLET}/libusb-1.0.so
+
 
 layout:
   /usr/share/libdrm:
