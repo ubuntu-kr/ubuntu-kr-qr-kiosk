@@ -46,6 +46,7 @@ apps:
     restart-delay: 5s
     restart-condition: always
     plugs: *_plugs
+    environment: *_environment
     
 
 plugs:
@@ -196,13 +197,14 @@ parts:
       - Jinja2==3.1.2
       - MarkupSafe==2.1.3
       - packaging==23.1
+      - pyusb==1.2.1
       - Werkzeug==2.3.7
     build-packages:
       - build-essential
       - libusb-1.0-0-dev
     stage-packages:
       - libusb-1.0-0
-      - python3-usb
+      - libusb-1.0-0-dev
     override-build: |
       craftctl default
       set -eux
