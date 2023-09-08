@@ -89,6 +89,7 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
                     child: ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: 600),
                       child: TextField(
+                        autofocus: true,
                         style: TextStyle(fontSize: 30),
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
@@ -146,6 +147,7 @@ class _CheckInByEmailScreenState extends State<CheckInByEmailScreen> {
                                                   padding: const EdgeInsets.all(
                                                       16.0),
                                                   child: TextField(
+                                                    autofocus: true,
                                                     style:
                                                         TextStyle(fontSize: 30),
                                                     readOnly: showModalProgress,
