@@ -109,74 +109,89 @@ class _PrintPageState extends State<PrintPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                    width: 550.0,
-                    height: 500.0,
-                    child: RepaintBoundary(
-                        key: nametagKey,
-                        child: ColorFiltered(
-                            colorFilter: greyScaleFilter,
-                            child: Container(
-                              color: Colors.white,
-                              child: Center(
-                                  child: Column(
-                                children: [
-                                  Text(
-                                    nametagName,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontWeight: ui.FontWeight.bold,
-                                        fontSize: 75),
-                                  ),
-                                  Text(
-                                    nametagAffiliation,
-                                    style: TextStyle(
-                                        fontWeight: ui.FontWeight.bold,
-                                        fontSize: 30),
-                                  ),
-                                  Text(
-                                    nametagRole,
-                                    style: TextStyle(
-                                        fontWeight: ui.FontWeight.bold,
-                                        fontSize: 30),
-                                  ),
-                                  QrImageView(
-                                      data: nametagQrUrl,
-                                      version: QrVersions.auto,
-                                      size: 150.0),
-                                ],
-                              )),
-                            )))),
-                SizedBox(
-                    width: 550.0,
-                    height: 500.0,
-                    child: RepaintBoundary(
-                        key: couponKey,
-                        child: ColorFiltered(
-                            colorFilter: greyScaleFilter,
-                            child: Container(
-                              color: Colors.white,
-                              child: Center(
-                                  child: Column(
-                                children: [
-                                  Text(
-                                    "교환권",
-                                    style: TextStyle(
-                                        fontWeight: ui.FontWeight.bold,
-                                        fontSize: 30),
-                                  ),
-                                  Text(
-                                    nametagName,
-                                    style: TextStyle(fontSize: 30),
-                                  ),
-                                  Text(
-                                    couponDetail,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 30),
-                                  ),
-                                ],
-                              )),
-                            ))))
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 1,
+                      color: Colors.black,
+                    ),
+                  ),
+                  child: SizedBox(
+                      width: 550.0,
+                      height: 500.0,
+                      child: RepaintBoundary(
+                          key: nametagKey,
+                          child: ColorFiltered(
+                              colorFilter: greyScaleFilter,
+                              child: Container(
+                                color: Colors.white,
+                                child: Center(
+                                    child: Column(
+                                  children: [
+                                    Text(
+                                      nametagName,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontWeight: ui.FontWeight.bold,
+                                          fontSize: 75),
+                                    ),
+                                    Text(
+                                      nametagAffiliation,
+                                      style: TextStyle(
+                                          fontWeight: ui.FontWeight.bold,
+                                          fontSize: 30),
+                                    ),
+                                    Text(
+                                      nametagRole,
+                                      style: TextStyle(
+                                          fontWeight: ui.FontWeight.bold,
+                                          fontSize: 30),
+                                    ),
+                                    QrImageView(
+                                        data: nametagQrUrl,
+                                        version: QrVersions.auto,
+                                        size: 150.0),
+                                  ],
+                                )),
+                              )))),
+                ),
+                Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        width: 1,
+                        color: Colors.black,
+                      ),
+                    ),
+                    child: SizedBox(
+                        width: 550.0,
+                        height: 500.0,
+                        child: RepaintBoundary(
+                            key: couponKey,
+                            child: ColorFiltered(
+                                colorFilter: greyScaleFilter,
+                                child: Container(
+                                  color: Colors.white,
+                                  child: Center(
+                                      child: Column(
+                                    children: [
+                                      Text(
+                                        "교환권",
+                                        style: TextStyle(
+                                            fontWeight: ui.FontWeight.bold,
+                                            fontSize: 30),
+                                      ),
+                                      Text(
+                                        nametagName,
+                                        style: TextStyle(fontSize: 30),
+                                      ),
+                                      Text(
+                                        couponDetail,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontSize: 30),
+                                      ),
+                                    ],
+                                  )),
+                                )))))
               ],
             )
           ],
