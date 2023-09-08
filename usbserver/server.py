@@ -1,5 +1,7 @@
 from flask import Flask, request
 import usb
+import usb.core
+import usb.backend.libusb1
 import os
 
 app = Flask(__name__)
