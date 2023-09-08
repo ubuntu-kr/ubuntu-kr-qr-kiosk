@@ -122,16 +122,30 @@ class KioskClient {
         "$host/checkin_passcode/?format=json&participantId=$participantId");
     var response = await http.post(
       url,
+      headers: {'Authorization': 'Token $apiToken'},
       body: {"passcode": passcode},
     );
     var status = response.statusCode;
-    print(utf8.decode(response.bodyBytes));
     try {
       var jsonBody = jsonDecode(utf8.decode(response.bodyBytes));
       String resultMsg = jsonBody["result"];
       return (status == 200, resultMsg);
     } on Exception {
       return (false, "체크인 중 서버 오류 발생. Error on serer while checking in.");
+    }
+  }
+
+  Future<(bool, String)> callStaff() async {
+    var url = Uri.parse("$host/call_staff");
+    var response =
+        await http.get(url, headers: {'Authorization': 'Token $apiToken'});
+    var status = response.statusCode;
+    try {
+      var jsonBody = jsonDecode(utf8.decode(response.bodyBytes));
+      String resultMsg = jsonBody["result"];
+      return (status == 200, resultMsg);
+    } on Exception {
+      return (false, "관계자를 호출 했습니다. Called event staff.");
     }
   }
 

@@ -51,6 +51,8 @@ class KioskMainPage extends StatefulWidget {
 }
 
 class _KioskMainPageState extends State<KioskMainPage> {
+  late KioskClient kioskClient;
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +60,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
     var host = envVars['KIOSK_HOST'] ?? "http://localhost:8000";
     var apiToken = envVars['KIOSK_API_TOKEN'] ?? "";
     configureKiosk(host, apiToken);
+    kioskClient = KioskClient();
     print('initState is called');
   }
 
@@ -181,7 +184,15 @@ class _KioskMainPageState extends State<KioskMainPage> {
                 Container(
                     padding: const EdgeInsets.all(8.0),
                     child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await kioskClient.callStaff();
+                          var resultSnackBar = SnackBar(
+                            content: Text(
+                                "행사 관계자를 호출 하였습니다. Event staff has been called."),
+                          );
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(resultSnackBar);
+                        },
                         child: Text(
                           "관계자 호출 CALL STAFF",
                           style: TextStyle(fontSize: 30),
