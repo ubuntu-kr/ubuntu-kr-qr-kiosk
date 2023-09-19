@@ -105,7 +105,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('UbuCon Korea Check-in'),
+          title: Text('참석자 체크인 키오스크 Attendee Check-in Kiosk'),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
