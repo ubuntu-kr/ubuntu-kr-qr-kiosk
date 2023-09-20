@@ -5,6 +5,7 @@ import 'checkInByEmailScreen.dart';
 import 'checkInByBarcodeScreen.dart';
 import 'package:yaru/yaru.dart';
 import 'kioskclient.dart';
+import 'wifiScreen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
@@ -105,8 +106,19 @@ class _KioskMainPageState extends State<KioskMainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('참석자 체크인 키오스크 Attendee Check-in Kiosk'),
-        ),
+            title: Text('참석자 체크인 키오스크 Attendee Check-in Kiosk'),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.settings),
+                tooltip: 'Wi-Fi',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const WifiScreen()),
+                  );
+                },
+              ),
+            ]),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

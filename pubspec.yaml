@@ -48,6 +48,7 @@ dependencies:
   shared_preferences: ^2.2.1
   http: ^1.1.0
   google_fonts: ^5.1.0
+  nm: ^0.5.0
   # quick_usb:
   #   git:
   #     url: https://github.com/ubuntu-kr/quick.flutter.git
