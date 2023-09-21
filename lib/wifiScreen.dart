@@ -71,6 +71,9 @@ class _WifiScreenState extends State<WifiScreen> {
           .firstWhere((d) => d.deviceType == NetworkManagerDeviceType.wifi);
     } catch (e) {
       print('No WiFi devices found');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("WiFi 장치가 없어서 주변 WiFi 스캔을 할 수 없습니다."),
+      ));
       setState(() {
         scanProgress = 0.0;
       });
@@ -96,6 +99,9 @@ class _WifiScreenState extends State<WifiScreen> {
         setState(() {
           scanProgress = 0.0;
         });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("WiFi 스캔이 완료 되었습니다."),
+        ));
       }
     });
   }
@@ -150,6 +156,10 @@ class _WifiScreenState extends State<WifiScreen> {
                   TextButton(
                     onPressed: () async {
                       Navigator.pop(context, 'Connect');
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                            "${utf8.decode(accessPoint.ssid)}에 연결 중입니다..."),
+                      ));
                       await connectToAccessPoint(
                           nmClient, nmDevice, accessPoint, wifiPassword);
                     },
@@ -184,7 +194,13 @@ class _WifiScreenState extends State<WifiScreen> {
       }
     } catch (e) {
       print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("${utf8.decode(accessPoint.ssid)}에 연결 시도 중 오류가 발생했습니다."),
+      ));
     }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("${utf8.decode(accessPoint.ssid)}에 연결 되었습니다!"),
+    ));
   }
 
   Future<String?> getSavedWifiPsk(NetworkManagerDevice device,
@@ -237,9 +253,15 @@ class _WifiScreenState extends State<WifiScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Wi-Fi Setup'),
-        ),
+        appBar: AppBar(title: Text('Wi-Fi Setup'), actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Wi-Fi 다시 스캔',
+            onPressed: () async {
+              await scanWifi();
+            },
+          ),
+        ]),
         body: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
