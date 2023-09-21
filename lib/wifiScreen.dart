@@ -118,32 +118,27 @@ class _WifiScreenState extends State<WifiScreen> {
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             LinearProgressIndicator(value: scanProgress),
-            Row(
-              children: [
-                Expanded(
-                    child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: foundAPs == null ? 0 : foundAPs.length,
-                  itemBuilder: (context, index) {
-                    var resultItem = foundAPs[index];
-                    return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: 600),
-                              child: ListTile(
-                                title: Text(
-                                  "${utf8.decode(resultItem.ssid)} (${resultItem.frequency}MHz, ${resultItem.strength.toString().padRight(3)})",
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                onTap: () => {},
-                              ))
-                        ]);
-                  },
-                ))
-              ],
-            )
+            Expanded(
+                child: ListView.builder(
+              itemCount: foundAPs == null ? 0 : foundAPs.length,
+              itemBuilder: (context, index) {
+                var resultItem = foundAPs[index];
+                return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 600),
+                          child: ListTile(
+                            title: Text(
+                              "${utf8.decode(resultItem.ssid)} (${resultItem.frequency}MHz, ${resultItem.strength.toString().padRight(3)})",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            onTap: () => {},
+                          ))
+                    ]);
+              },
+            ))
           ],
         ));
   }
