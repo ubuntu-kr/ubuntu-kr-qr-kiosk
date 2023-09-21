@@ -16,7 +16,9 @@ class WifiScreen extends StatefulWidget {
 
 class _WifiScreenState extends State<WifiScreen> {
   double? scanProgress = 0.0;
+  var wifiPassword = "";
   late NetworkManagerClient nmClient;
+  late NetworkManagerDevice nmDevice;
   List<NetworkManagerAccessPoint> foundAPs = [];
   @override
   void initState() {
@@ -64,9 +66,8 @@ class _WifiScreenState extends State<WifiScreen> {
     setState(() {
       scanProgress = null;
     });
-    NetworkManagerDevice device;
     try {
-      device = nmClient.devices
+      nmDevice = nmClient.devices
           .firstWhere((d) => d.deviceType == NetworkManagerDeviceType.wifi);
     } catch (e) {
       print('No WiFi devices found');
@@ -76,9 +77,9 @@ class _WifiScreenState extends State<WifiScreen> {
       return;
     }
 
-    var wireless = device.wireless!;
+    var wireless = nmDevice.wireless!;
 
-    print('Scanning WiFi device ${device.hwAddress}...');
+    print('Scanning WiFi device ${nmDevice.hwAddress}...');
     await wireless.requestScan();
 
     wireless.propertiesChanged.listen((propertyNames) {
@@ -95,17 +96,142 @@ class _WifiScreenState extends State<WifiScreen> {
         setState(() {
           scanProgress = 0.0;
         });
-        // for (var accessPoint in accessPoints) {
-        //   var ssid = utf8.decode(accessPoint.ssid);
-        //   var strength = accessPoint.strength.toString().padRight(3);
-        //   print("  ${accessPoint.frequency}MHz $strength '$ssid'");
-        // }
-        // if (accessPoints.isNotEmpty) {
-        //   // connectToWifiNetwork(client, device, accessPoints.first);
-        // }
-        // exit(0);
       }
     });
+  }
+
+  void showAccessPointConnectDialog(
+      BuildContext context, NetworkManagerAccessPoint accessPoint) {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+                title: Text(utf8.decode(accessPoint.ssid)),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('주파수(Frequency): ${accessPoint.frequency}MHz'),
+                    Text(
+                        '신호 강도(Strength): ${accessPoint.strength.toString().padRight(3)}'),
+                    Text(
+                        '${utf8.decode(accessPoint.ssid)}에 처음 연결하거나, 암호가 변경된 경우 암호를 입력하세요.'),
+                    Text('그렇지 않은 경우 암호 입력란을 비워두세요.'),
+                    if (accessPoint.rsnFlags.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(16.0),
+                        child: TextField(
+                          autofocus: true,
+                          obscureText: true,
+                          style: TextStyle(fontSize: 20),
+                          // readOnly: showModalProgress,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: '암호 입력',
+                          ),
+                          onChanged: (value) => {
+                            setState(() {
+                              wifiPassword = value;
+                            })
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        wifiPassword = "";
+                      });
+                      Navigator.pop(context, 'Cancel');
+                    },
+                    child: const Text('취소 (Cancel)'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.pop(context, 'Connect');
+                      await connectToAccessPoint(
+                          nmClient, nmDevice, accessPoint, wifiPassword);
+                    },
+                    child: const Text('연결 (Connect)'),
+                  ),
+                ]));
+  }
+
+  Future<void> connectToAccessPoint(
+      NetworkManagerClient manager,
+      NetworkManagerDevice device,
+      NetworkManagerAccessPoint accessPoint,
+      String? wifiPsk) async {
+    try {
+      // Has password
+      if (accessPoint.rsnFlags.isNotEmpty) {
+        var psk = wifiPsk ?? await getSavedWifiPsk(device, accessPoint);
+        if (psk != null) {
+          await manager.addAndActivateConnection(
+              device: device,
+              accessPoint: accessPoint,
+              connection: {
+                '802-11-wireless-security': {
+                  'key-mgmt': DBusString('wpa-psk'),
+                  'psk': DBusString(psk)
+                }
+              });
+        }
+      } else {
+        await manager.addAndActivateConnection(
+            device: device, accessPoint: accessPoint);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<String?> getSavedWifiPsk(NetworkManagerDevice device,
+      NetworkManagerAccessPoint accessPoint) async {
+    var settingsConnection =
+        await getAccessPointConnectionSettings(device, accessPoint);
+    if (settingsConnection != null) {
+      var secrets =
+          await settingsConnection.getSecrets('802-11-wireless-security');
+      if (secrets.isNotEmpty) {
+        var security = secrets['802-11-wireless-security'];
+        if (security != null) {
+          var psk = security['psk'];
+          if (psk != null) {
+            return psk.toNative();
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  Future<NetworkManagerSettingsConnection?> getAccessPointConnectionSettings(
+      NetworkManagerDevice device,
+      NetworkManagerAccessPoint accessPoint) async {
+    var ssid = utf8.decode(accessPoint.ssid);
+
+    var settings = await Future.wait(device.availableConnections.map(
+        (e) async => {'settings': await e.getSettings(), 'connection': e}));
+    NetworkManagerSettingsConnection? accessPointSettings;
+    for (var element in settings) {
+      var s = element['settings'] as dynamic;
+      if (s != null) {
+        var connection = s['connection'] as Map<String, DBusValue>?;
+        if (connection != null) {
+          var id = connection['id'];
+          if (id != null) {
+            if (id.toNative() == ssid) {
+              accessPointSettings =
+                  element['connection'] as NetworkManagerSettingsConnection;
+              break;
+            }
+          }
+        }
+      }
+    }
+    return accessPointSettings;
   }
 
   @override
@@ -134,7 +260,9 @@ class _WifiScreenState extends State<WifiScreen> {
                               "${utf8.decode(resultItem.ssid)} (${resultItem.frequency}MHz, ${resultItem.strength.toString().padRight(3)})",
                               style: TextStyle(fontSize: 20),
                             ),
-                            onTap: () => {},
+                            onTap: () {
+                              showAccessPointConnectDialog(context, resultItem);
+                            },
                           ))
                     ]);
               },
