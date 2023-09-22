@@ -27,6 +27,7 @@ apps:
     - hardware-observe
     - network-bind
     - network-manager
+    - network-manager-observe
     # slots:
     #   - dbus-ubuntu-kr-qr-kiosk
     environment: &_environment
