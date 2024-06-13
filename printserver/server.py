@@ -1,27 +1,17 @@
 from flask import Flask, request
-import usb
-import usb.core
-import usb.backend.libusb1
+import cups
 import os
 
 app = Flask(__name__)
 
 @app.route('/list', methods=['GET'])
 def get_device_list():
-    if os.getenv("LIBUSB_PATH", None) is not None:
-        backend = usb.backend.libusb1.get_backend(find_library=lambda x: os.getenv("LIBUSB_PATH", ""))
-        devices = usb.core.find(find_all=1, backend=backend)
-    else:
-        devices = usb.core.find(find_all=1)
-    device_list_dict = []
-    for device in devices:
-        device_list_dict.append({
-            'vendorId': device.idVendor,
-            'productId': device.idProduct,
-            'manufacturerName': usb.util.get_string(device, device.iManufacturer),
-            'productName': usb.util.get_string(device, device.iProduct),
-        })
-    return device_list_dict
+    conn = cups.Connection()
+    printers = conn.getPrinters()
+    printer_uri_list = []
+    for printer in printers:
+        printer_uri_list.append(printers[printer]["device-uri"])
+    return printer_uri_list
 
 @app.route('/write_usb/<int:vendor_id>/<int:product_id>', methods=['POST'])
 def write_usb(vendor_id, product_id):
