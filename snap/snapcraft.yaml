@@ -193,6 +193,7 @@ parts:
     plugin: python
     source: ./usbserver
     python-packages:
+      - pycups==2.0.4
       - blinker==1.6.2
       - click==8.1.7
       - Flask==2.3.2
@@ -201,14 +202,10 @@ parts:
       - Jinja2==3.1.2
       - MarkupSafe==2.1.3
       - packaging==23.1
-      - pyusb==1.2.1
       - Werkzeug==2.3.7
     build-packages:
       - build-essential
-      - libusb-1.0-0-dev
-    stage-packages:
-      - libusb-1.0-0
-      - libusb-1.0-0-dev
+    # stage-packages:
     override-build: |
       craftctl default
       set -eux
