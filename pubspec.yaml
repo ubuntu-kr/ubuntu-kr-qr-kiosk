@@ -49,10 +49,9 @@ dependencies:
   http: ^1.1.0
   google_fonts: ^5.1.0
   nm: ^0.5.0
-  # quick_usb:
-  #   git:
-  #     url: https://github.com/ubuntu-kr/quick.flutter.git
-  #     path: packages/quick_usb
+  webview_universal: 
+    git:
+      url: https://github.com/ubuntu-kr/webview_universal.git
 
 dev_dependencies:
   flutter_test:

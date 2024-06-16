@@ -42,8 +42,8 @@ apps:
     command: *_command
     plugs: *_plugs
     environment: *_environment
-  usbserver:
-    command: bin/usbserver-launch
+  printserver:
+    command: bin/printserver-launch
     daemon: simple
     restart-delay: 5s
     restart-condition: always
@@ -169,6 +169,9 @@ parts:
       - libsqlite3-dev
       - libsqlite3-0
       - fonts-noto-cjk
+      - libnss3
+      - libwebkit2gtk-4.0-37
+      - libwebkit2gtk-4.0-dev
     stage-packages:
       - libgtk-3-0
       - libgl1
@@ -189,9 +192,9 @@ parts:
       flutter pub get
       flutter build linux --release -v
       cp -r build/linux/*/release/bundle/* $CRAFT_PART_INSTALL/bin/
-  usbserver:
+  printserver:
     plugin: python
-    source: ./usbserver
+    source: ./printserver
     python-packages:
       - pycups==2.0.4
       - blinker==1.6.2
@@ -209,8 +212,8 @@ parts:
     override-build: |
       craftctl default
       set -eux
-      mkdir -p $CRAFT_PART_INSTALL/bin/usbserver
-      cp -r ./* $SNAPCRAFT_PART_INSTALL/bin/usbserver
+      mkdir -p $CRAFT_PART_INSTALL/bin/printserver
+      cp -r ./* $SNAPCRAFT_PART_INSTALL/bin/printserver
 
   graphics-core22:
     after:
