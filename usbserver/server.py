@@ -3,6 +3,8 @@ import usb
 import usb.core
 import usb.backend.libusb1
 import os
+import struct
+import codecs
 
 app = Flask(__name__)
 
@@ -23,6 +25,18 @@ def get_device_list():
         })
     return device_list_dict
 
+def build_bitmap_print_tspl_cmd(x, y, img_width_px, img_height_px, canvas_width_mm, canvas_height_mm, image_bitmap):
+    width_in_bytes = (img_width_px // 8)
+    commands_bytearray = bytearray()
+    commands_list = [
+        f"SIZE {canvas_width_mm} mm,{canvas_height_mm} mm\r\nCLS\r\n".encode(),
+        f"BITMAP {x},{y},{width_in_bytes},{img_height_px},1, ".encode(),
+        image_bitmap,
+        "\r\nPRINT 1\r\nEND\r\n".encode(),
+    ]
+    for cmd in commands_list:
+        commands_bytearray.append(cmd)
+    return commands_bytearray
 @app.route('/write_usb/<int:vendor_id>/<int:product_id>', methods=['POST'])
 def write_usb(vendor_id, product_id):
     if os.getenv("LIBUSB_PATH", None) is not None:
