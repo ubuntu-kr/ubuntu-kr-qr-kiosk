@@ -3,8 +3,9 @@ import usb
 import usb.core
 import usb.backend.libusb1
 import os
-import struct
-import codecs
+from PIL import Image 
+import io
+
 
 app = Flask(__name__)
 
@@ -36,7 +37,8 @@ def build_bitmap_print_tspl_cmd(x, y, img_width_px, img_height_px, canvas_width_
     ]
     for cmd in commands_list:
         commands_bytearray.append(cmd)
-    return commands_bytearray
+    return commands_bytearray 
+
 @app.route('/write_usb/<int:vendor_id>/<int:product_id>', methods=['POST'])
 def write_usb(vendor_id, product_id):
     if os.getenv("LIBUSB_PATH", None) is not None:
@@ -70,8 +72,13 @@ def write_usb(vendor_id, product_id):
     lambda e: \
         usb.util.endpoint_direction(e.bEndpointAddress) == \
         usb.util.ENDPOINT_OUT)
-    bytes_to_write = request.get_data()
-    ep.write(bytes_to_write)
+    image = Image.open(io.BytesIO(request.get_data()))
+    monochrome_image = image.convert('1')
+
+    monochrome_image_bytes = io.BytesIO()
+    monochrome_image.save(monochrome_image_bytes, format=monochrome_image.format)
+    monochrome_image_bytes = monochrome_image_bytes.getvalue()
+    ep.write(monochrome_image_bytes)
     usb.util.dispose_resources(dev)
     return {"result": "success", "reason": "Data sent to the usb device"}
 
