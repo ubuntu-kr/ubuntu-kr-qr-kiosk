@@ -39,8 +39,10 @@ def build_bitmap_print_tspl_cmd(x, y, img_width_px, img_height_px, canvas_width_
         commands_bytearray.append(cmd)
     return commands_bytearray 
 
-@app.route('/write_usb/<int:vendor_id>/<int:product_id>', methods=['POST'])
-def write_usb(vendor_id, product_id):
+@app.route('/print/<int:vendor_id>/<int:product_id>', methods=['POST'])
+def print(vendor_id, product_id):
+    print_canvas_width_mm = request.args.get('print_canvas_width_mm', 70)
+    print_canvas_height_mm = request.args.get('print_canvas_height_mm', 70)
     if os.getenv("LIBUSB_PATH", None) is not None:
         backend = usb.backend.libusb1.get_backend(find_library=lambda x: os.getenv("LIBUSB_PATH", ""))
     # find our device
@@ -78,6 +80,7 @@ def write_usb(vendor_id, product_id):
     monochrome_image_bytes = io.BytesIO()
     monochrome_image.save(monochrome_image_bytes, format=monochrome_image.format)
     monochrome_image_bytes = monochrome_image_bytes.getvalue()
+    tspl_cmd = build_bitmap_print_tspl_cmd(0, 50, image.width, image.height, print_canvas_width_mm, print_canvas_height_mm, monochrome_image_bytes)
     ep.write(monochrome_image_bytes)
     usb.util.dispose_resources(dev)
     return {"result": "success", "reason": "Data sent to the usb device"}
