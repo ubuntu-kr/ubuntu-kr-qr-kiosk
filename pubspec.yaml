@@ -34,20 +34,19 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.6
+  cupertino_icons: ^1.0.8
   # quick_usb: 0.3.1
-  convert: ^3.0.1
+  convert: ^3.1.1
   yaru: ^4.1.0
-  provider: ^6.0.5
+  provider: ^6.1.2
   charset: ^2.0.1
-  # image: ^4.0.17
-  image: ^4.0.17
+  image: ^4.2.0
   qr_flutter: ^4.1.0
-  dart_jsonwebtoken: ^2.8.2
-  sqlite3: ^2.1.0
-  shared_preferences: ^2.2.1
-  http: ^1.1.0
-  google_fonts: ^5.1.0
+  dart_jsonwebtoken: ^2.14.0
+  sqlite3: ^2.4.4
+  shared_preferences: ^2.2.3
+  http: ^1.2.1
+  google_fonts: ^6.2.1
   nm: ^0.5.0
 
 dev_dependencies:
