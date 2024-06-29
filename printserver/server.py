@@ -3,8 +3,10 @@ import usb
 import usb.core
 import usb.backend.libusb1
 import os
-from PIL import Image 
+from PIL import Image
 import io
+import math
+import numpy as np
 
 
 app = Flask(__name__)
@@ -27,22 +29,34 @@ def get_device_list():
     return device_list_dict
 
 def build_bitmap_print_tspl_cmd(x, y, img_width_px, img_height_px, canvas_width_mm, canvas_height_mm, image_bitmap):
-    width_in_bytes = (img_width_px // 8)
+    width_in_bytes = math.ceil(img_width_px / 8)
     commands_bytearray = bytearray()
     commands_list = [
-        f"SIZE {canvas_width_mm} mm,{canvas_height_mm} mm\r\nCLS\r\n".encode(),
-        f"BITMAP {x},{y},{width_in_bytes},{img_height_px},1, ".encode(),
+        f"SIZE {canvas_width_mm} mm,{canvas_height_mm} mm\r\nCLS\r\n".encode(encoding="utf-8"),
+        f"BITMAP {x},{y},{width_in_bytes},{img_height_px},1,".encode(encoding="utf-8"),
         image_bitmap,
-        "\r\nPRINT 1\r\nEND\r\n".encode(),
+        "\r\nPRINT 1\r\nEND\r\n".encode(encoding="utf-8"),
     ]
-    for cmd in commands_list:
-        commands_bytearray.append(cmd)
+    # print(commands_list)
+    for index, cmd in enumerate(commands_list):
+        commands_bytearray.extend(cmd)
     return commands_bytearray 
 
+def get_image_bytes(image_source):
+    image = image_source
+    if image.mode != '1':
+        image = image.convert('1')
+    imgData = np.array(image).flatten()
+    uint8list = np.packbits(imgData).tobytes()
+    return uint8list
+
 @app.route('/print/<int:vendor_id>/<int:product_id>', methods=['POST'])
-def print(vendor_id, product_id):
-    print_canvas_width_mm = request.args.get('print_canvas_width_mm', 70)
-    print_canvas_height_mm = request.args.get('print_canvas_height_mm', 70)
+def print_label(vendor_id, product_id):
+    print_canvas_width_mm = request.args.get('print_canvas_width_mm', 80, type=int)
+    print_canvas_height_mm = request.args.get('print_canvas_height_mm', 80, type=int)
+    print_dpi = request.args.get('print_dpi', 203, type=int)
+    max_width_px = int(round(print_canvas_width_mm * (print_dpi / 25.4)))
+    max_height_px = int(round(print_canvas_height_mm * (print_dpi / 25.4)))
     if os.getenv("LIBUSB_PATH", None) is not None:
         backend = usb.backend.libusb1.get_backend(find_library=lambda x: os.getenv("LIBUSB_PATH", ""))
     # find our device
@@ -74,14 +88,21 @@ def print(vendor_id, product_id):
     lambda e: \
         usb.util.endpoint_direction(e.bEndpointAddress) == \
         usb.util.ENDPOINT_OUT)
-    image = Image.open(io.BytesIO(request.get_data()))
-    monochrome_image = image.convert('1')
+    
+    # get file from multipart/form-data
+    uploaded_file = request.files['image']
+    req_img_bytes = io.BytesIO()
+    uploaded_file.save(req_img_bytes)
+    image = Image.open(req_img_bytes)
 
-    monochrome_image_bytes = io.BytesIO()
-    monochrome_image.save(monochrome_image_bytes, format=monochrome_image.format)
-    monochrome_image_bytes = monochrome_image_bytes.getvalue()
-    tspl_cmd = build_bitmap_print_tspl_cmd(0, 50, image.width, image.height, print_canvas_width_mm, print_canvas_height_mm, monochrome_image_bytes)
-    ep.write(monochrome_image_bytes)
+    # resize image but keep ratio if it's bigger then max_width_px or max_height_px
+    if image.width > max_width_px or image.height > max_height_px:
+        image.thumbnail((max_width_px, max_height_px), Image.Resampling.HAMMING)
+        
+    monochrome_image_bytes = get_image_bytes(image)
+    print(monochrome_image_bytes)
+    tspl_cmd = build_bitmap_print_tspl_cmd(10, 10, image.width, image.height, print_canvas_width_mm, print_canvas_height_mm, monochrome_image_bytes)
+    ep.write(tspl_cmd)
     usb.util.dispose_resources(dev)
     return {"result": "success", "reason": "Data sent to the usb device"}
 
