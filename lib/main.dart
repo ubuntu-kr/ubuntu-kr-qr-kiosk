@@ -183,7 +183,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
                           padding: const EdgeInsets.all(30.0),
                           child: Column(children: [
                             Icon(
-                              Icons.email_outlined,
+                              YaruIcons.mail_open,
                               size: 100.0,
                             ),
                             Text("E-Mail 주소", style: TextStyle(fontSize: 40))
