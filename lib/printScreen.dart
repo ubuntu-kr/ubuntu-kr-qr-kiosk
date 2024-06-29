@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'imgutil.dart';
-import 'tsplutils.dart';
+import 'printclient.dart';
 
 GlobalKey nametagKey = GlobalKey();
 GlobalKey couponKey = GlobalKey();
@@ -88,10 +88,7 @@ class _PrintPageState extends State<PrintPage> {
 
   Future<bool> printNametag(GlobalKey globalKey) async {
     var uiImage = await _capturePng(globalKey);
-    var imageUint8 = await convertImageToMonochrome(uiImage);
-    var tsplBitmapData = buildBitmapPrintTsplCmd(
-        0, 50, uiImage.width, uiImage.height, 70, 70, imageUint8);
-    var result = await sendTsplData(tsplBitmapData, 8137, 8214);
+    var result = await printImageToLabel(uiImage, 8137, 8214);
     setState(() {
       isProcessingQrCheckin = false;
     });
