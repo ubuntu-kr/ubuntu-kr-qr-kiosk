@@ -54,9 +54,12 @@ def get_image_bytes(image_source):
 def print_label(vendor_id, product_id):
     print_canvas_width_mm = request.args.get('print_canvas_width_mm', 80, type=int)
     print_canvas_height_mm = request.args.get('print_canvas_height_mm', 80, type=int)
+    margin_top_px = request.args.get('margin_top_px', 0, type=int)
+    margin_left_px = request.args.get('margin_left_px', 0, type=int)
     print_dpi = request.args.get('print_dpi', 203, type=int)
     max_width_px = int(round(print_canvas_width_mm * (print_dpi / 25.4)))
     max_height_px = int(round(print_canvas_height_mm * (print_dpi / 25.4)))
+
     if os.getenv("LIBUSB_PATH", None) is not None:
         backend = usb.backend.libusb1.get_backend(find_library=lambda x: os.getenv("LIBUSB_PATH", ""))
     # find our device
@@ -88,7 +91,8 @@ def print_label(vendor_id, product_id):
     lambda e: \
         usb.util.endpoint_direction(e.bEndpointAddress) == \
         usb.util.ENDPOINT_OUT)
-    
+    assert ep is not None
+
     # get file from multipart/form-data
     uploaded_file = request.files['image']
     req_img_bytes = io.BytesIO()
@@ -97,11 +101,14 @@ def print_label(vendor_id, product_id):
 
     # resize image but keep ratio if it's bigger then max_width_px or max_height_px
     if image.width > max_width_px or image.height > max_height_px:
-        image.thumbnail((max_width_px, max_height_px), Image.Resampling.HAMMING)
+        image.thumbnail((max_width_px, max_height_px))
         
     monochrome_image_bytes = get_image_bytes(image)
-    print(monochrome_image_bytes)
-    tspl_cmd = build_bitmap_print_tspl_cmd(10, 10, image.width, image.height, print_canvas_width_mm, print_canvas_height_mm, monochrome_image_bytes)
+    tspl_cmd = build_bitmap_print_tspl_cmd(
+        margin_left_px, margin_top_px, 
+        image.width, image.height, 
+        print_canvas_width_mm, print_canvas_height_mm, 
+        monochrome_image_bytes)
     ep.write(tspl_cmd)
     usb.util.dispose_resources(dev)
     return {"result": "success", "reason": "Data sent to the usb device"}

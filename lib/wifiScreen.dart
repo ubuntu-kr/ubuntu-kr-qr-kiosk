@@ -7,7 +7,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:dbus/dbus.dart';
 import 'package:nm/nm.dart';
-import 'webviewScreen.dart';
 
 class WifiScreen extends StatefulWidget {
   const WifiScreen({Key? key}) : super(key: key);
@@ -264,16 +263,6 @@ class _WifiScreenState extends State<WifiScreen> {
             tooltip: 'Wi-Fi 다시 스캔',
             onPressed: () async {
               await scanWifi();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.web),
-            tooltip: '웹 브라우저',
-            onPressed: () async {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const webviewScreen()),
-              );
             },
           ),
         ]),
