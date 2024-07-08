@@ -7,6 +7,7 @@ import 'checkInByBarcodeScreen.dart';
 import 'package:yaru/yaru.dart';
 import 'kioskclient.dart';
 import 'wifiScreen.dart';
+import 'settings.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
@@ -111,11 +112,11 @@ class _KioskMainPageState extends State<KioskMainPage> {
             actions: <Widget>[
               IconButton(
                 icon: const Icon(Icons.settings),
-                tooltip: 'Wi-Fi',
+                tooltip: '설정',
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const WifiScreen()),
+                    MaterialPageRoute(builder: (context) => const Settings()),
                   );
                 },
               ),
