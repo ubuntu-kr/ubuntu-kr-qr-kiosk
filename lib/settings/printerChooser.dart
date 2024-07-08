@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../printclient.dart';
 
 class PrinterChooser extends StatefulWidget {
@@ -9,6 +10,10 @@ class PrinterChooser extends StatefulWidget {
 
 class _PrinterChooserState extends State<PrinterChooser> {
   double? scanProgress = 0.0;
+  String currentPrinterManufacturerName = "";
+  String currentPrinterProductName = "";
+  int currentPrinterVendorId = 0;
+  int currentPrinterProductId = 0;
   List<dynamic> printerList = [
     // {
     //   "manufacturerName": "HP",
@@ -20,6 +25,7 @@ class _PrinterChooserState extends State<PrinterChooser> {
   @override
   void initState() {
     super.initState();
+    getCurrentPrinter().then((_) => print('load current printer'));
     scanPrinters().then((_) => print('printer scanned'));
     print('initState is called');
   }
@@ -66,6 +72,23 @@ class _PrinterChooserState extends State<PrinterChooser> {
     });
   }
 
+  Future<void> setPrinter(String manufacturerName, String productName,
+      int vendorId, int productId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('manufacturerName', manufacturerName);
+    prefs.setString('productName', productName);
+    prefs.setInt('vendorId', vendorId);
+    prefs.setInt('productId', productId);
+  }
+
+  Future<void> getCurrentPrinter() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    currentPrinterManufacturerName = prefs.getString('manufacturerName') ?? "";
+    currentPrinterProductName = prefs.getString('productName') ?? "";
+    currentPrinterVendorId = prefs.getInt('vendorId') ?? -1;
+    currentPrinterProductId = prefs.getInt('productId') ?? -1;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,12 +117,29 @@ class _PrinterChooserState extends State<PrinterChooser> {
                       ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: 600),
                           child: ListTile(
+                            selected: (resultItem["vendorId"] ==
+                                    currentPrinterVendorId &&
+                                resultItem["productId"] ==
+                                    currentPrinterProductId),
                             title: Text(
                               "${resultItem["manufacturerName"]} ${resultItem["productName"]} (${resultItem["vendorId"]}, ${resultItem["productId"]})",
-                              style: TextStyle(fontSize: 20),
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: (resultItem["vendorId"] ==
+                                              currentPrinterVendorId &&
+                                          resultItem["productId"] ==
+                                              currentPrinterProductId)
+                                      ? FontWeight.bold
+                                      : FontWeight.normal),
                             ),
-                            onTap: () {
-                              // showAccessPointConnectDialog(context, resultItem);
+                            onTap: () async {
+                              await setPrinter(
+                                  resultItem["manufacturerName"],
+                                  resultItem["productName"],
+                                  resultItem["vendorId"],
+                                  resultItem["productId"]);
+                              await scanPrinters();
+                              await getCurrentPrinter();
                             },
                           ))
                     ]);
