@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 
@@ -14,4 +15,11 @@ Future<int> printImageToLabel(
   request.files.add(multipartFile);
   var response = await request.send();
   return response.statusCode;
+}
+
+Future<List<dynamic>> getPrinterList() async {
+  var url = Uri.parse("http://0.0.0.0:5000/list");
+  var response = await http.get(url);
+  var jsonBody = jsonDecode(response.body) as List<dynamic>;
+  return jsonBody;
 }

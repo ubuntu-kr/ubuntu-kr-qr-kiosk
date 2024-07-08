@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yaru/widgets.dart';
 import 'wifiScreen.dart';
+import 'printerChooser.dart';
 
 class Settings extends StatelessWidget {
   const Settings({
@@ -19,16 +20,14 @@ class Settings extends StatelessWidget {
           if (index == 0) {
             return YaruMasterTile(title: Text('Wi-Fi Setup'));
           } else {
-            return YaruMasterTile(title: Text('Page 2'));
+            return YaruMasterTile(title: Text('프린터 선택'));
           }
         },
         pageBuilder: (context, index) {
           if (index == 0) {
             return WifiScreen();
           } else {
-            return Center(
-              child: Text('Hello Yaru'),
-            );
+            return PrinterChooser();
           }
         },
       ),

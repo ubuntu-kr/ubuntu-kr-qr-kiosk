@@ -6,8 +6,8 @@ import 'checkInByEmailScreen.dart';
 import 'checkInByBarcodeScreen.dart';
 import 'package:yaru/yaru.dart';
 import 'kioskclient.dart';
-import 'wifiScreen.dart';
-import 'settings.dart';
+import 'settings/wifiScreen.dart';
+import 'settings/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
