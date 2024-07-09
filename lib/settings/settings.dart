@@ -4,6 +4,7 @@ import 'package:yaru/icons.dart';
 
 import 'wifiScreen.dart';
 import 'printerChooser.dart';
+import 'printLayout.dart';
 
 class Settings extends StatelessWidget {
   const Settings({
@@ -31,19 +32,25 @@ class Settings extends StatelessWidget {
             onTap: () => Navigator.pop(context, 'Close'),
           ),
         ),
-        length: 2,
+        length: 3,
         tileBuilder: (context, index, selected, availableWidth) {
-          if (index == 0) {
-            return YaruMasterTile(title: Text('Wi-Fi Setup'));
-          } else {
-            return YaruMasterTile(title: Text('프린터 선택'));
+          switch (index) {
+            case 0:
+              return YaruMasterTile(title: Text('Wi-Fi Setup'));
+            case 1:
+              return YaruMasterTile(title: Text('프린터 선택'));
+            default:
+              return YaruMasterTile(title: Text('인쇄 레이아웃'));
           }
         },
         pageBuilder: (context, index) {
-          if (index == 0) {
-            return WifiScreen();
-          } else {
-            return PrinterChooser();
+          switch (index) {
+            case 0:
+              return WifiScreen();
+            case 1:
+              return PrinterChooser();
+            default:
+              return PrintLayoutSettings();
           }
         },
       ),
