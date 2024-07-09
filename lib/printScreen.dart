@@ -7,6 +7,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'imgutil.dart';
 import 'printclient.dart';
 
@@ -40,6 +41,8 @@ class _PrintPageState extends State<PrintPage> {
   var couponDetail = "";
   var isKioskConfigured = false;
   bool isProcessingQrCheckin = false;
+  var printerVendorId = -1;
+  var printerProductId = -1;
   _PrintPageState(NametagData nametagData) {
     nametagName = nametagData.name;
     nametagAffiliation = nametagData.affiliation;
@@ -51,6 +54,11 @@ class _PrintPageState extends State<PrintPage> {
   void initState() {
     super.initState();
     Timer(Duration(seconds: 1), () async {
+      var prefs = await SharedPreferences.getInstance();
+      setState(() {
+        printerVendorId = prefs.getInt('vendorId') ?? 8137;
+        printerProductId = prefs.getInt('productId') ?? 8214;
+      });
       var result1 = await printNametag(nametagKey);
       var result1Msg = result1
           ? "명찰 인쇄 완료. Nametag has been printed."
@@ -88,7 +96,8 @@ class _PrintPageState extends State<PrintPage> {
 
   Future<bool> printNametag(GlobalKey globalKey) async {
     var uiImage = await _capturePng(globalKey);
-    var result = await printImageToLabel(uiImage, 8137, 8214);
+    var result =
+        await printImageToLabel(uiImage, printerVendorId, printerProductId);
     setState(() {
       isProcessingQrCheckin = false;
     });
