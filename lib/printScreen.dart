@@ -43,6 +43,8 @@ class _PrintPageState extends State<PrintPage> {
   bool isProcessingQrCheckin = false;
   var printerVendorId = -1;
   var printerProductId = -1;
+  var canvasWidthPx = 550.0;
+  var canvasHeightPx = 550.0;
   _PrintPageState(NametagData nametagData) {
     nametagName = nametagData.name;
     nametagAffiliation = nametagData.affiliation;
@@ -55,9 +57,14 @@ class _PrintPageState extends State<PrintPage> {
     super.initState();
     Timer(Duration(seconds: 1), () async {
       var prefs = await SharedPreferences.getInstance();
+      var widthMm = prefs.getInt('printCanvasWidthMm') ?? 70;
+      var heightMm = prefs.getInt('printCanvasHeightMm') ?? 70;
+      var canvasDpi = prefs.getInt('printCanvasDpi') ?? 203;
       setState(() {
         printerVendorId = prefs.getInt('vendorId') ?? 8137;
         printerProductId = prefs.getInt('productId') ?? 8214;
+        canvasWidthPx = (widthMm * canvasDpi) / 25.4;
+        canvasHeightPx = (heightMm * canvasDpi) / 25.4;
       });
       var result1 = await printNametag(nametagKey);
       var result1Msg = result1
@@ -123,8 +130,8 @@ class _PrintPageState extends State<PrintPage> {
                     ),
                   ),
                   child: SizedBox(
-                      width: 550.0,
-                      height: 500.0,
+                      width: canvasWidthPx,
+                      height: canvasHeightPx,
                       child: RepaintBoundary(
                           key: nametagKey,
                           child: ColorFiltered(
@@ -169,8 +176,8 @@ class _PrintPageState extends State<PrintPage> {
                       ),
                     ),
                     child: SizedBox(
-                        width: 550.0,
-                        height: 500.0,
+                        width: canvasWidthPx,
+                        height: canvasHeightPx,
                         child: RepaintBoundary(
                             key: couponKey,
                             child: ColorFiltered(

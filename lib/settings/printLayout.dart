@@ -29,15 +29,11 @@ class _PrintLayoutSettingsState extends State<PrintLayoutSettings> {
         printCanvasWidthMm = prefs.getInt('printCanvasWidthMm') ?? 70;
         printCanvasHeightMm = prefs.getInt('printCanvasHeightMm') ?? 70;
         printCanvasDpi = prefs.getInt('printCanvasDpi') ?? 203;
-        printCanvasWidthPx = mmToPx(printCanvasWidthMm, printCanvasDpi);
-        printCanvasHeightPx = mmToPx(printCanvasHeightMm, printCanvasDpi);
+        printCanvasWidthPx = (printCanvasWidthMm * printCanvasDpi) ~/ 25.4;
+        printCanvasHeightPx = (printCanvasHeightMm * printCanvasDpi) ~/ 25.4;
       });
     });
     print('initState is called');
-  }
-
-  int mmToPx(int mm, int dpi) {
-    return (mm * dpi) ~/ 25.4;
   }
 
   void savePrintLayout() async {
@@ -86,7 +82,7 @@ class _PrintLayoutSettingsState extends State<PrintLayoutSettings> {
                             setState(() {
                               printCanvasWidthMm = int.parse(value);
                               printCanvasWidthPx =
-                                  mmToPx(printCanvasWidthMm, printCanvasDpi);
+                                  (printCanvasWidthMm * printCanvasDpi) ~/ 25.4;
                             });
                             savePrintLayout();
                           },
@@ -106,7 +102,8 @@ class _PrintLayoutSettingsState extends State<PrintLayoutSettings> {
                             setState(() {
                               printCanvasHeightMm = int.parse(value);
                               printCanvasHeightPx =
-                                  mmToPx(printCanvasHeightMm, printCanvasDpi);
+                                  (printCanvasHeightMm * printCanvasDpi) ~/
+                                      25.4;
                             });
                             savePrintLayout();
                           },
@@ -139,9 +136,10 @@ class _PrintLayoutSettingsState extends State<PrintLayoutSettings> {
                             setState(() {
                               printCanvasDpi = int.parse(value);
                               printCanvasWidthPx =
-                                  mmToPx(printCanvasWidthMm, printCanvasDpi);
+                                  (printCanvasWidthMm * printCanvasDpi) ~/ 25.4;
                               printCanvasHeightPx =
-                                  mmToPx(printCanvasHeightMm, printCanvasDpi);
+                                  (printCanvasHeightMm * printCanvasDpi) ~/
+                                      25.4;
                             });
                             savePrintLayout();
                           },
