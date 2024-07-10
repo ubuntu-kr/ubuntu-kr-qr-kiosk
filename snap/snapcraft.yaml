@@ -222,7 +222,7 @@ parts:
       - ubuntu-kr-qr-kiosk
       - gsettings+pixbuf+immodules
       - setup
-    source: https://github.com/MirServer/graphics-core22.git
+    source: https://github.com/canonical/gpu-snap.git
     plugin: dump
     override-prime: |
       craftctl default
