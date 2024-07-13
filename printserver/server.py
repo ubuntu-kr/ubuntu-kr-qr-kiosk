@@ -52,8 +52,8 @@ def get_image_bytes(image_source):
 
 @app.route('/print/<int:vendor_id>/<int:product_id>', methods=['POST'])
 def print_label(vendor_id, product_id):
-    print_canvas_width_mm = request.args.get('print_canvas_width_mm', 80, type=int)
-    print_canvas_height_mm = request.args.get('print_canvas_height_mm', 80, type=int)
+    print_canvas_width_mm = request.args.get('print_canvas_width_mm', 70, type=int)
+    print_canvas_height_mm = request.args.get('print_canvas_height_mm', 70, type=int)
     margin_top_px = request.args.get('margin_top_px', 0, type=int)
     margin_left_px = request.args.get('margin_left_px', 0, type=int)
     print_dpi = request.args.get('print_dpi', 203, type=int)
