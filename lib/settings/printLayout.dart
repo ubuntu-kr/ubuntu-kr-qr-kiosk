@@ -174,7 +174,8 @@ class _PrintLayoutSettingsState extends State<PrintLayoutSettings> {
                                     "[소속]",
                                     "[직책]",
                                     "https://ubuntu-kr.org",
-                                    "교환권\n티셔츠 XL (테스트)\n 도시락/채식 (테스트)"))),
+                                    "교환권\n티셔츠 XL (테스트)\n 도시락/채식 (테스트)",
+                                    true))),
                       );
                     })
               ],

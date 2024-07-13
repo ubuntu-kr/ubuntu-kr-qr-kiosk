@@ -58,7 +58,7 @@ class _PrintPageState extends State<PrintPage> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () async {
+    Timer(Duration(seconds: 2), () async {
       var prefs = await SharedPreferences.getInstance();
       var widthMm = prefs.getInt('printCanvasWidthMm') ?? 70;
       var heightMm = prefs.getInt('printCanvasHeightMm') ?? 70;
@@ -77,6 +77,7 @@ class _PrintPageState extends State<PrintPage> {
         content: Text(result1Msg),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      await Future.delayed(Duration(seconds: 1));
       if (couponDetail != "") {
         var result2 = await printNametag(couponKey);
         var result2Msg = result2
@@ -91,6 +92,8 @@ class _PrintPageState extends State<PrintPage> {
         content: Text("명찰 및 교환권 인쇄 완료. Nametag and coupon have been printed."),
       );
       ScaffoldMessenger.of(context).showSnackBar(resultSnackBar);
+      // sleep 1 sec
+      await Future.delayed(Duration(seconds: 1));
       Navigator.pop(context, 'OK');
       if (!isTest) {
         Navigator.pop(context, 'OK');
@@ -100,9 +103,9 @@ class _PrintPageState extends State<PrintPage> {
   }
 
   Future<ui.Image> _capturePng(GlobalKey globalKey) async {
-    RenderRepaintBoundary boundary =
-        globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-    ui.Image image = await boundary.toImage();
+    final RenderRepaintBoundary boundary =
+        globalKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    final ui.Image image = await boundary.toImage();
     return image;
   }
 
@@ -134,44 +137,42 @@ class _PrintPageState extends State<PrintPage> {
                       color: Colors.black,
                     ),
                   ),
-                  child: SizedBox(
-                      width: canvasWidthPx,
-                      height: canvasHeightPx,
-                      child: RepaintBoundary(
-                          key: nametagKey,
-                          child: ColorFiltered(
-                              colorFilter: greyScaleFilter,
-                              child: Container(
-                                color: Colors.white,
-                                child: Center(
-                                    child: Column(
-                                  children: [
-                                    Text(
-                                      nametagName,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontWeight: ui.FontWeight.bold,
-                                          fontSize: 75),
-                                    ),
-                                    Text(
-                                      nametagAffiliation,
-                                      style: TextStyle(
-                                          fontWeight: ui.FontWeight.bold,
-                                          fontSize: 30),
-                                    ),
-                                    Text(
-                                      nametagRole,
-                                      style: TextStyle(
-                                          fontWeight: ui.FontWeight.bold,
-                                          fontSize: 30),
-                                    ),
-                                    QrImageView(
-                                        data: nametagQrUrl,
-                                        version: QrVersions.auto,
-                                        size: 150.0),
-                                  ],
-                                )),
-                              )))),
+                  child: RepaintBoundary(
+                      key: nametagKey,
+                      child: SizedBox(
+                          width: canvasWidthPx,
+                          height: canvasHeightPx,
+                          child: Container(
+                            color: Colors.white,
+                            child: Center(
+                                child: Column(
+                              children: [
+                                Text(
+                                  nametagName,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: ui.FontWeight.bold,
+                                      fontSize: 75),
+                                ),
+                                Text(
+                                  nametagAffiliation,
+                                  style: TextStyle(
+                                      fontWeight: ui.FontWeight.bold,
+                                      fontSize: 30),
+                                ),
+                                Text(
+                                  nametagRole,
+                                  style: TextStyle(
+                                      fontWeight: ui.FontWeight.bold,
+                                      fontSize: 30),
+                                ),
+                                QrImageView(
+                                    data: nametagQrUrl,
+                                    version: QrVersions.auto,
+                                    size: 150.0),
+                              ],
+                            )),
+                          ))),
                 ),
                 Container(
                     decoration: BoxDecoration(
@@ -180,36 +181,34 @@ class _PrintPageState extends State<PrintPage> {
                         color: Colors.black,
                       ),
                     ),
-                    child: SizedBox(
-                        width: canvasWidthPx,
-                        height: canvasHeightPx,
-                        child: RepaintBoundary(
-                            key: couponKey,
-                            child: ColorFiltered(
-                                colorFilter: greyScaleFilter,
-                                child: Container(
-                                  color: Colors.white,
-                                  child: Center(
-                                      child: Column(
-                                    children: [
-                                      Text(
-                                        "교환권",
-                                        style: TextStyle(
-                                            fontWeight: ui.FontWeight.bold,
-                                            fontSize: 30),
-                                      ),
-                                      Text(
-                                        nametagName,
-                                        style: TextStyle(fontSize: 30),
-                                      ),
-                                      Text(
-                                        couponDetail,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontSize: 30),
-                                      ),
-                                    ],
-                                  )),
-                                )))))
+                    child: RepaintBoundary(
+                        key: couponKey,
+                        child: SizedBox(
+                            width: canvasWidthPx,
+                            height: canvasHeightPx,
+                            child: Container(
+                              color: Colors.white,
+                              child: Center(
+                                  child: Column(
+                                children: [
+                                  Text(
+                                    "교환권",
+                                    style: TextStyle(
+                                        fontWeight: ui.FontWeight.bold,
+                                        fontSize: 30),
+                                  ),
+                                  Text(
+                                    nametagName,
+                                    style: TextStyle(fontSize: 30),
+                                  ),
+                                  Text(
+                                    couponDetail,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 30),
+                                  ),
+                                ],
+                              )),
+                            ))))
               ],
             )
           ],
