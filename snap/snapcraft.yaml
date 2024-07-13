@@ -144,22 +144,36 @@ parts:
     override-build: |
       # The plugs needed to run Wayland. (wayland-launch checks them, setup.sh connects them)
       # You may add further plugs here if you want these options
-      PLUGS="opengl wayland graphics-core22 home raw-usb process-control system-observe hardware-observe"
+      PLUGS="opengl wayland graphics-core22 home raw-usb process-control system-observe hardware-observe network-manager network-manager-observe"
       sed --in-place "s/%PLUGS%/$PLUGS/g" $CRAFT_PART_BUILD/bin/wayland-launch
       sed --in-place "s/%PLUGS%/$PLUGS/g" $CRAFT_PART_BUILD/bin/setup.sh
       craftctl default
     stage-packages:
       - inotify-tools
 
+  flutter-git:
+    plugin: nil
+    source: https://github.com/flutter/flutter.git
+    source-type: git
+    source-tag: 3.19.6
+    override-build: |
+      set -eux
+      mkdir -p $CRAFT_PART_INSTALL/usr/bin
+      mkdir -p $CRAFT_PART_INSTALL/usr/libexec
+      cp -r $CRAFT_PART_SRC $CRAFT_PART_INSTALL/usr/libexec/flutter
+      ln -sf $CRAFT_PART_INSTALL/usr/libexec/flutter/bin/flutter $CRAFT_PART_INSTALL/usr/bin/flutter
+      export PATH="$CRAFT_PART_INSTALL/usr/bin:$PATH"
+
   ubuntu-kr-qr-kiosk:
-    # after: [flutter-git]
+    after:
+      - flutter-git
     source: .
     source-type: git
     plugin: nil
     # plugin: flutter
     # flutter-target: lib/main.dart # The main entry-point file of the application
-    build-snaps:
-      - flutter/latest/stable
+    # build-snaps:
+    #   - flutter/latest/stable
     build-environment:
       - C_INCLUDE_PATH: /snap/flutter/current/usr/include
       - LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/snap/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
