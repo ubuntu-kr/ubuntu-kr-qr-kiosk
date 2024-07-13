@@ -137,6 +137,7 @@ class _PrintPageState extends State<PrintPage> {
                           width: canvasWidthPx,
                           height: canvasHeightPx,
                           child: Container(
+                            padding: EdgeInsets.all(20.0),
                             color: Colors.white,
                             child: Center(
                                 child: Column(
@@ -181,6 +182,7 @@ class _PrintPageState extends State<PrintPage> {
                             width: canvasWidthPx,
                             height: canvasHeightPx,
                             child: Container(
+                              padding: EdgeInsets.all(20.0),
                               color: Colors.white,
                               child: Center(
                                   child: Column(
