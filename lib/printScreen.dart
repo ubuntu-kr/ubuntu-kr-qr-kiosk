@@ -58,15 +58,15 @@ class _PrintPageState extends State<PrintPage> {
   @override
   void initState() {
     super.initState();
-    var prefs = SharedPreferences.getInstance().then((prefs) {
-      var widthMm = prefs.getInt('printCanvasWidthMm') ?? 70;
-      var heightMm = prefs.getInt('printCanvasHeightMm') ?? 70;
+    SharedPreferences.getInstance().then((prefs) {
+      var widthMm = (prefs.getInt('printCanvasWidthMm') ?? 70);
+      var heightMm = (prefs.getInt('printCanvasHeightMm') ?? 70);
       var canvasDpi = prefs.getInt('printCanvasDpi') ?? 203;
       setState(() {
         printerVendorId = prefs.getInt('vendorId') ?? 8137;
         printerProductId = prefs.getInt('productId') ?? 8214;
-        canvasWidthPx = (widthMm * canvasDpi) / 25.4;
-        canvasHeightPx = (heightMm * canvasDpi) / 25.4;
+        canvasWidthPx = (widthMm * canvasDpi / 25.4).floorToDouble();
+        canvasHeightPx = (heightMm * canvasDpi / 25.4).floorToDouble();
       });
     });
     Timer(Duration(seconds: 1), () async {

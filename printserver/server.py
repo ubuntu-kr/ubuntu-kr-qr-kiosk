@@ -31,6 +31,8 @@ def get_device_list():
 def build_bitmap_print_tspl_cmd(x, y, img_width_px, img_height_px, canvas_width_mm, canvas_height_mm, image_bitmap):
     width_in_bytes = math.ceil(img_width_px / 8)
     commands_bytearray = bytearray()
+    print(width_in_bytes)
+    print(img_height_px)
     commands_list = [
         f"SIZE {canvas_width_mm} mm,{canvas_height_mm} mm\r\nCLS\r\n".encode(encoding="utf-8"),
         f"BITMAP {x},{y},{width_in_bytes},{img_height_px},1,".encode(encoding="utf-8"),
@@ -47,6 +49,7 @@ def get_image_bytes(image_source):
     if image.mode != '1':
         image = image.convert('1')
     imgData = np.array(image).flatten()
+    print(np.packbits(imgData).shape)
     uint8list = np.packbits(imgData).tobytes()
     return uint8list
 
@@ -101,8 +104,13 @@ def print_label(vendor_id, product_id):
 
     # resize image but keep ratio if it's bigger then max_width_px or max_height_px
     if image.width > max_width_px or image.height > max_height_px:
-        image.thumbnail((max_width_px, max_height_px))
-        
+        image.thumbnail(size=(max_width_px, max_height_px))
+    
+    if image.width % 8 != 0 or image.height % 8 != 0:
+        w_div_by_8 = image.width // 8
+        h_div_by_8 = image.height // 8
+        image.thumbnail(size=(w_div_by_8*8, h_div_by_8*8))
+
     monochrome_image_bytes = get_image_bytes(image)
     tspl_cmd = build_bitmap_print_tspl_cmd(
         margin_left_px, margin_top_px, 
