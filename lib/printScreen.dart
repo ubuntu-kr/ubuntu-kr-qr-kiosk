@@ -20,9 +20,10 @@ class NametagData {
   final String role;
   final String qrUrl;
   final String couponDetail;
-
+  final bool isTest;
   const NametagData(
-      this.name, this.affiliation, this.role, this.qrUrl, this.couponDetail);
+      this.name, this.affiliation, this.role, this.qrUrl, this.couponDetail,
+      [this.isTest = false]);
 }
 
 class PrintPage extends StatefulWidget {
@@ -45,12 +46,14 @@ class _PrintPageState extends State<PrintPage> {
   var printerProductId = -1;
   var canvasWidthPx = 550.0;
   var canvasHeightPx = 550.0;
+  bool isTest = false;
   _PrintPageState(NametagData nametagData) {
     nametagName = nametagData.name;
     nametagAffiliation = nametagData.affiliation;
     nametagRole = nametagData.role;
     nametagQrUrl = nametagData.qrUrl;
     couponDetail = nametagData.couponDetail;
+    isTest = nametagData.isTest;
   }
   @override
   void initState() {
@@ -89,7 +92,9 @@ class _PrintPageState extends State<PrintPage> {
       );
       ScaffoldMessenger.of(context).showSnackBar(resultSnackBar);
       Navigator.pop(context, 'OK');
-      Navigator.pop(context, 'OK');
+      if (!isTest) {
+        Navigator.pop(context, 'OK');
+      }
     });
     print('initState is called');
   }
