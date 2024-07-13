@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:ubuntu_kr_qr_kiosk/printScreen.dart';
 import 'checkInByEmailScreen.dart';
 import 'checkInByBarcodeScreen.dart';
 import 'package:yaru/yaru.dart';
@@ -120,6 +121,25 @@ class _KioskMainPageState extends State<KioskMainPage> {
                   );
                 },
               ),
+              IconButton(
+                icon: Icon(Icons.print),
+                tooltip: "인쇄 테스트",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PrintPage(
+                            nametagData: NametagData(
+                                "[이름]",
+                                "[소속]",
+                                "[직책]",
+                                "https://ubuntu-kr.org",
+                                // "교환권\n티셔츠 XL (테스트)\n 도시락/채식 (테스트)",
+                                "",
+                                true))),
+                  );
+                },
+              )
             ]),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,

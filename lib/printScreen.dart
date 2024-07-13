@@ -10,9 +10,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'imgutil.dart';
 import 'printclient.dart';
-
-GlobalKey nametagKey = GlobalKey();
-GlobalKey couponKey = GlobalKey();
+import 'package:screenshot/screenshot.dart';
 
 class NametagData {
   final String name;
@@ -34,6 +32,8 @@ class PrintPage extends StatefulWidget {
 }
 
 class _PrintPageState extends State<PrintPage> {
+  ScreenshotController nametagScreenshotController = ScreenshotController();
+  ScreenshotController couponScreenshotController = ScreenshotController();
   var qrCodeContent = "";
   var nametagName = "";
   var nametagAffiliation = "";
@@ -58,8 +58,7 @@ class _PrintPageState extends State<PrintPage> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 2), () async {
-      var prefs = await SharedPreferences.getInstance();
+    var prefs = SharedPreferences.getInstance().then((prefs) {
       var widthMm = prefs.getInt('printCanvasWidthMm') ?? 70;
       var heightMm = prefs.getInt('printCanvasHeightMm') ?? 70;
       var canvasDpi = prefs.getInt('printCanvasDpi') ?? 203;
@@ -69,7 +68,9 @@ class _PrintPageState extends State<PrintPage> {
         canvasWidthPx = (widthMm * canvasDpi) / 25.4;
         canvasHeightPx = (heightMm * canvasDpi) / 25.4;
       });
-      var result1 = await printNametag(nametagKey);
+    });
+    Timer(Duration(seconds: 1), () async {
+      var result1 = await printNametag(nametagScreenshotController);
       var result1Msg = result1
           ? "명찰 인쇄 완료. Nametag has been printed."
           : "명찰 인쇄중 오류 발생. Error while printing nametag.";
@@ -79,7 +80,7 @@ class _PrintPageState extends State<PrintPage> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       await Future.delayed(Duration(seconds: 1));
       if (couponDetail != "") {
-        var result2 = await printNametag(couponKey);
+        var result2 = await printNametag(couponScreenshotController);
         var result2Msg = result2
             ? "교환권 인쇄 완료. Coupon has been printed."
             : "교환권 인쇄중 오류 발생. Error while printing Coupon.";
@@ -102,17 +103,10 @@ class _PrintPageState extends State<PrintPage> {
     print('initState is called');
   }
 
-  Future<ui.Image> _capturePng(GlobalKey globalKey) async {
-    final RenderRepaintBoundary boundary =
-        globalKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-    final ui.Image image = await boundary.toImage();
-    return image;
-  }
-
-  Future<bool> printNametag(GlobalKey globalKey) async {
-    var uiImage = await _capturePng(globalKey);
+  Future<bool> printNametag(ScreenshotController controller) async {
+    var uint8Image = await controller.capture();
     var result =
-        await printImageToLabel(uiImage, printerVendorId, printerProductId);
+        await printImageToLabel(uint8Image!, printerVendorId, printerProductId);
     setState(() {
       isProcessingQrCheckin = false;
     });
@@ -137,8 +131,8 @@ class _PrintPageState extends State<PrintPage> {
                       color: Colors.black,
                     ),
                   ),
-                  child: RepaintBoundary(
-                      key: nametagKey,
+                  child: Screenshot(
+                      controller: nametagScreenshotController,
                       child: SizedBox(
                           width: canvasWidthPx,
                           height: canvasHeightPx,
@@ -181,8 +175,8 @@ class _PrintPageState extends State<PrintPage> {
                         color: Colors.black,
                       ),
                     ),
-                    child: RepaintBoundary(
-                        key: couponKey,
+                    child: Screenshot(
+                        controller: couponScreenshotController,
                         child: SizedBox(
                             width: canvasWidthPx,
                             height: canvasHeightPx,
