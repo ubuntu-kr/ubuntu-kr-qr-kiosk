@@ -7,6 +7,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ubuntu_kr_qr_kiosk/printScreen.dart';
 
 class PrintLayoutSettings extends StatefulWidget {
   const PrintLayoutSettings({Key? key}) : super(key: key);
@@ -155,6 +156,29 @@ class _PrintLayoutSettingsState extends State<PrintLayoutSettings> {
                         "사용중인 설정: $printCanvasWidthMm mm * $printCanvasHeightMm mm ($printCanvasDpi DPI) -> $printCanvasWidthPx px * $printCanvasHeightPx px"))
               ],
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    child: Text(
+                      "인쇄 테스트 Test printing",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PrintPage(
+                                nametagData: NametagData(
+                                    "[이름]",
+                                    "[소속]",
+                                    "[직책]",
+                                    "https://ubuntu-kr.org",
+                                    "교환권\n티셔츠 XL (테스트)\n 도시락/채식 (테스트)"))),
+                      );
+                    })
+              ],
+            )
           ],
         ));
   }
