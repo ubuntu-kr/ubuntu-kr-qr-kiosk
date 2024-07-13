@@ -157,11 +157,9 @@ parts:
     source-type: git
     source-tag: 3.19.6
     override-build: |
-      set -eux
+      craftctl default
       mkdir -p $CRAFT_PART_INSTALL/usr/bin
-      mkdir -p $CRAFT_PART_INSTALL/usr/libexec
-      cp -r $CRAFT_PART_SRC $CRAFT_PART_INSTALL/usr/libexec/flutter
-      ln -sf $CRAFT_PART_INSTALL/usr/libexec/flutter/bin/flutter $CRAFT_PART_INSTALL/usr/bin/flutter
+      cp -r $CRAFT_PART_SRC $CRAFT_PART_INSTALL/usr/bin/flutter
       export PATH="$CRAFT_PART_INSTALL/usr/bin:$PATH"
 
   ubuntu-kr-qr-kiosk:
@@ -174,11 +172,11 @@ parts:
     # flutter-target: lib/main.dart # The main entry-point file of the application
     # build-snaps:
     #   - flutter/latest/stable
-    build-environment:
-      - C_INCLUDE_PATH: /snap/flutter/current/usr/include
-      - LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/snap/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
-      - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}/snap/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pkgconfig
-      - XDG_DATA_DIRS: /snap/flutter/current/usr/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}
+    # build-environment:
+    #   - C_INCLUDE_PATH: /snap/flutter/current/usr/include
+    #   - LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/snap/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
+    #   - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}/snap/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pkgconfig
+    #   - XDG_DATA_DIRS: /snap/flutter/current/usr/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}
     build-packages:
       - libsqlite3-dev
       - libsqlite3-0
@@ -186,6 +184,19 @@ parts:
       - libnss3
       - libwebkit2gtk-4.0-37
       - libwebkit2gtk-4.0-dev
+      - curl
+      - git
+      - unzip
+      - xz-utils
+      - zip
+      - libglu1-mesa
+      - clang
+      - make
+      - ninja-build
+      - pkg-config
+      - libgtk-3-dev
+      - liblzma-dev
+      - libstdc++-12-dev
     stage-packages:
       - libgtk-3-0
       - libgl1
