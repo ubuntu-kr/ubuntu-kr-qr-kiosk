@@ -1,10 +1,9 @@
 import 'package:sqlite3/sqlite3.dart';
 
 void createTable(Database db) {
-  db.execute(
-      '''
+  db.execute('''
     CREATE TABLE IF NOT EXISTS checkin (
-      tid TEXT NOT NULL PRIMARY KEY,
+      id INT NOT NULL PRIMARY KEY,
       name TEXT NOT NULL,
       affiliation TEXT NOT NULL,
       role TEXT NOT NULL,
@@ -14,24 +13,22 @@ void createTable(Database db) {
   ''');
 }
 
-bool isCheckedIn(Database db, String tid) {
+bool isCheckedIn(Database db, int id) {
   final ResultSet resultSet =
-      db.select("SELECT * FROM checkin WHERE tid = ?", [tid]);
+      db.select("SELECT * FROM checkin WHERE id = ?", [id]);
   return resultSet.isNotEmpty;
 }
 
-void markAsCheckedIn(Database db, String tid, String name, String affiliation,
+void markAsCheckedIn(Database db, int id, String name, String affiliation,
     String role, String qrUrl, String userid) {
-  db.execute(
-      '''
+  db.execute('''
     INSERT INTO checkin  (
-      tid,
+      id,
       name,
       affiliation,
       role,
       qrurl,
       userid
     ) VALUES (?, ?, ?, ?, ?, ?);
-  ''',
-      [tid, name, affiliation, role, qrUrl, userid]);
+  ''', [id, name, affiliation, role, qrUrl, userid]);
 }

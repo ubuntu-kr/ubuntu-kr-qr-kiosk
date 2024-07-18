@@ -11,21 +11,13 @@ Future<void> configureKiosk(String host, String apiToken) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString('apiToken', apiToken);
   prefs.setString('host', host);
-
-  var url = Uri.parse("$host/kioskconfig");
-  var response = await http.get(url);
-  var jsonBody = jsonDecode(response.body);
-
-  prefs.setString('jwtKey', jsonBody['public_key']);
-  prefs.setString('jwtKeyAlgo', jsonBody['key_algo']);
 }
 
 Future<bool> checkIsKioskConfigured() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  var jwtKeyCheck = prefs.getString('jwtKey') != null;
-  var jwtKeyAlgoCheck = prefs.getString('jwtKeyAlgo') != null;
-  print("jwtKeyCheck: $jwtKeyCheck, jwtKeyAlgoCheck: $jwtKeyAlgoCheck");
-  return jwtKeyCheck && jwtKeyAlgoCheck;
+  var apiToken = prefs.getString('apiToken') != null;
+  var host = prefs.getString('host') != null;
+  return apiToken && host;
 }
 
 class KioskClient {
@@ -33,8 +25,6 @@ class KioskClient {
   late sqlite3lib.Database db;
   late String host;
   late String apiToken;
-  late String jwtKey;
-  late String jwtKeyAlgo;
 
   // using a factory is important
   // because it promises to return _an_ object of this type
@@ -53,43 +43,19 @@ class KioskClient {
     createTable(db);
     host = envVars['KIOSK_HOST'] ?? "http://localhost:8000";
     apiToken = envVars['KIOSK_API_TOKEN'] ?? "";
-    SharedPreferences.getInstance().then((prefs) {
-      jwtKey = prefs.getString('jwtKey') ?? "";
-      jwtKeyAlgo = prefs.getString('jwtKeyAlgo') ?? "";
-    });
   }
 
-  dynamic verifyQrToken(String token) {
-    var pubkey = ECPublicKey(jwtKey);
-    final jwt =
-        JWT.verify(token, pubkey, checkExpiresIn: false, checkNotBefore: false);
-    return jwt.payload;
-  }
-
-  (bool, dynamic) checkInLocally(String token) {
+  (bool, dynamic) checkInLocally(dynamic payload) {
     try {
-      var payload = verifyQrToken(token);
-      var tid = payload["tid"];
-      if (isCheckedIn(db, tid)) {
-        return (false, "이미 사용된 QR 코드 입니다. Already redeemed QR code.");
-      }
       markAsCheckedIn(
           db,
-          payload['tid'],
-          "payload['nametagName']",
-          "payload['nametagAffiliation']",
-          "payload['nametagRole']",
-          "payload['nametagUrl']",
+          payload['id'],
+          payload['nametagName'],
+          payload['nametagAffiliation'],
+          payload['nametagRole'],
+          payload['nametagUrl'],
           payload['sub']);
       return (true, payload);
-    } on JWTExpiredException catch (e, s) {
-      print(e);
-      print(s);
-      return (false, "만료된 QR 코드 입니다. You've scanned expired QR code.");
-    } on JWTException catch (e, s) {
-      print(e);
-      print(s);
-      return (false, "QR 코드 처리 오류. Error processing QR code.");
     } catch (e, s) {
       print(e);
       print(s);
