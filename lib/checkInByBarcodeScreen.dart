@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -104,36 +105,30 @@ class _CheckInByBarcodeScreenState extends State<CheckInByBarcodeScreen> {
                         labelText: 'Barcode data',
                       ),
                       onSubmitted: (value) async {
-                        var localResult = kioskClient.checkInLocally(value);
-                        if (!localResult.$1) {
-                          var snackBar = SnackBar(
-                            content: Text(localResult.$2),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          Navigator.pop(context, 'ERROR');
-                          return;
-                        }
-                        var serverResult =
-                            await kioskClient.checkInOnServer(value);
-                        if (!serverResult.$1) {
-                          var snackBar = SnackBar(
-                            content: Text(localResult.$2["result"]),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          Navigator.pop(context, 'ERROR');
-                          return;
-                        }
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PrintPage(
-                                  nametagData: NametagData(
-                                      serverResult.$2['name'],
-                                      serverResult.$2['affilation'],
-                                      serverResult.$2['role'],
-                                      serverResult.$2['qrUrl'],
-                                      serverResult.$2['couponDetail']))),
+                        var rawQrJsonData = base64.decode(value).toString();
+                        var qrJsonData = json.decode(rawQrJsonData);
+
+                        var serverResult = await kioskClient.checkInBySearch(
+                            qrJsonData['id'], qrJsonData['passcode']);
+                        var participantData = await kioskClient
+                            .getParticipantById(qrJsonData['id']);
+                        var snackBar = SnackBar(
+                          content: Text(serverResult.$2),
                         );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        if (serverResult.$1 && participantData.$1) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PrintPage(
+                                    nametagData: NametagData(
+                                        participantData.$2['name'],
+                                        participantData.$2['affilation'],
+                                        participantData.$2['role'],
+                                        participantData.$2['qrUrl'],
+                                        participantData.$2['couponDetail']))),
+                          );
+                        }
                       },
                     ))
               ],

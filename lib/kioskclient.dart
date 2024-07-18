@@ -116,6 +116,15 @@ class KioskClient {
     return (status == 200, searchResults);
   }
 
+  Future<(bool, dynamic)> getParticipantById(int id) async {
+    var url = Uri.parse("$host/participant/?format=json&id=$id");
+    var response =
+        await http.get(url, headers: {'Authorization': 'Token $apiToken'});
+    var status = response.statusCode;
+    var result = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+    return (status == 200, result);
+  }
+
   Future<(bool, String)> checkInBySearch(
       int participantId, String passcode) async {
     var url = Uri.parse(
