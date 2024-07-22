@@ -159,8 +159,10 @@ parts:
     override-build: |
       craftctl default
       mkdir -p $CRAFT_PART_INSTALL/usr/bin
-      cp -r $CRAFT_PART_SRC $CRAFT_PART_INSTALL/usr/bin/flutter
-      export PATH="$CRAFT_PART_INSTALL/usr/bin:$PATH"
+      mkdir -p $CRAFT_PART_INSTALL/usr/libexec
+      cp -r $CRAFT_PART_SRC $CRAFT_PART_INSTALL/usr/libexec/flutter
+      ln -s $CRAFT_PART_INSTALL/usr/libexec/flutter/bin/flutter $CRAFT_PART_INSTALL/usr/bin/flutter
+      $CRAFT_PART_INSTALL/usr/bin/flutter doctor
 
   ubuntu-kr-qr-kiosk:
     after:
@@ -173,10 +175,10 @@ parts:
     # build-snaps:
     #   - flutter/latest/stable
     # build-environment:
-    #   - C_INCLUDE_PATH: /snap/flutter/current/usr/include
-    #   - LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/snap/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
-    #   - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}/snap/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pkgconfig
-    #   - XDG_DATA_DIRS: /snap/flutter/current/usr/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}
+    #   - C_INCLUDE_PATH: /usr/bin/flutter/current/usr/include
+    #   - LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/usr/bin/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
+    #   - PKG_CONFIG_PATH: ${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}/usr/bin/flutter/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pkgconfig
+    #   - XDG_DATA_DIRS: /usr/bin/flutter/current/usr/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}
     build-packages:
       - libsqlite3-dev
       - libsqlite3-0
@@ -210,8 +212,6 @@ parts:
       mkdir -p $CRAFT_PART_INSTALL/bin/lib
       mkdir fonts
       cp -r /usr/share/fonts/opentype/noto/* fonts/
-      flutter channel stable
-      flutter upgrade
       flutter config --enable-linux-desktop
       flutter doctor
       flutter pub get
