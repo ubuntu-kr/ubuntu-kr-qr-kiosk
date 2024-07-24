@@ -20,15 +20,15 @@ jobs:
         - amd64
         - arm64
     steps:
-      - uses: actions/checkout@v3
-      - uses: docker/setup-qemu-action@v1
-      - uses: diddlesnaps/snapcraft-multiarch-action@v1
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: diddlesnaps/snapcraft-multiarch-action@v1.8.0
         id: snapcraft
         with:
           architecture: ${{ matrix.platform }}
       # - uses: snapcore/action-build@v1
       #   id: snapcraft
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: snap-package
           path: ${{ steps.snapcraft.outputs.snap }}
