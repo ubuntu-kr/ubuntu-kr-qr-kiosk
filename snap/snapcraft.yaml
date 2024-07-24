@@ -229,6 +229,7 @@ parts:
       - numpy==2.0.0
     build-packages:
       - build-essential
+      - libusb-1.0-0-dev
     stage-packages:
       - libusb-1.0-0
     override-build: |
