@@ -157,7 +157,7 @@ parts:
     source-type: git
     source-tag: 3.19.6
     override-prime: |
-      craftctl prime
+      craftctl default
       rm $CRAFT_PART_INSTALL/usr/bin/flutter
       rm -rf $CRAFT_PRIME/usr/libexec/flutter
     override-build: |
