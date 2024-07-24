@@ -10,14 +10,14 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run: apt install -y snapd
-      - run: snap install --classic snapcraft
-      - run: snapcraft --destructive-mode
+      - run: sudo apt install -y snapd
+      - run: sudo snap install --classic snapcraft
+      - run: sudo snapcraft --destructive-mode
       - run:
           name: Upload snap package
           command: |
-            mkdir /tmp/artifacts
-            cp *.snap /tmp/artifacts
+            sudo mkdir /tmp/artifacts
+            sudo cp *.snap /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
   build-arm64-snap:
@@ -26,14 +26,14 @@ jobs:
     resource_class: arm.medium
     steps:
       - checkout
-      - run: apt install -y snapd
-      - run: snap install --classic snapcraft
-      - run: snapcraft --destructive-mode
+      - run: sudo apt install -y snapd
+      - run: sudo snap install --classic snapcraft
+      - run: sudo snapcraft --destructive-mode
       - run:
           name: Upload snap package
           command: |
-            mkdir /tmp/artifacts
-            cp *.snap /tmp/artifacts
+            sudo mkdir /tmp/artifacts
+            sudo cp *.snap /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
 
