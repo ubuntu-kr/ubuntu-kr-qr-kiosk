@@ -167,7 +167,7 @@ parts:
       cp -r $CRAFT_PART_SRC $CRAFT_PART_INSTALL/usr/libexec/flutter
       ln -s $CRAFT_PART_INSTALL/usr/libexec/flutter/bin/flutter $CRAFT_PART_INSTALL/usr/bin/flutter
       $CRAFT_PART_INSTALL/usr/bin/flutter doctor
-      $CRAFT_PART_INSTALL/usr/bin/flutter precache
+      $CRAFT_PART_INSTALL/usr/bin/flutter precache --linux --universal
     build-packages:
       - curl
       - git
