@@ -10,7 +10,7 @@ jobs:
       image: ubuntu-2204:current
     steps:
       - checkout
-      - run: sudo apt update; sudo apt upgrade -y
+      - run: sudo apt update
       - run: sudo apt install -y snapd
       - run: sudo snap install --classic snapcraft
       - run: sudo snapcraft --destructive-mode
@@ -27,7 +27,7 @@ jobs:
     resource_class: arm.medium
     steps:
       - checkout
-      - run: sudo apt update; sudo apt upgrade -y
+      - run: sudo apt update
       - run: sudo apt install -y snapd
       - run: sudo snap install --classic snapcraft
       - run: sudo snapcraft --destructive-mode
