@@ -156,6 +156,10 @@ parts:
     source: https://github.com/flutter/flutter.git
     source-type: git
     source-tag: 3.19.6
+    override-prime: |
+      craftctl prime
+      rm $CRAFT_PART_INSTALL/usr/bin/flutter
+      rm -rf $CRAFT_PRIME/usr/libexec/flutter
     override-build: |
       craftctl default
       mkdir -p $CRAFT_PART_INSTALL/usr/bin
@@ -233,7 +237,7 @@ parts:
       craftctl default
       set -eux
       mkdir -p $CRAFT_PART_INSTALL/bin/printserver
-      cp -r ./* $SNAPCRAFT_PART_INSTALL/bin/printserver
+      cp -r ./* $CRAFT_PART_INSTALL/bin/printserver
 
   graphics-core22:
     after:
