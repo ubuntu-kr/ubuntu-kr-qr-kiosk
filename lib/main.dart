@@ -1,15 +1,14 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:ubuntu_kr_qr_kiosk/printScreen.dart';
+import 'package:flutter/widgets.dart';
 import 'checkInByEmailScreen.dart';
 import 'checkInByBarcodeScreen.dart';
 import 'package:yaru/yaru.dart';
 import 'kioskclient.dart';
-import 'settings/wifiScreen.dart';
 import 'settings/settings.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'clockwidgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -112,7 +111,7 @@ class _KioskMainPageState extends State<KioskMainPage> {
             title: Text('참석자 체크인 키오스크 Attendee Check-in Kiosk'),
             actions: <Widget>[
               IconButton(
-                icon: const Icon(Icons.settings),
+                icon: const Icon(YaruIcons.settings),
                 tooltip: '설정',
                 onPressed: () {
                   Navigator.push(
@@ -128,29 +127,33 @@ class _KioskMainPageState extends State<KioskMainPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.fact_check,
-                  size: 100.0,
-                  semanticLabel: 'Text to announce in accessibility modes',
-                ),
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 1000, maxHeight: 150),
+                    child: YaruBanner.tile(
+                        surfaceTintColor: YaruColors.orange,
+                        title: Text("환영합니다 | Welcome",
+                            style: TextStyle(fontSize: 40)),
+                        subtitle: Text("체크인 방법을 선택하세요 | Choose Check-in method",
+                            style: TextStyle(fontSize: 20)),
+                        icon: Icon(
+                          YaruIcons.ubuntu_logo_large,
+                          size: 100,
+                        ))),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "체크인 방법을 선택하세요",
-                  style: TextStyle(fontSize: 40),
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Card(
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      splashColor: Colors.orange.withAlpha(30),
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 500, maxHeight: 200),
+                    child: YaruBanner.tile(
+                      title: Text("QR 코드로 체크인", style: TextStyle(fontSize: 35)),
+                      subtitle: Text("Check-in with QR Code",
+                          style: TextStyle(fontSize: 20)),
+                      icon: Icon(
+                        Icons.qr_code,
+                        size: 100,
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -159,20 +162,18 @@ class _KioskMainPageState extends State<KioskMainPage> {
                                   const CheckInByBarcodeScreen()),
                         );
                       },
-                      child: Container(
-                          padding: const EdgeInsets.all(30.0),
-                          child: Column(children: [
-                            Icon(
-                              Icons.qr_code_scanner,
-                              size: 100.0,
-                            ),
-                            Text("QR 코드", style: TextStyle(fontSize: 40))
-                          ])),
                     )),
-                Card(
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      splashColor: Colors.orange.withAlpha(30),
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 500, maxHeight: 200),
+                    child: YaruBanner.tile(
+                      title:
+                          Text("이메일 주소로 체크인", style: TextStyle(fontSize: 35)),
+                      subtitle: Text("Check-in with E-Mail Address",
+                          style: TextStyle(fontSize: 20)),
+                      icon: Icon(
+                        YaruIcons.mail_open,
+                        size: 100,
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -181,37 +182,42 @@ class _KioskMainPageState extends State<KioskMainPage> {
                                   const CheckInByEmailScreen()),
                         );
                       },
-                      child: Container(
-                          padding: const EdgeInsets.all(30.0),
-                          child: Column(children: [
-                            Icon(
-                              YaruIcons.mail_open,
-                              size: 100.0,
-                            ),
-                            Text("E-Mail 주소", style: TextStyle(fontSize: 40))
-                          ])),
-                    ))
+                    )),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: OutlinedButton(
-                        onPressed: () async {
-                          await kioskClient.callStaff();
-                          var resultSnackBar = SnackBar(
-                            content: Text(
-                                "행사 관계자를 호출 하였습니다. Event staff has been called."),
-                          );
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(resultSnackBar);
-                        },
-                        child: Text(
-                          "관계자 호출 CALL STAFF",
-                          style: TextStyle(fontSize: 30),
-                        ))),
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 500, maxHeight: 100),
+                    child: YaruBanner.tile(
+                      title: ClockTimeWidget(),
+                      subtitle: ClockDateWidget(),
+                      icon: Icon(
+                        YaruIcons.clock,
+                        size: 50,
+                      ),
+                    )),
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 500, maxHeight: 100),
+                    child: YaruBanner.tile(
+                      surfaceTintColor: YaruColors.orange,
+                      title: Text("관계자 호출"),
+                      subtitle: Text("CALL STAFF"),
+                      icon: Icon(
+                        YaruIcons.light_bulb_on,
+                        size: 50,
+                      ),
+                      onTap: () async {
+                        await kioskClient.callStaff();
+                        var resultSnackBar = SnackBar(
+                          content: Text(
+                              "행사 관계자를 호출 하였습니다. Event staff has been called."),
+                        );
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(resultSnackBar);
+                      },
+                    )),
               ],
             )
           ],
