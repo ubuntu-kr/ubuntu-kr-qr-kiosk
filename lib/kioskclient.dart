@@ -87,7 +87,7 @@ class KioskClient {
     var response =
         await http.get(url, headers: {'Authorization': 'Token $apiToken'});
     var status = response.statusCode;
-    var result = jsonDecode(utf8.decode(response.bodyBytes)) as List;
+    var result = jsonDecode(utf8.decode(response.bodyBytes));
     return (status == 200, result);
   }
 
