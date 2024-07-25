@@ -128,16 +128,16 @@ class _KioskMainPageState extends State<KioskMainPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 1000, maxHeight: 150),
+                    constraints: BoxConstraints(maxWidth: 1300, maxHeight: 200),
                     child: YaruBanner.tile(
                         surfaceTintColor: YaruColors.orange,
                         title: Text("환영합니다 | Welcome",
-                            style: TextStyle(fontSize: 40)),
+                            style: TextStyle(fontSize: 60)),
                         subtitle: Text("체크인 방법을 선택하세요 | Choose Check-in method",
-                            style: TextStyle(fontSize: 20)),
+                            style: TextStyle(fontSize: 30)),
                         icon: Icon(
                           YaruIcons.ubuntu_logo_large,
-                          size: 100,
+                          size: 120,
                         ))),
               ],
             ),
@@ -145,14 +145,14 @@ class _KioskMainPageState extends State<KioskMainPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 500, maxHeight: 200),
+                    constraints: BoxConstraints(maxWidth: 650, maxHeight: 250),
                     child: YaruBanner.tile(
-                      title: Text("QR 코드로 체크인", style: TextStyle(fontSize: 35)),
+                      title: Text("QR 코드로 체크인", style: TextStyle(fontSize: 50)),
                       subtitle: Text("Check-in with QR Code",
-                          style: TextStyle(fontSize: 20)),
+                          style: TextStyle(fontSize: 25)),
                       icon: Icon(
                         Icons.qr_code,
-                        size: 100,
+                        size: 120,
                       ),
                       onTap: () {
                         Navigator.push(
@@ -164,15 +164,15 @@ class _KioskMainPageState extends State<KioskMainPage> {
                       },
                     )),
                 ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 500, maxHeight: 200),
+                    constraints: BoxConstraints(maxWidth: 650, maxHeight: 250),
                     child: YaruBanner.tile(
                       title:
-                          Text("이메일 주소로 체크인", style: TextStyle(fontSize: 35)),
+                          Text("이메일 주소로 체크인", style: TextStyle(fontSize: 50)),
                       subtitle: Text("Check-in with E-Mail Address",
-                          style: TextStyle(fontSize: 20)),
+                          style: TextStyle(fontSize: 25)),
                       icon: Icon(
                         YaruIcons.mail_open,
-                        size: 100,
+                        size: 120,
                       ),
                       onTap: () {
                         Navigator.push(
@@ -189,24 +189,27 @@ class _KioskMainPageState extends State<KioskMainPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 500, maxHeight: 100),
+                    constraints: BoxConstraints(maxWidth: 650, maxHeight: 150),
                     child: YaruBanner.tile(
-                      title: ClockTimeWidget(),
-                      subtitle: ClockDateWidget(),
+                      title: ClockTimeWidget(
+                        style: TextStyle(fontSize: 30),
+                      ),
+                      subtitle: ClockDateWidget(style: TextStyle(fontSize: 20)),
                       icon: Icon(
                         YaruIcons.clock,
-                        size: 50,
+                        size: 60,
                       ),
                     )),
                 ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 500, maxHeight: 100),
+                    constraints: BoxConstraints(maxWidth: 650, maxHeight: 150),
                     child: YaruBanner.tile(
                       surfaceTintColor: YaruColors.orange,
-                      title: Text("관계자 호출"),
-                      subtitle: Text("CALL STAFF"),
+                      title: Text("관계자 호출", style: TextStyle(fontSize: 30)),
+                      subtitle:
+                          Text("CALL STAFF", style: TextStyle(fontSize: 20)),
                       icon: Icon(
                         YaruIcons.light_bulb_on,
-                        size: 50,
+                        size: 60,
                       ),
                       onTap: () async {
                         await kioskClient.callStaff();
