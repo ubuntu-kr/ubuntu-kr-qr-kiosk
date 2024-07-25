@@ -109,7 +109,8 @@ class _CheckInByBarcodeScreenState extends State<CheckInByBarcodeScreen> {
                         var qrJsonData = json.decode(rawQrJsonData);
 
                         var serverResult = await kioskClient.checkInBySearch(
-                            qrJsonData['id'], qrJsonData['passcode']);
+                            int.parse(qrJsonData['id']),
+                            qrJsonData['passcode']);
                         var participantData = await kioskClient
                             .getParticipantById(qrJsonData['id']);
                         var snackBar = SnackBar(
