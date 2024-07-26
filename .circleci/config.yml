@@ -12,7 +12,7 @@ jobs:
       - checkout
       - run: sudo apt update
       - run: 
-          name: Install Snapcraft and LXD 
+          name: Install Snapd and Snapcraft
           command: |
             sudo apt install -y snapd
             sudo snap install --classic snapcraft
@@ -21,6 +21,8 @@ jobs:
           command: |
             sudo snap install lxd
             lxd init --minimal
+            sudo iptables -I DOCKER-USER -i lxdbr0 -j ACCEPT
+            sudo iptables -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
       - run: sudo snapcraft
       - run:
           name: Upload snap package
@@ -36,9 +38,8 @@ jobs:
     steps:
       - checkout
       - run: sudo apt update
-      - run: sudo apt install -y snapd
       - run: 
-          name: Install Snapcraft and LXD 
+          name: Install Snapd and Snapcraft
           command: |
             sudo apt install -y snapd
             sudo snap install --classic snapcraft
@@ -47,6 +48,8 @@ jobs:
           command: |
             sudo snap install lxd
             lxd init --minimal
+            sudo iptables -I DOCKER-USER -i lxdbr0 -j ACCEPT
+            sudo iptables -I DOCKER-USER -o lxdbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
       - run: sudo snapcraft
       - run:
           name: Upload snap package
