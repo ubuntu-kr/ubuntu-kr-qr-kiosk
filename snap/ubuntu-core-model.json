@@ -22,12 +22,6 @@
             "id": "jeIuP6tfFrvAdic8DMWqHmoaoukAPNbJ"
         },
         {
-            "name": "core22",
-            "type": "base",
-            "default-channel": "latest/stable",
-            "id": "amcUKQILKXHHTlmSa7NMdnXSx02dNeeT"
-        },
-        {
             "name": "core24",
             "type": "base",
             "default-channel": "latest/stable",
@@ -53,7 +47,7 @@
             "id": "RmBXKl6HO6YOC2DE4G2q1JzWImC04EUy"
         },
         {
-            "name": "mesa-core22",
+            "name": "mesa-2404",
             "type": "app",
             "default-channel": "latest/stable",
             "id": "UijXdFgvIKp9ZZ6P4ijPAJHWZLtSKgWm"
@@ -61,13 +55,13 @@
         {
             "name": "ubuntu-frame",
             "type": "app",
-            "default-channel": "22/stable",
+            "default-channel": "24/stable",
             "id": "BPZbvWzvoMTrpec4goCXlckLe2IhfthK"
         },
         {
             "name": "ubuntu-frame-osk",
             "type": "app",
-            "default-channel": "22/stable",
+            "default-channel": "24/stable",
             "id": "UaV8aeiyZzQMgUyRCwuJma4Q2IuxA99t"
         }
     ]
