@@ -115,14 +115,15 @@ parts:
       - libgdk-pixbuf2.0-0
       - librsvg2-common
       - shared-mime-info
-      - libgtk-3-0
+      - libgtk-3-0t64
+      - fonts-noto-cjk
     override-build: |
       craftctl default
       # Update mime database
       update-mime-database ${CRAFT_PART_INSTALL}/usr/share/mime
       # build immodules cache
       mkdir -p ${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gtk-3.0/3.0.0/
-      /usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libgtk-3-0/gtk-query-immodules-3.0 > ${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gtk-3.0/3.0.0/immodules.cache
+      /usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/libgtk-3-0t64/gtk-query-immodules-3.0 > ${CRAFT_PART_INSTALL}/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/gtk-3.0/3.0.0/immodules.cache
     stage-packages:
       - librsvg2-common
       - gsettings-desktop-schemas
