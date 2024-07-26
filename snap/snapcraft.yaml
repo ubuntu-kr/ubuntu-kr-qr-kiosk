@@ -54,7 +54,7 @@ apps:
 plugs:
   gpu-2404:
     interface: content
-    target: $SNAP/graphics
+    target: $SNAP/gpu-2404
     default-provider: mesa-2404
 
 environment:
@@ -77,9 +77,9 @@ environment:
 
 layout:
   /usr/share/libdrm:
-    bind: $SNAP/graphics/libdrm
+    bind: $SNAP/gpu-2404/libdrm
   /usr/share/drirc.d:
-    symlink: $SNAP/graphics/drirc.d
+    symlink: $SNAP/gpu-2404/drirc.d
   # Other, generally useful paths
   /usr/share/fonts:
     bind: $SNAP/usr/share/fonts
