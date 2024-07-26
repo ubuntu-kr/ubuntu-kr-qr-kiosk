@@ -43,7 +43,7 @@ wait_for "${WAYLAND_DISPLAY}"
 mkdir -p "$XDG_RUNTIME_DIR" -m 700
 unset DISPLAY
 
-. $SNAP/snap/hooks/management
+. $SNAP/meta/hooks/management
 export KIOSK_HOST="$(server_host)"
 export KIOSK_API_TOKEN="$(api_token)"
 

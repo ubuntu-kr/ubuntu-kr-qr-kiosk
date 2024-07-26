@@ -23,7 +23,7 @@ esac
  fc-cache -r -v 
 
 # source the management script
-. $SNAP/snap/hooks/management
+. $SNAP/meta/hooks/management
 
 handle_server_config()
 {
