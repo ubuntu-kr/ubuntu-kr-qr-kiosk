@@ -1,17 +1,17 @@
 name: ubuntu-kr-qr-kiosk
-version: 0.1.0
+version: 0.2.0
 summary: Kiosk app for Ubuntu KR event QR Check in
 description: Kiosk app for Ubuntu KR event QR Check in
 compression: lzo
 
 confinement: strict
-base: core22
+base: core24
 grade: stable
 
 apps:
   ubuntu-kr-qr-kiosk:
     command-chain: &_command-chain
-    - bin/graphics-core22-wrapper
+    - bin/gpu-2404-wrapper
     - bin/wayland-launch
     command: &_command bin/ubuntu_kr_qr_kiosk
     # extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
@@ -52,10 +52,10 @@ apps:
     
 
 plugs:
-  graphics-core22:
+  gpu-2404:
     interface: content
     target: $SNAP/graphics
-    default-provider: mesa-core22
+    default-provider: mesa-2404
 
 environment:
   # Other, generally useful environment settings...
@@ -145,7 +145,7 @@ parts:
     override-build: |
       # The plugs needed to run Wayland. (wayland-launch checks them, setup.sh connects them)
       # You may add further plugs here if you want these options
-      PLUGS="opengl wayland graphics-core22 home raw-usb process-control system-observe hardware-observe network-manager network-manager-observe"
+      PLUGS="opengl wayland gpu-2404 home raw-usb process-control system-observe hardware-observe network-manager network-manager-observe"
       sed --in-place "s/%PLUGS%/$PLUGS/g" $CRAFT_PART_BUILD/bin/wayland-launch
       sed --in-place "s/%PLUGS%/$PLUGS/g" $CRAFT_PART_BUILD/bin/setup.sh
       craftctl default
@@ -211,6 +211,7 @@ parts:
       flutter pub get
       flutter build linux --release -v
       cp -r build/linux/*/release/bundle/* $CRAFT_PART_INSTALL/bin/
+
   printserver:
     plugin: python
     source: ./printserver
@@ -239,7 +240,7 @@ parts:
       mkdir -p $CRAFT_PART_INSTALL/bin/printserver
       cp -r ./* $CRAFT_PART_INSTALL/bin/printserver
 
-  graphics-core22:
+  gpu-2404:
     after:
       - ubuntu-kr-qr-kiosk
       - gsettings+pixbuf+immodules
@@ -248,15 +249,14 @@ parts:
     plugin: dump
     override-prime: |
       craftctl default
-      ${CRAFT_PART_SRC}/bin/graphics-core22-cleanup mesa-core22 nvidia-core22
+      ${CRAFT_PART_SRC}/bin/gpu-2404-cleanup mesa-2404 nvidia-2404
       cd "$CRAFT_PRIME/usr/share/"
       rm -rf bug drirc.d glvnd libdrm lintian man
       rm -rf applications apport bash-completion dbus-1 doc-base doc gtk-doc\
              help pkgconfig libthai metainfo themes thumbnailers xml
     prime:
-      - bin/graphics-core22-wrapper
+      - bin/gpu-2404-wrapper
 
-architectures:
-  - build-on: amd64
-  - build-on: armhf
-  - build-on: arm64
+platforms:
+  amd64:
+  arm64:
