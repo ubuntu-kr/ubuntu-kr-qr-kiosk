@@ -11,9 +11,17 @@ jobs:
     steps:
       - checkout
       - run: sudo apt update
-      - run: sudo apt install -y snapd
-      - run: sudo snap install --classic snapcraft
-      - run: sudo snapcraft --destructive-mode
+      - run: 
+          name: Install Snapcraft and LXD 
+          command: |
+            sudo apt install -y snapd
+            sudo snap install --classic snapcraft
+      - run: 
+          name: Install and Setup LXD 
+          command: |
+            sudo snap install lxd
+            lxd init --minimal
+      - run: sudo snapcraft
       - run:
           name: Upload snap package
           command: |
@@ -29,8 +37,17 @@ jobs:
       - checkout
       - run: sudo apt update
       - run: sudo apt install -y snapd
-      - run: sudo snap install --classic snapcraft
-      - run: sudo snapcraft --destructive-mode
+      - run: 
+          name: Install Snapcraft and LXD 
+          command: |
+            sudo apt install -y snapd
+            sudo snap install --classic snapcraft
+      - run: 
+          name: Install and Setup LXD 
+          command: |
+            sudo snap install lxd
+            lxd init --minimal
+      - run: sudo snapcraft
       - run:
           name: Upload snap package
           command: |
