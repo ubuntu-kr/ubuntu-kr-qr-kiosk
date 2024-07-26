@@ -193,16 +193,12 @@ parts:
     source-type: git
     plugin: nil
     build-packages:
-      - libsqlite3-0
-      - libsqlite3-dev
       - libnss3
       - git
       - make
     stage-packages:
       - libgtk-3-0
       - libgl1
-      - libsqlite3-0
-      - libsqlite3-dev
       - locales-all
       # - libdrm-common
     override-build: |
@@ -253,10 +249,7 @@ parts:
     override-prime: |
       craftctl default
       ${CRAFT_PART_SRC}/bin/gpu-2404-cleanup mesa-2404 nvidia-2404
-      cd "$CRAFT_PRIME/usr/share/"
-      rm -rf bug drirc.d glvnd libdrm lintian man
-      rm -rf applications apport bash-completion dbus-1 doc-base doc gtk-doc\
-             help pkgconfig libthai metainfo themes thumbnailers xml
+
     prime:
       - bin/gpu-2404-wrapper
 
