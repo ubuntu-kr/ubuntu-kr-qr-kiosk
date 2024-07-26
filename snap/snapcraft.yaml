@@ -27,7 +27,7 @@ apps:
     - hardware-observe
     - network-bind
     - network-manager
-    - network-manager-observe
+    - network-observe
     # slots:
     #   - dbus-ubuntu-kr-qr-kiosk
     environment: &_environment
@@ -129,6 +129,7 @@ parts:
       - gsettings-desktop-schemas
       - libglib2.0-bin
       - fonts-noto-cjk
+      - xkb-data
     override-prime: |
       craftctl default
       # Compile the gsettings schemas
@@ -146,7 +147,7 @@ parts:
     override-build: |
       # The plugs needed to run Wayland. (wayland-launch checks them, setup.sh connects them)
       # You may add further plugs here if you want these options
-      PLUGS="opengl wayland gpu-2404 home raw-usb process-control system-observe hardware-observe network-manager network-manager-observe"
+      PLUGS="opengl wayland gpu-2404 home raw-usb process-control system-observe hardware-observe network-manager network-observe"
       sed --in-place "s/%PLUGS%/$PLUGS/g" $CRAFT_PART_BUILD/bin/wayland-launch
       sed --in-place "s/%PLUGS%/$PLUGS/g" $CRAFT_PART_BUILD/bin/setup.sh
       craftctl default
@@ -192,8 +193,8 @@ parts:
     source-type: git
     plugin: nil
     build-packages:
-      - libsqlite3-dev
       - libsqlite3-0
+      - libsqlite3-dev
       - libnss3
       - git
       - make
@@ -205,6 +206,7 @@ parts:
       - locales-all
       # - libdrm-common
     override-build: |
+      craftctl default
       set -eux
       mkdir -p $CRAFT_PART_INSTALL/bin/lib
       flutter config --enable-linux-desktop
@@ -243,9 +245,9 @@ parts:
 
   gpu-2404:
     after:
-      - ubuntu-kr-qr-kiosk
       - gsettings+pixbuf+immodules
       - setup
+      - ubuntu-kr-qr-kiosk
     source: https://github.com/canonical/gpu-snap.git
     plugin: dump
     override-prime: |
