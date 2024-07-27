@@ -20,6 +20,7 @@ class _WifiScreenState extends State<WifiScreen> {
   late NetworkManagerClient nmClient;
   late NetworkManagerDevice nmDevice;
   List<NetworkManagerAccessPoint> foundAPs = [];
+  NetworkManagerActiveConnection? primaryConnection;
   @override
   void initState() {
     super.initState();
@@ -99,10 +100,18 @@ class _WifiScreenState extends State<WifiScreen> {
         setState(() {
           scanProgress = 0.0;
         });
+
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("WiFi 스캔이 완료 되었습니다."),
         ));
+        updateCurrentConnectionInfo();
       }
+    });
+  }
+
+  void updateCurrentConnectionInfo() {
+    setState(() {
+      primaryConnection = nmClient.primaryConnection;
     });
   }
 
@@ -270,11 +279,24 @@ class _WifiScreenState extends State<WifiScreen> {
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             LinearProgressIndicator(value: scanProgress),
+            ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 600),
+                child: ListTile(
+                  title: Text(
+                    "사용중인 Wi-Fi: ${primaryConnection?.id}",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  subtitle: Text(
+                    "[IPv4 ${primaryConnection?.ip4Config?.addressData.first['address']}/${primaryConnection?.ip4Config?.addressData.first['prefix']}]" +
+                        "[IPv6 ${primaryConnection?.ip6Config?.addressData.first['address']}/${primaryConnection?.ip6Config?.addressData.first['prefix']}]",
+                  ),
+                )),
             Expanded(
                 child: ListView.builder(
               itemCount: foundAPs == null ? 0 : foundAPs.length,
               itemBuilder: (context, index) {
                 var resultItem = foundAPs[index];
+
                 return Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
