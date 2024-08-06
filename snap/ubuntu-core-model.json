@@ -7,7 +7,7 @@
     "brand-id": "GkaoBVNZ1UgZSeBizcmkRfN42z7NJkAG",
     "timestamp": "2024-07-25T16:03:16+00:00",
     "base": "core24",
-    "grade": "signed",
+    "grade": "dangerous",
     "snaps": [
         {
             "name": "pi",

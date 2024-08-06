@@ -71,13 +71,9 @@ Sign the model so that we can create custom core image.
 snap sign -k my-model-key snap/ubuntu-core-model.json > snap/ubuntu-core-model.model
 ```
 
-Add Kiosk Snap and Custom Pi Gadget with following command
+Build build the custom ubuntu core image with Kiosk Snap and Custom Pi Gadget with following command
 
 ```bash
-ubuntu-image snap snap/ubuntu-core-model.model --snap <snap_file_name>
+ubuntu-image snap snap/ubuntu-core-model.model --snap <snap_file_name> --snap <snap_file_name>
 ```
 
-Finally, build the custom ubuntu core image
-```bash
-ubuntu-image snap snap/ubuntu-core-model.model
-```
