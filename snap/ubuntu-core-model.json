@@ -37,8 +37,7 @@
             "name": "console-conf",
             "type": "app",
             "default-channel": "24/stable",
-            "id": "ASctKBEHzVt3f1pbZLoekCvcigRjtuqw",
-            "presence": "optional"
+            "id": "ASctKBEHzVt3f1pbZLoekCvcigRjtuqw"
         },
         {
             "name": "network-manager",
