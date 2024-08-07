@@ -22,6 +22,12 @@
             "id": "jeIuP6tfFrvAdic8DMWqHmoaoukAPNbJ"
         },
         {
+            "name": "core22",
+            "type": "base",
+            "default-channel": "latest/stable",
+            "id": "amcUKQILKXHHTlmSa7NMdnXSx02dNeeT"
+        },
+        {
             "name": "core24",
             "type": "base",
             "default-channel": "latest/stable",
@@ -42,7 +48,7 @@
         {
             "name": "network-manager",
             "type": "app",
-            "default-channel": "24/stable",
+            "default-channel": "22/stable",
             "id": "RmBXKl6HO6YOC2DE4G2q1JzWImC04EUy"
         },
         {
