@@ -1,6 +1,10 @@
 # ubuntu-kr-qr-kiosk [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/LCy26Fe3U1mrPC75gaG7e1/K8Lwqp1Yg1mdDbFWcENXcQ/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/circleci/LCy26Fe3U1mrPC75gaG7e1/K8Lwqp1Yg1mdDbFWcENXcQ/tree/main)
 
+![20240809_191118](https://github.com/user-attachments/assets/ddb2b6d6-4a5d-4b9e-8245-5b75d8e68289)
+
 A Check-in kiosk app built with Flutter for Ubuntu Frame and Ubuntu Core environment
+
+[See how it works in action with video](https://www.youtube.com/watch?v=Nd4mDMSv4po)
 
 ## Building Snap
 Simply run `snapcraft` where `snapcraft`, `snap` and `lxd` are installed.
