@@ -158,7 +158,7 @@ parts:
     plugin: nil
     source: https://github.com/flutter/flutter.git
     source-type: git
-    source-tag: 3.19.6
+    source-tag: 3.32.7
     override-prime: |
       craftctl default
       rm $CRAFT_PART_INSTALL/usr/bin/flutter
