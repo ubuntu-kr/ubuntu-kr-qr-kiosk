@@ -1,5 +1,5 @@
 name: ubuntu-kr-qr-kiosk
-version: 0.2.0
+version: 0.2.1
 summary: Kiosk app for Ubuntu KR event QR Check in
 description: Kiosk app for Ubuntu KR event QR Check in
 compression: lzo
@@ -215,18 +215,18 @@ parts:
     plugin: python
     source: ./printserver
     python-packages:
-      - blinker==1.6.2
-      - click==8.1.7
-      - Flask==2.3.2
-      - gunicorn==21.2.0
-      - itsdangerous==2.1.2
-      - Jinja2==3.1.2
-      - MarkupSafe==2.1.3
-      - packaging==23.1
-      - Werkzeug==2.3.7
-      - Pillow==10.3.0
-      - pyusb==1.2.1
-      - numpy==2.0.0
+      - blinker==1.9.0
+      - click==8.2.1
+      - Flask==3.1.1
+      - gunicorn==23.0.0
+      - itsdangerous==2.2.0
+      - Jinja2==3.1.6
+      - MarkupSafe==3.0.2
+      - packaging==25.0
+      - Werkzeug==3.1.3
+      - Pillow==11.3.0
+      - pyusb==1.3.1
+      - numpy==2.3.1
     build-packages:
       - build-essential
       - libusb-1.0-0-dev
