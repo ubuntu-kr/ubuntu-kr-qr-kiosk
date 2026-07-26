@@ -12,7 +12,7 @@ import 'package:ubuntu_kr_qr_kiosk/main.dart';
 
 void main() {
   testWidgets('Kiosk app smoke test', (WidgetTester tester) async {
-    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.physicalSize = const Size(1080, 1920);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
