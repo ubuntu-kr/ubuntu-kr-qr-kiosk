@@ -44,7 +44,8 @@ class _PrintLayoutSettingsState extends State<PrintLayoutSettings> {
     prefs.setInt('printCanvasDpi', printCanvasDpi);
     var resultSnackBar = SnackBar(
       content: Text(
-          "인쇄 레이아웃 저장됨: $printCanvasWidthMm mm * $printCanvasHeightMm mm ($printCanvasDpi DPI) -> $printCanvasWidthPx px * $printCanvasHeightPx px"),
+        "인쇄 레이아웃 저장됨: $printCanvasWidthMm mm * $printCanvasHeightMm mm ($printCanvasDpi DPI) -> $printCanvasWidthPx px * $printCanvasHeightPx px",
+      ),
     );
     ScaffoldMessenger.of(context).showSnackBar(resultSnackBar);
   }
@@ -52,135 +53,151 @@ class _PrintLayoutSettingsState extends State<PrintLayoutSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('인쇄 레이아웃'),
-        ),
-        body: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text("높이 및 너비(단위: mm)"))
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 300),
-                    child: Container(
-                        padding: const EdgeInsets.all(16.0),
-                        child: TextField(
-                          style: TextStyle(fontSize: 20),
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: '너비 (mm)',
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              printCanvasWidthMm = int.parse(value);
-                              printCanvasWidthPx =
-                                  (printCanvasWidthMm * printCanvasDpi) ~/ 25.4;
-                            });
-                            savePrintLayout();
-                          },
-                        ))),
-                ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 300),
-                    child: Container(
-                        padding: const EdgeInsets.all(16.0),
-                        child: TextField(
-                          style: TextStyle(fontSize: 20),
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: '높이 (mm)',
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              printCanvasHeightMm = int.parse(value);
-                              printCanvasHeightPx =
-                                  (printCanvasHeightMm * printCanvasDpi) ~/
-                                      25.4;
-                            });
-                            savePrintLayout();
-                          },
-                        ))),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text("해상도(단위: DPI)"))
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 300),
-                    child: Container(
-                        padding: const EdgeInsets.all(16.0),
-                        child: TextField(
-                          style: TextStyle(fontSize: 20),
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: '해상도 (DPI)',
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              printCanvasDpi = int.parse(value);
-                              printCanvasWidthPx =
-                                  (printCanvasWidthMm * printCanvasDpi) ~/ 25.4;
-                              printCanvasHeightPx =
-                                  (printCanvasHeightMm * printCanvasDpi) ~/
-                                      25.4;
-                            });
-                            savePrintLayout();
-                          },
-                        ))),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                        "사용중인 설정: $printCanvasWidthMm mm * $printCanvasHeightMm mm ($printCanvasDpi DPI) -> $printCanvasWidthPx px * $printCanvasHeightPx px"))
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                    child: Text(
-                      "인쇄 테스트 Test printing",
-                      style: TextStyle(fontSize: 20),
+      appBar: AppBar(title: const Text('인쇄 레이아웃')),
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Text("높이 및 너비(단위: mm)"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 300),
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextField(
+                    style: TextStyle(fontSize: 20),
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '너비 Width (mm)',
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PrintPage(
-                                nametagData: NametagData(
-                                    "[이름]",
-                                    "[소속]",
-                                    "[직책]",
-                                    "https://ubuntu-kr.org",
-                                    "교환권\n티셔츠 XL (테스트)\n 도시락/채식 (테스트)",
-                                    true))),
-                      );
-                    })
-              ],
-            )
-          ],
-        ));
+                    onChanged: (value) {
+                      setState(() {
+                        printCanvasWidthMm = int.parse(value);
+                        printCanvasWidthPx =
+                            (printCanvasWidthMm * printCanvasDpi) ~/ 25.4;
+                      });
+                      savePrintLayout();
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 300),
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextField(
+                    style: TextStyle(fontSize: 20),
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '높이 Height (mm)',
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        printCanvasHeightMm = int.parse(value);
+                        printCanvasHeightPx =
+                            (printCanvasHeightMm * printCanvasDpi) ~/ 25.4;
+                      });
+                      savePrintLayout();
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Text("해상도(단위: DPI)"),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 300),
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextField(
+                    style: TextStyle(fontSize: 20),
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '해상도 Resolution (DPI)',
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        printCanvasDpi = int.parse(value);
+                        printCanvasWidthPx =
+                            (printCanvasWidthMm * printCanvasDpi) ~/ 25.4;
+                        printCanvasHeightPx =
+                            (printCanvasHeightMm * printCanvasDpi) ~/ 25.4;
+                      });
+                      savePrintLayout();
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  "사용중인 설정: $printCanvasWidthMm mm * $printCanvasHeightMm mm ($printCanvasDpi DPI) -> $printCanvasWidthPx px * $printCanvasHeightPx px",
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                child: Text(
+                  "인쇄 테스트 Test printing",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PrintPage(
+                        nametagData: NametagData(
+                          "[이름]",
+                          "[소속]",
+                          "[직책]",
+                          "https://ubuntu-kr.org",
+                          "교환권\n티셔츠 XL (테스트)\n 도시락/채식 (테스트)",
+                          true,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
