@@ -5,7 +5,6 @@ import 'dbcommands.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 Future<void> configureKiosk(String host, String apiToken) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -125,6 +124,6 @@ class KioskClient {
   }
 
   void closeDb() {
-    db.dispose();
+    db.close();
   }
 }

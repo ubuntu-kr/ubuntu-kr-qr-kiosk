@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'checkInByEmailScreen.dart';
 import 'checkInByBarcodeScreen.dart';
 import 'package:yaru/yaru.dart';
@@ -22,8 +21,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var yaru = YaruThemeData(variant: YaruVariant.orange, useMaterial3: true);
-    var yaruTheme = yaru.theme!;
-    var yaruDarkTheme = yaru.darkTheme!;
+    var yaruTheme = yaru.theme;
+    var yaruDarkTheme = yaru.darkTheme;
     ThemeData customTheme = yaruTheme.copyWith(
         textTheme: GoogleFonts.nanumGothicTextTheme(),
         primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
@@ -135,6 +134,8 @@ class _KioskMainPageState extends State<KioskMainPage> {
                             style: TextStyle(fontSize: 60)),
                         subtitle: Text("체크인 방법을 선택하세요 | Choose Check-in method",
                             style: TextStyle(fontSize: 30)),
+                        subtitle: Text("체크인 방법을 선택하세요 | Choose Check-in method",
+                            style: TextStyle(fontSize: 15)),
                         icon: Icon(
                           YaruIcons.ubuntu_logo_large,
                           size: 120,
