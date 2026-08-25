@@ -6,7 +6,6 @@ import 'checkInByBarcodeScreen.dart';
 import 'package:yaru/yaru.dart';
 import 'kioskclient.dart';
 import 'settings/settings.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'clockwidgets.dart';
 
 void main() {
@@ -20,41 +19,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var yaru = YaruThemeData(variant: YaruVariant.orange, useMaterial3: true);
-    var yaruTheme = yaru.theme;
-    var yaruDarkTheme = yaru.darkTheme;
-    ThemeData customTheme = yaruTheme.copyWith(
-      textTheme: GoogleFonts.nanumGothicTextTheme(),
-      primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
-      appBarTheme: yaruTheme.appBarTheme.copyWith(
-        titleTextStyle: GoogleFonts.nanumGothic(
-          color: Colors.black,
-          fontSize: 20,
-        ),
-      ),
-      snackBarTheme: yaruTheme.snackBarTheme.copyWith(
-        contentTextStyle: GoogleFonts.nanumGothic(color: Colors.white),
-      ),
-    );
-    ThemeData customThemeDark = yaruDarkTheme.copyWith(
-      textTheme: GoogleFonts.nanumGothicTextTheme(),
-      primaryTextTheme: GoogleFonts.nanumGothicTextTheme(),
-      appBarTheme: yaruDarkTheme.appBarTheme.copyWith(
-        titleTextStyle: GoogleFonts.nanumGothic(
-          color: Colors.white,
-          fontSize: 20,
-        ),
-      ),
-      snackBarTheme: yaruDarkTheme.snackBarTheme.copyWith(
-        contentTextStyle: GoogleFonts.nanumGothic(color: Colors.black),
-      ),
-    );
+    final customTheme = _createKioskTheme(Brightness.light);
+    final customThemeDark = _createKioskTheme(Brightness.dark);
     return MaterialApp(
       theme: customTheme,
       darkTheme: customThemeDark,
       home: const KioskMainPage(),
     );
   }
+}
+
+ThemeData _createKioskTheme(Brightness brightness) {
+  const fontFamily = 'NanumGothic';
+  const fontFamilyFallback = ['Noto Sans CJK KR', 'sans-serif'];
+  final isLight = brightness == Brightness.light;
+  final theme = isLight
+      ? createYaruLightTheme(
+          primaryColor: YaruColors.orange,
+          elevatedButtonColor: YaruColors.light.success,
+          fontFamily: fontFamily,
+          fontFamilyFallback: fontFamilyFallback,
+        )
+      : createYaruDarkTheme(
+          primaryColor: YaruColors.orange,
+          elevatedButtonColor: YaruColors.dark.success,
+          fontFamily: fontFamily,
+          fontFamilyFallback: fontFamilyFallback,
+        );
+
+  return theme.copyWith(primaryTextTheme: theme.textTheme);
 }
 
 class KioskMainPage extends StatefulWidget {

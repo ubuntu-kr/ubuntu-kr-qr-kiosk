@@ -23,4 +23,25 @@ void main() {
     expect(find.text('참석자 체크인 키오스크 Attendee Check-in Kiosk'), findsOneWidget);
     expect(find.byIcon(Icons.qr_code), findsOneWidget);
   });
+
+  testWidgets('Yaru component themes use the bundled Korean font', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 1920);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const MyApp());
+
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    for (final theme in [app.theme!, app.darkTheme!]) {
+      expect(theme.textTheme.bodyMedium?.fontFamily, 'NanumGothic');
+      expect(theme.listTileTheme.titleTextStyle?.fontFamily, 'NanumGothic');
+      expect(
+        theme.listTileTheme.titleTextStyle?.fontFamilyFallback,
+        contains('Noto Sans CJK KR'),
+      );
+    }
+  });
 }

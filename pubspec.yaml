@@ -47,7 +47,6 @@ dependencies:
   shared_preferences: ^2.5.5
   http: ^1.6.0
   http_parser: ^4.1.2
-  google_fonts: ^8.2.0
   nm: ^0.5.0
   dbus: ^0.7.13
   screenshot: ^3.0.0
@@ -75,6 +74,19 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - fonts/OFL.txt
+
+  fonts:
+    - family: NanumGothic
+      fonts:
+        - asset: fonts/NanumGothic-Regular.ttf
+          weight: 400
+        - asset: fonts/NanumGothic-Bold.ttf
+          weight: 700
+        - asset: fonts/NanumGothic-ExtraBold.ttf
+          weight: 800
 
   # To add assets to your application, add an assets section, like this:
   # assets:
