@@ -1,5 +1,5 @@
 name: ubuntu-kr-qr-kiosk
-version: 0.2.1
+version: 0.3.0
 summary: Kiosk app for Ubuntu KR event QR Check in
 description: Kiosk app for Ubuntu KR event QR Check in
 compression: lzo
@@ -15,7 +15,7 @@ apps:
     - bin/wayland-launch
     command: &_command bin/ubuntu_kr_qr_kiosk
     # extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
-    # extensions: [gnome] 
+    # extensions: [gnome]
     plugs: &_plugs
     - opengl
     - wayland
@@ -49,7 +49,7 @@ apps:
     restart-condition: always
     plugs: *_plugs
     environment: *_environment
-    
+
 
 plugs:
   gpu-2404:
@@ -89,7 +89,7 @@ layout:
     bind: $SNAP/usr/share/sounds
   /etc/fonts:
     bind: $SNAP/etc/fonts
-  /usr/local/share/fonts: 
+  /usr/local/share/fonts:
     bind: $SNAP/usr/share/fonts
   # GTK
   /usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/gdk-pixbuf-2.0:
@@ -105,7 +105,7 @@ layout:
   #   interface: dbus
   #   bus: session
   #   name: org.ubuntu-kr.kiosk # adjust accordingly to your app name and
-  
+
 parts:
   # gsettings, pixbuf and immodules are not needed by all snaps,
   # but they are so common a requirement include them here
