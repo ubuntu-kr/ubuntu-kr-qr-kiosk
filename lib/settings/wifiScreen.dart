@@ -138,7 +138,7 @@ class _WifiScreenState extends State<WifiScreen> {
                           obscureText: true,
                           style: TextStyle(fontSize: 20),
                           // readOnly: showModalProgress,
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: '암호 입력',
